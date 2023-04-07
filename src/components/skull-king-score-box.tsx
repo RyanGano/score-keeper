@@ -5,6 +5,7 @@ import Col from "react-bootstrap/esm/Col";
 import { Container } from "react-bootstrap";
 
 export interface SkullKingRoundInfo {
+  id: string;
   possibleTricks: number;
   bid: number;
   taken: number;
@@ -13,6 +14,7 @@ export interface SkullKingRoundInfo {
 }
 
 export const defaultSkullKingRoundInfo: SkullKingRoundInfo = {
+  id: "",
   possibleTricks: 0,
   bid: 0,
   taken: 0,
@@ -27,6 +29,10 @@ export interface SkullKingScoreBoxProps {
 
 export const skullKingScoreBoxWidth = 125;
 
+function validateSkullKingRoundInfo(info: SkullKingRoundInfo) {
+  if (info.id === "") throw new Error(`InvalidId: ${info}`);
+}
+
 function calculateBidStatusColor(
   roundInfo: SkullKingRoundInfo,
   display: boolean
@@ -39,6 +45,7 @@ function calculateBidStatusColor(
 }
 
 export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
+  validateSkullKingRoundInfo(props.roundInfo);
   const roundScore = calculateRoundScore(props.roundInfo);
 
   return (

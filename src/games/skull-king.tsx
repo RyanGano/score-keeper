@@ -18,6 +18,7 @@ import { BonusInputArea } from "../components/bonus-input-area";
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
   roundScores: SkullKingRoundInfo[];
+  currentRound: SkullKingRoundInfo;
 }
 
 export function calculateRoundScore(info: SkullKingRoundInfo): number {
@@ -54,7 +55,12 @@ export const SkullKing = () => {
         props.getPlayers().map((x, index) => {
           return {
             playerInfo: x,
-            roundScores: [{ ...defaultSkullKingRoundInfo, possibleTricks: 1 }],
+            roundScores: [],
+            currentRound: {
+              ...defaultSkullKingRoundInfo,
+              id: `${x.Name}_1`,
+              possibleTricks: 1,
+            },
           };
         })
       );
@@ -95,16 +101,25 @@ export const SkullKing = () => {
     return playerStates.map((x) => x.roundScores[which]);
   }
 
+  function getCurrentRoundInfos(): SkullKingRoundInfo[] {
+    return playerStates.map((x) => x.currentRound);
+  }
+
   function getAllScores(): JSX.Element[] {
     let scores: JSX.Element[] = [];
     if (round !== 0) {
-      for (var i: number = 0; i < round; i++) {
+      for (var i: number = 0; i < round - 1; i++) {
         scores.push(
           <div key={`score_${i}`}>
             {getRoundInfo(getRoundInfos(i), i < round - 1)}
           </div>
         );
       }
+      scores.push(
+        <div key={`score_current`}>
+          {getRoundInfo(getCurrentRoundInfos(), false)}
+        </div>
+      );
     }
 
     return scores;
@@ -126,17 +141,8 @@ export const SkullKing = () => {
           ? x
           : {
               playerInfo: x.playerInfo,
-              roundScores: [
-                ...x.roundScores.slice(0, x.roundScores.length - 1),
-                {
-                  ...x.roundScores[x.roundScores.length - 1],
-                  bid: newBid,
-                  possibleTricks: round,
-                  currentScore: getCurrentScore(
-                    x.roundScores.slice(0, x.roundScores.length - 1)
-                  ),
-                },
-              ],
+              roundScores: [...x.roundScores],
+              currentRound: { ...x.currentRound, bid: newBid },
             }
       )
     );
@@ -152,13 +158,8 @@ export const SkullKing = () => {
           ? x
           : {
               playerInfo: x.playerInfo,
-              roundScores: [
-                ...x.roundScores.slice(0, x.roundScores.length - 1),
-                {
-                  ...x.roundScores[x.roundScores.length - 1],
-                  taken: newTricksTaken,
-                },
-              ],
+              roundScores: [...x.roundScores],
+              currentRound: { ...x.currentRound, taken: newTricksTaken },
             }
       )
     );
@@ -171,13 +172,8 @@ export const SkullKing = () => {
           ? x
           : {
               playerInfo: x.playerInfo,
-              roundScores: [
-                ...x.roundScores.slice(0, x.roundScores.length - 1),
-                {
-                  ...x.roundScores[x.roundScores.length - 1],
-                  bonus: newBonus,
-                },
-              ],
+              roundScores: [...x.roundScores],
+              currentRound: { ...x.currentRound, bonus: newBonus },
             }
       )
     );
@@ -186,16 +182,19 @@ export const SkullKing = () => {
   function addNewRoundInfo(): void {
     setPlayerStates(
       playerStates.map((x) => {
+        const finishedRoundInfo = {
+          ...x.currentRound,
+          currentScore: getCurrentScore(x.roundScores),
+        };
         return {
           playerInfo: x.playerInfo,
-          roundScores: [
-            ...x.roundScores,
-            {
-              ...defaultSkullKingRoundInfo,
-              currentScore: getCurrentScore(x.roundScores),
-              possibleTricks: round + 1,
-            },
-          ],
+          roundScores: [...x.roundScores, finishedRoundInfo],
+          currentRound: {
+            ...defaultSkullKingRoundInfo,
+            id: `${x.playerInfo.Name}_${round + 1}`,
+            currentScore: getCurrentScore(x.roundScores),
+            possibleTricks: round + 1,
+          },
         };
       })
     );
