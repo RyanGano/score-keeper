@@ -208,84 +208,9 @@ export const SkullKing = () => {
     return currentScore;
   }
 
-  function setBid(playerInfo: PlayerGeneralProps, newBid: number): void {
-    setPlayerStates(
-      playerStates.map((x) =>
-        x.playerInfo !== playerInfo
-          ? x
-          : {
-              playerInfo: x.playerInfo,
-              roundScores: [...x.roundScores],
-              currentRound:
-                x.currentRound !== null
-                  ? { ...x.currentRound, bid: newBid }
-                  : { ...defaultSkullKingRoundInfo },
-              editRound: null,
-            }
-      )
-    );
-  }
-
-  function editBid(playerInfo: PlayerGeneralProps, newBid: number): void {
-    setPlayerStates(
-      playerStates.map((x) => {
-        return x.playerInfo !== playerInfo
-          ? x
-          : {
-              playerInfo: x.playerInfo,
-              roundScores: [...x.roundScores],
-              currentRound: x.currentRound,
-              editRound:
-                x.editRound !== null
-                  ? { ...x.editRound, bid: newBid }
-                  : { ...defaultSkullKingRoundInfo },
-            };
-      })
-    );
-  }
-
-  function editTricksTaken(
+  function updateField(
     playerInfo: PlayerGeneralProps,
-    newTricksTaken: number
-  ): void {
-    setPlayerStates(
-      playerStates.map((x) => {
-        return x.playerInfo !== playerInfo
-          ? x
-          : {
-              playerInfo: x.playerInfo,
-              roundScores: [...x.roundScores],
-              currentRound: x.currentRound,
-              editRound:
-                x.editRound !== null
-                  ? { ...x.editRound, taken: newTricksTaken }
-                  : { ...defaultSkullKingRoundInfo },
-            };
-      })
-    );
-  }
-
-  function editBonus(playerInfo: PlayerGeneralProps, newBonus: number): void {
-    setPlayerStates(
-      playerStates.map((x) => {
-        return x.playerInfo !== playerInfo
-          ? x
-          : {
-              playerInfo: x.playerInfo,
-              roundScores: [...x.roundScores],
-              currentRound: x.currentRound,
-              editRound:
-                x.editRound !== null
-                  ? { ...x.editRound, bonus: newBonus }
-                  : { ...defaultSkullKingRoundInfo },
-            };
-      })
-    );
-  }
-
-  function setTricksTaken(
-    playerInfo: PlayerGeneralProps,
-    newTricksTaken: number
+    buildRoundInfo: (roundInfo: SkullKingRoundInfo) => SkullKingRoundInfo
   ): void {
     setPlayerStates(
       playerStates.map((x) =>
@@ -294,29 +219,16 @@ export const SkullKing = () => {
           : {
               playerInfo: x.playerInfo,
               roundScores: [...x.roundScores],
-              currentRound:
-                x.currentRound !== null
-                  ? { ...x.currentRound, taken: newTricksTaken }
-                  : { ...defaultSkullKingRoundInfo },
-              editRound: null,
-            }
-      )
-    );
-  }
-
-  function setBonus(playerInfo: PlayerGeneralProps, newBonus: number): void {
-    setPlayerStates(
-      playerStates.map((x) =>
-        x.playerInfo !== playerInfo
-          ? x
-          : {
-              playerInfo: x.playerInfo,
-              roundScores: [...x.roundScores],
-              currentRound:
-                x.currentRound !== null
-                  ? { ...x.currentRound, bonus: newBonus }
-                  : { ...defaultSkullKingRoundInfo },
-              editRound: null,
+              currentRound: !!x.editRound
+                ? x.currentRound
+                : x.currentRound !== null
+                ? buildRoundInfo(x.currentRound)
+                : { ...defaultSkullKingRoundInfo },
+              editRound: !!x.editRound
+                ? x.editRound !== null
+                  ? buildRoundInfo(x.editRound)
+                  : { ...defaultSkullKingRoundInfo }
+                : x.editRound,
             }
       )
     );
@@ -407,7 +319,14 @@ export const SkullKing = () => {
                 {playerStates.map((x, index) => (
                   <Col key={`bidInput_${index}`}>
                     <BidInputField
-                      setBid={(newBid) => editBid(x.playerInfo, newBid)}
+                      setBid={(newBid) =>
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, bid: newBid };
+                          }
+                        )
+                      }
                       startingValue={x.editRound?.bid}
                     />
                   </Col>
@@ -424,12 +343,24 @@ export const SkullKing = () => {
                   <Col key={`state2_${index}`}>
                     <TricksTakenInputArea
                       setTricksTaken={(tricksTaken) =>
-                        editTricksTaken(x.playerInfo, tricksTaken)
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, taken: tricksTaken };
+                          }
+                        )
                       }
                       startingValue={x.editRound?.taken}
                     />
                     <BonusInputArea
-                      setBonus={(bonus) => editBonus(x.playerInfo, bonus)}
+                      setBonus={(bonus) =>
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, bonus };
+                          }
+                        )
+                      }
                       startingValue={x.editRound?.bonus}
                     />
                   </Col>
@@ -459,7 +390,14 @@ export const SkullKing = () => {
                 {playerStates.map((x, index) => (
                   <Col key={`bidInput_${index}`}>
                     <BidInputField
-                      setBid={(newBid) => setBid(x.playerInfo, newBid)}
+                      setBid={(newBid) =>
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, bid: newBid };
+                          }
+                        )
+                      }
                       startingValue={undefined}
                     />
                   </Col>
@@ -496,12 +434,24 @@ export const SkullKing = () => {
                   <Col key={`state2_${index}`}>
                     <TricksTakenInputArea
                       setTricksTaken={(tricksTaken) =>
-                        setTricksTaken(x.playerInfo, tricksTaken)
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, taken: tricksTaken };
+                          }
+                        )
                       }
                       startingValue={undefined}
                     />
                     <BonusInputArea
-                      setBonus={(bonus) => setBonus(x.playerInfo, bonus)}
+                      setBonus={(bonus) =>
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, bonus };
+                          }
+                        )
+                      }
                       startingValue={undefined}
                     />
                   </Col>
