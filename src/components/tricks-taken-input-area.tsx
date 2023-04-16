@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export interface TricksTakenInputAreaProps {
   setTricksTaken: (tricksTaken: number) => void;
+  startingValue: number | undefined;
 }
 
 export const TricksTakenInputArea = (props: TricksTakenInputAreaProps) => {
@@ -20,7 +21,9 @@ export const TricksTakenInputArea = (props: TricksTakenInputAreaProps) => {
     };
   }
 
-  const trickInputProps = useInput("0");
+  const trickInputProps = useInput(
+    !!props.startingValue ? props.startingValue.toString() : "0"
+  );
 
   return (
     // <div style={{ width: "25px", position: "relative" }}>

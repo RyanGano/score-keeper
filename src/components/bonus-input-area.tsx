@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export interface BonusInputAreaProps {
   setBonus: (bonus: number) => void;
+  startingValue: number | undefined;
 }
 
 export const BonusInputArea = (props: BonusInputAreaProps) => {
@@ -20,7 +21,9 @@ export const BonusInputArea = (props: BonusInputAreaProps) => {
     };
   }
 
-  const bonusInputProps = useInput("0");
+  const bonusInputProps = useInput(
+    !!props.startingValue ? props.startingValue.toString() : "0"
+  );
 
   return (
     // <div style={{ width: "25px" }}>

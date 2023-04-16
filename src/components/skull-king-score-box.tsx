@@ -30,7 +30,7 @@ export interface SkullKingScoreBoxProps {
 export const skullKingScoreBoxWidth = 125;
 
 function validateSkullKingRoundInfo(info: SkullKingRoundInfo) {
-  if (info.id === "") throw new Error(`InvalidId: ${info}`);
+  // if (info.id === "") throw new Error(`InvalidId: ${info}`);
 }
 
 function calculateBidStatusColor(
@@ -47,6 +47,32 @@ function calculateBidStatusColor(
 export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
   validateSkullKingRoundInfo(props.roundInfo);
   const roundScore = calculateRoundScore(props.roundInfo);
+
+  const secondRow = props.displayFullInfo ? (
+    <Row>
+      <Col
+        style={{
+          backgroundColor: "#cccccc",
+          borderStyle: "solid",
+          borderWidth: ".5px",
+          borderColor: "#888888",
+        }}
+      >
+        {props.displayFullInfo ? `${roundScore}` : " "}
+      </Col>
+      <Col
+        style={{
+          borderStyle: "solid",
+          borderWidth: ".5px",
+          borderColor: "#888888",
+        }}
+      >
+        {props.displayFullInfo
+          ? `${props.roundInfo.currentScore + roundScore}`
+          : " "}
+      </Col>
+    </Row>
+  ) : null;
 
   return (
     <Container
@@ -82,29 +108,7 @@ export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
             : " "}
         </Col>
       </Row>
-      <Row>
-        <Col
-          style={{
-            backgroundColor: "#cccccc",
-            borderStyle: "solid",
-            borderWidth: ".5px",
-            borderColor: "#888888",
-          }}
-        >
-          {props.displayFullInfo ? `${roundScore}` : " "}
-        </Col>
-        <Col
-          style={{
-            borderStyle: "solid",
-            borderWidth: ".5px",
-            borderColor: "#888888",
-          }}
-        >
-          {props.displayFullInfo
-            ? `${props.roundInfo.currentScore + roundScore}`
-            : " "}
-        </Col>
-      </Row>
+      {secondRow}
     </Container>
   );
 };

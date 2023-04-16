@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export interface BidInputFieldProps {
   setBid: (newBid: number) => void;
+  startingValue: number | undefined;
 }
 
 export const BidInputField = (props: BidInputFieldProps) => {
@@ -20,7 +21,9 @@ export const BidInputField = (props: BidInputFieldProps) => {
     };
   }
 
-  const inputProps = useInput("0");
+  const inputProps = useInput(
+    !!props.startingValue ? props.startingValue.toString() : "0"
+  );
 
   return (
     <div style={{ width: "100px" }}>

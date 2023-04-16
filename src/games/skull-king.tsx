@@ -14,11 +14,13 @@ import Col from "react-bootstrap/esm/Col";
 import { BidInputField } from "../components/bid-input-field";
 import { TricksTakenInputArea } from "../components/tricks-taken-input-area";
 import { BonusInputArea } from "../components/bonus-input-area";
+import { PencilFill } from "react-bootstrap-icons";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
   roundScores: SkullKingRoundInfo[];
-  currentRound: SkullKingRoundInfo;
+  currentRound: SkullKingRoundInfo | null;
+  editRound: SkullKingRoundInfo | null;
 }
 
 export function calculateRoundScore(info: SkullKingRoundInfo): number {
@@ -39,6 +41,7 @@ enum SkullKingGameStatus {
   BiddingOpen,
   BiddingClosed,
   GameOver,
+  EditingPastItem,
 }
 
 export const SkullKing = () => {
@@ -61,6 +64,7 @@ export const SkullKing = () => {
               id: `${x.Name}_1`,
               possibleTricks: 1,
             },
+            editRound: null,
           };
         })
       );
@@ -73,7 +77,8 @@ export const SkullKing = () => {
 
   function getRoundInfo(
     info: SkullKingRoundInfo[],
-    displayFullInfo: boolean
+    displayFullInfo: boolean,
+    displayEditButton: boolean
   ): JSX.Element {
     let scores: JSX.Element[] = [];
     info.forEach((x, index) => {
@@ -86,14 +91,75 @@ export const SkullKing = () => {
       );
     });
 
+    if (gameStatus !== SkullKingGameStatus.EditingPastItem) {
+      if (displayFullInfo) {
+        scores.push(
+          <Button
+            variant="danger"
+            size="sm"
+            style={{ width: "32px" }}
+            onClick={() => beginEditing(info)}
+          >
+            <PencilFill />
+          </Button>
+        );
+      } else {
+        scores.push(<div style={{ width: "32px" }} />);
+      }
+    }
+
     return (
       <Row
         style={{
-          maxWidth: `${playerStates.length * skullKingScoreBoxWidth}px`,
+          maxWidth: `${(playerStates.length + 1) * skullKingScoreBoxWidth}px`,
         }}
       >
         {scores}
       </Row>
+    );
+  }
+
+  function beginEditing(roundInfo: SkullKingRoundInfo[]) {
+    setGameStatus(SkullKingGameStatus.EditingPastItem);
+
+    setPlayerStates(
+      playerStates.map((x) => {
+        return {
+          playerInfo: x.playerInfo,
+          roundScores: [...x.roundScores],
+          currentRound:
+            x.currentRound !== null
+              ? { ...x.currentRound }
+              : { ...defaultSkullKingRoundInfo },
+          editRound: roundInfo.filter(
+            (y) => !!x.roundScores.find((z) => z.id === y.id)
+          )[0],
+        };
+      })
+    );
+  }
+
+  function stopEditing() {
+    setGameStatus(SkullKingGameStatus.BiddingOpen);
+
+    setPlayerStates(
+      playerStates.map((x) => {
+        return {
+          playerInfo: x.playerInfo,
+          roundScores: [
+            ...x.roundScores.map((y) => {
+              return x.editRound !== null && x.editRound.id === y.id
+                ? { ...x.editRound }
+                : { ...y };
+            }),
+          ],
+          currentRound:
+            x.currentRound !== null
+              ? { ...x.currentRound }
+              : { ...defaultSkullKingRoundInfo },
+          editRound: null,
+        };
+      })
     );
   }
 
@@ -102,7 +168,13 @@ export const SkullKing = () => {
   }
 
   function getCurrentRoundInfos(): SkullKingRoundInfo[] {
-    return playerStates.map((x) => x.currentRound);
+    return playerStates
+      .filter((x) => x !== null)
+      .map((x) =>
+        x.currentRound !== null
+          ? x.currentRound
+          : { ...defaultSkullKingRoundInfo }
+      );
   }
 
   function getAllScores(): JSX.Element[] {
@@ -111,15 +183,17 @@ export const SkullKing = () => {
       for (var i: number = 0; i < round - 1; i++) {
         scores.push(
           <div key={`score_${i}`}>
-            {getRoundInfo(getRoundInfos(i), i < round - 1)}
+            {getRoundInfo(getRoundInfos(i), i < round - 1, true)}
           </div>
         );
       }
-      scores.push(
-        <div key={`score_current`}>
-          {getRoundInfo(getCurrentRoundInfos(), false)}
-        </div>
-      );
+      if (gameStatus !== SkullKingGameStatus.GameOver) {
+        scores.push(
+          <div key={`score_current`}>
+            {getRoundInfo(getCurrentRoundInfos(), false, false)}
+          </div>
+        );
+      }
     }
 
     return scores;
@@ -142,9 +216,70 @@ export const SkullKing = () => {
           : {
               playerInfo: x.playerInfo,
               roundScores: [...x.roundScores],
-              currentRound: { ...x.currentRound, bid: newBid },
+              currentRound:
+                x.currentRound !== null
+                  ? { ...x.currentRound, bid: newBid }
+                  : { ...defaultSkullKingRoundInfo },
+              editRound: null,
             }
       )
+    );
+  }
+
+  function editBid(playerInfo: PlayerGeneralProps, newBid: number): void {
+    setPlayerStates(
+      playerStates.map((x) => {
+        return x.playerInfo !== playerInfo
+          ? x
+          : {
+              playerInfo: x.playerInfo,
+              roundScores: [...x.roundScores],
+              currentRound: x.currentRound,
+              editRound:
+                x.editRound !== null
+                  ? { ...x.editRound, bid: newBid }
+                  : { ...defaultSkullKingRoundInfo },
+            };
+      })
+    );
+  }
+
+  function editTricksTaken(
+    playerInfo: PlayerGeneralProps,
+    newTricksTaken: number
+  ): void {
+    setPlayerStates(
+      playerStates.map((x) => {
+        return x.playerInfo !== playerInfo
+          ? x
+          : {
+              playerInfo: x.playerInfo,
+              roundScores: [...x.roundScores],
+              currentRound: x.currentRound,
+              editRound:
+                x.editRound !== null
+                  ? { ...x.editRound, taken: newTricksTaken }
+                  : { ...defaultSkullKingRoundInfo },
+            };
+      })
+    );
+  }
+
+  function editBonus(playerInfo: PlayerGeneralProps, newBonus: number): void {
+    setPlayerStates(
+      playerStates.map((x) => {
+        return x.playerInfo !== playerInfo
+          ? x
+          : {
+              playerInfo: x.playerInfo,
+              roundScores: [...x.roundScores],
+              currentRound: x.currentRound,
+              editRound:
+                x.editRound !== null
+                  ? { ...x.editRound, bonus: newBonus }
+                  : { ...defaultSkullKingRoundInfo },
+            };
+      })
     );
   }
 
@@ -159,7 +294,11 @@ export const SkullKing = () => {
           : {
               playerInfo: x.playerInfo,
               roundScores: [...x.roundScores],
-              currentRound: { ...x.currentRound, taken: newTricksTaken },
+              currentRound:
+                x.currentRound !== null
+                  ? { ...x.currentRound, taken: newTricksTaken }
+                  : { ...defaultSkullKingRoundInfo },
+              editRound: null,
             }
       )
     );
@@ -173,7 +312,11 @@ export const SkullKing = () => {
           : {
               playerInfo: x.playerInfo,
               roundScores: [...x.roundScores],
-              currentRound: { ...x.currentRound, bonus: newBonus },
+              currentRound:
+                x.currentRound !== null
+                  ? { ...x.currentRound, bonus: newBonus }
+                  : { ...defaultSkullKingRoundInfo },
+              editRound: null,
             }
       )
     );
@@ -182,10 +325,13 @@ export const SkullKing = () => {
   function addNewRoundInfo(): void {
     setPlayerStates(
       playerStates.map((x) => {
-        const finishedRoundInfo = {
-          ...x.currentRound,
-          currentScore: getCurrentScore(x.roundScores),
-        };
+        const finishedRoundInfo =
+          x.currentRound !== null
+            ? {
+                ...x.currentRound,
+                currentScore: getCurrentScore(x.roundScores),
+              }
+            : { ...defaultSkullKingRoundInfo };
         return {
           playerInfo: x.playerInfo,
           roundScores: [...x.roundScores, finishedRoundInfo],
@@ -195,6 +341,27 @@ export const SkullKing = () => {
             currentScore: getCurrentScore(x.roundScores),
             possibleTricks: round + 1,
           },
+          editRound: null,
+        };
+      })
+    );
+  }
+
+  function finishGame(): void {
+    setPlayerStates(
+      playerStates.map((x) => {
+        const finishedRoundInfo =
+          x.currentRound !== null
+            ? {
+                ...x.currentRound,
+                currentScore: getCurrentScore(x.roundScores),
+              }
+            : { ...defaultSkullKingRoundInfo };
+        return {
+          playerInfo: x.playerInfo,
+          roundScores: [...x.roundScores, finishedRoundInfo],
+          currentRound: null,
+          editRound: null,
         };
       })
     );
@@ -210,7 +377,10 @@ export const SkullKing = () => {
       </Button>
       <p />
       <div style={{ position: "relative", left: "0px", right: "24px" }}>
-        {gameStatus !== SkullKingGameStatus.GameNotStarted && `Round: ${round}`}
+        {gameStatus !== SkullKingGameStatus.GameNotStarted &&
+          gameStatus !== SkullKingGameStatus.GameOver &&
+          `Round: ${round}`}
+        {gameStatus === SkullKingGameStatus.GameOver && "Game over"}
         <Container>
           <Row>
             {playerStates.map((x, index) => (
@@ -223,6 +393,58 @@ export const SkullKing = () => {
         </Container>
       </div>
       <div style={{ position: "absolute", left: "0px", bottom: "24px" }}>
+        {gameStatus === SkullKingGameStatus.EditingPastItem && (
+          <div>
+            <Container>
+              <Row>
+                {playerStates.map((x, index) => (
+                  <Col key={`playerNameTop_${index}`}>
+                    <b>{x.playerInfo.Name}</b>
+                  </Col>
+                ))}
+              </Row>
+              <Row>
+                {playerStates.map((x, index) => (
+                  <Col key={`bidInput_${index}`}>
+                    <BidInputField
+                      setBid={(newBid) => editBid(x.playerInfo, newBid)}
+                      startingValue={x.editRound?.bid}
+                    />
+                  </Col>
+                ))}
+              </Row>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "625px",
+                }}
+              >
+                {playerStates.map((x, index) => (
+                  <Col key={`state2_${index}`}>
+                    <TricksTakenInputArea
+                      setTricksTaken={(tricksTaken) =>
+                        editTricksTaken(x.playerInfo, tricksTaken)
+                      }
+                      startingValue={x.editRound?.taken}
+                    />
+                    <BonusInputArea
+                      setBonus={(bonus) => editBonus(x.playerInfo, bonus)}
+                      startingValue={x.editRound?.bonus}
+                    />
+                  </Col>
+                ))}
+              </div>
+            </Container>
+            <Button
+              onClick={() => {
+                stopEditing();
+              }}
+            >
+              Done Editing
+            </Button>
+          </div>
+        )}
         {gameStatus === SkullKingGameStatus.BiddingOpen && (
           <div>
             <Container>
@@ -238,6 +460,7 @@ export const SkullKing = () => {
                   <Col key={`bidInput_${index}`}>
                     <BidInputField
                       setBid={(newBid) => setBid(x.playerInfo, newBid)}
+                      startingValue={undefined}
                     />
                   </Col>
                 ))}
@@ -275,9 +498,11 @@ export const SkullKing = () => {
                       setTricksTaken={(tricksTaken) =>
                         setTricksTaken(x.playerInfo, tricksTaken)
                       }
+                      startingValue={undefined}
                     />
                     <BonusInputArea
                       setBonus={(bonus) => setBonus(x.playerInfo, bonus)}
+                      startingValue={undefined}
                     />
                   </Col>
                 ))}
@@ -285,9 +510,13 @@ export const SkullKing = () => {
             </Container>
             <Button
               onClick={() => {
-                setGameStatus(SkullKingGameStatus.BiddingOpen);
+                setGameStatus(
+                  round !== 10
+                    ? SkullKingGameStatus.BiddingOpen
+                    : SkullKingGameStatus.GameOver
+                );
                 setRound(round + 1);
-                addNewRoundInfo();
+                round !== 10 ? addNewRoundInfo() : finishGame();
               }}
             >
               Update results
