@@ -28,7 +28,7 @@ export const BonusInputArea = (props: BonusInputAreaProps) => {
   return (
     // <div style={{ width: "25px" }}>
     <StyledInput
-      style={{ width: "25px", position: "relative", top: "0px" }}
+      style={{ width: "50px", position: "relative", top: "0px" }}
       {...bonusInputProps}
       placeholder=""
     />

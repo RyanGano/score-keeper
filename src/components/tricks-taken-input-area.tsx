@@ -28,7 +28,7 @@ export const TricksTakenInputArea = (props: TricksTakenInputAreaProps) => {
   return (
     // <div style={{ width: "25px", position: "relative" }}>
     <StyledInput
-      style={{ width: "25px", position: "relative", top: "0px" }}
+      style={{ width: "50px", position: "relative", top: "0px" }}
       {...trickInputProps}
       placeholder=""
     />
