@@ -15,7 +15,7 @@ export const LightBlueLeftNav = styled(Nav)`
   bottom: 0;
   background-color: #ccddff;
   min-height: 100vh !important;
-  z-index: 100;
+  // z-index: 100;
   padding: 12px 24px 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
 `;
