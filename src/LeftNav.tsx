@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Pencil,
-  PersonAdd,
-  PersonDash,
-  PersonGear,
-  XCircle,
-} from "react-bootstrap-icons";
+import { Pencil, PersonAdd, XCircle } from "react-bootstrap-icons";
 import Button from "react-bootstrap/esm/Button";
 import { NavLink } from "react-router-dom";
 import { LightBlueLeftNav } from "./common/styles";
