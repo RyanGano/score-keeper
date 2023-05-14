@@ -298,34 +298,41 @@ export const SkullKing = () => {
 
   return (
     <div
-      style={{ position: "absolute", left: "274px", top: "24px", bottom: "0" }}
+      style={{
+        position: "absolute",
+        left: "274px",
+        top: "24px",
+        bottom: "24px",
+      }}
     >
-      <h2>Skull King</h2>
-      {(gameStatus === SkullKingGameStatus.GameNotStarted ||
-        gameStatus === SkullKingGameStatus.GameOver) && (
-        <>
-          <Button size="sm" onClick={() => startGame()}>
-            Start Game
-          </Button>
-          <SkullKingIncludedCards
-            {...includedCards}
-            updateKraken={(newValue) =>
-              setIncludedCards({ ...includedCards, kraken: newValue })
-            }
-            updateWhiteWhale={(newValue) =>
-              setIncludedCards({ ...includedCards, whiteWhale: newValue })
-            }
-            updateLootCoins={(newValue) =>
-              setIncludedCards({ ...includedCards, lootCoins: newValue })
-            }
-            updateMermaids={(newValue) =>
-              setIncludedCards({ ...includedCards, mermaids: newValue })
-            }
-          />
-          <p />
-        </>
-      )}
-      <div style={{ position: "relative", left: "0px", right: "24px" }}>
+      <div>
+        <h2>Skull King</h2>
+        {(gameStatus === SkullKingGameStatus.GameNotStarted ||
+          gameStatus === SkullKingGameStatus.GameOver) && (
+          <>
+            <Button size="sm" onClick={() => startGame()}>
+              Start Game
+            </Button>
+            <SkullKingIncludedCards
+              {...includedCards}
+              updateKraken={(newValue) =>
+                setIncludedCards({ ...includedCards, kraken: newValue })
+              }
+              updateWhiteWhale={(newValue) =>
+                setIncludedCards({ ...includedCards, whiteWhale: newValue })
+              }
+              updateLootCoins={(newValue) =>
+                setIncludedCards({ ...includedCards, lootCoins: newValue })
+              }
+              updateMermaids={(newValue) =>
+                setIncludedCards({ ...includedCards, mermaids: newValue })
+              }
+            />
+            <p />
+          </>
+        )}
+      </div>
+      <div>
         {gameStatus !== SkullKingGameStatus.GameNotStarted &&
           gameStatus !== SkullKingGameStatus.GameOver &&
           `Round: ${round}`}
@@ -341,7 +348,7 @@ export const SkullKing = () => {
           {getAllScores()}
         </Container>
       </div>
-      <div style={{ position: "absolute", left: "0px", bottom: "24px" }}>
+      <div>
         {gameStatus === SkullKingGameStatus.EditingPastItem && (
           <Stack gap={1}>
             <Stack direction="horizontal" gap={1}>
