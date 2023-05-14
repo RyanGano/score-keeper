@@ -40,9 +40,8 @@ export function calculateRoundScore(info: SkullKingRoundInfo): number {
     return newScore;
   }
 
-  if (info.bid === 0)
-    return info.possibleTricks * -10;
-    
+  if (info.bid === 0) return info.possibleTricks * -10;
+
   return Math.abs(info.taken - info.bid) * -10;
 }
 
@@ -302,25 +301,30 @@ export const SkullKing = () => {
       style={{ position: "absolute", left: "274px", top: "24px", bottom: "0" }}
     >
       <h2>Skull King</h2>
-      <Button size="sm" onClick={() => startGame()}>
-        Start Game
-      </Button>
-      <SkullKingIncludedCards
-        {...includedCards}
-        updateKraken={(newValue) =>
-          setIncludedCards({ ...includedCards, kraken: newValue })
-        }
-        updateWhiteWhale={(newValue) =>
-          setIncludedCards({ ...includedCards, whiteWhale: newValue })
-        }
-        updateLootCoins={(newValue) =>
-          setIncludedCards({ ...includedCards, lootCoins: newValue })
-        }
-        updateMermaids={(newValue) =>
-          setIncludedCards({ ...includedCards, mermaids: newValue })
-        }
-      />
-      <p />
+      {(gameStatus === SkullKingGameStatus.GameNotStarted ||
+        gameStatus === SkullKingGameStatus.GameOver) && (
+        <>
+          <Button size="sm" onClick={() => startGame()}>
+            Start Game
+          </Button>
+          <SkullKingIncludedCards
+            {...includedCards}
+            updateKraken={(newValue) =>
+              setIncludedCards({ ...includedCards, kraken: newValue })
+            }
+            updateWhiteWhale={(newValue) =>
+              setIncludedCards({ ...includedCards, whiteWhale: newValue })
+            }
+            updateLootCoins={(newValue) =>
+              setIncludedCards({ ...includedCards, lootCoins: newValue })
+            }
+            updateMermaids={(newValue) =>
+              setIncludedCards({ ...includedCards, mermaids: newValue })
+            }
+          />
+          <p />
+        </>
+      )}
       <div style={{ position: "relative", left: "0px", right: "24px" }}>
         {gameStatus !== SkullKingGameStatus.GameNotStarted &&
           gameStatus !== SkullKingGameStatus.GameOver &&
