@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
 import "./App.css";
 import { PlayerGeneralProps } from "./components/player-general";
 import LeftNav from "./LeftNav";
 import { useCookies } from "react-cookie";
 import Alert from "react-bootstrap/esm/Alert";
+import { SkullKing } from "./games/skull-king";
+import { RollThroughTheAges } from "./games/roll-through-the-ages";
+
+export enum Game {
+  SkullKing,
+  RollThroughTheAges,
+}
 
 export interface GameProps {
   getPlayers: () => PlayerGeneralProps[];
@@ -23,6 +29,7 @@ function App() {
   const [maxPlayers, setMaxPlayers] = useState<number>(8);
   const [cookies, setCookie] = useCookies(["game", "players"]);
   const [alert, setAlert] = useState<string | undefined>();
+  const [game, setGame] = useState<Game | undefined>();
 
   if (!cookies.players && players.length === 0) {
     setPlayers([{ Name: "Player 1" }, { Name: "Player 2" }]);
@@ -33,6 +40,13 @@ function App() {
         return { Name: x };
       })
     );
+  }
+
+  if (cookies.game && !game) {
+    if (cookies.game === Game.SkullKing) setGame(Game.SkullKing);
+    else if (cookies.game === Game.RollThroughTheAges)
+      setGame(Game.RollThroughTheAges);
+    else setGame(undefined);
   }
 
   function addPlayer(name: string) {
@@ -79,6 +93,11 @@ function App() {
     else setAlert(newAlert);
   }
 
+  function setActiveGame(game: Game) {
+    console.log("Setting game:", game);
+    setGame(game);
+  }
+
   const gameContext: GameProps = {
     getPlayers: () => players,
     setMaxPlayerCount: (max) => setMaxPlayers(max),
@@ -89,9 +108,11 @@ function App() {
       addPlayer={addPlayer}
       editPlayer={editPlayer}
       removePlayer={removePlayer}
+      setGame={setActiveGame}
       canAddPlayer={players.length < maxPlayers}
       canRemovePlayer={players.length > 1}
       activePlayers={players}
+      collapsed={game !== undefined}
     />
   );
 
@@ -99,15 +120,16 @@ function App() {
     <div className="App">
       {leftNav}
       {alert && (
-        <Alert variant="info" onClose={() => setAlert(undefined)} dismissible>
+        <Alert variant="info" style={{zIndex:"150"}} onClose={() => setAlert(undefined)} dismissible>
           {alert.split("|").map((x, index) => (
             <div key={index}>{x}</div>
           ))}
         </Alert>
       )}
-      <Context.Provider value={gameContext}>
-        <Outlet context={gameContext} />
-      </Context.Provider>
+      {game === Game.SkullKing && <SkullKing {...gameContext} />}
+      {game === Game.RollThroughTheAges && (
+        <RollThroughTheAges {...gameContext} />
+      )}
     </div>
   );
 }
