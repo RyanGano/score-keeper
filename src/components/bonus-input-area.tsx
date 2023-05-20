@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyledInput } from "../common/styles";
 import { useState } from "react";
+import { skullKingScoreBoxWidth } from "./skull-king-score-box";
 
 export interface BonusInputAreaProps {
   setBonus: (bonus: number) => void;
@@ -26,12 +27,10 @@ export const BonusInputArea = (props: BonusInputAreaProps) => {
   );
 
   return (
-    // <div style={{ width: "25px" }}>
     <StyledInput
-      style={{ width: "50px", position: "relative", top: "0px" }}
+      style={{ width: `${skullKingScoreBoxWidth / 2}px` }}
       {...bonusInputProps}
       placeholder=""
     />
-    // </div>
   );
 };

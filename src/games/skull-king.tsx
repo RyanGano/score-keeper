@@ -8,13 +8,10 @@ import {
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
 } from "../components/skull-king-score-box";
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
 import { BidInputField } from "../components/bid-input-field";
 import { TricksTakenInputArea } from "../components/tricks-taken-input-area";
 import { BonusInputArea } from "../components/bonus-input-area";
-import { PencilFill } from "react-bootstrap-icons";
+import { Pencil, XCircle } from "react-bootstrap-icons";
 import {
   SkullKingCardInclusions,
   SkullKingIncludedCards,
@@ -88,8 +85,7 @@ export const SkullKing = (props: GameProps) => {
 
   function getRoundInfo(
     info: SkullKingRoundInfo[],
-    displayFullInfo: boolean,
-    displayEditButton: boolean
+    displayFullInfo: boolean
   ): JSX.Element {
     let scores: JSX.Element[] = [];
     info.forEach((x, index) => {
@@ -105,14 +101,21 @@ export const SkullKing = (props: GameProps) => {
     if (gameStatus !== SkullKingGameStatus.EditingPastItem) {
       if (displayFullInfo) {
         scores.push(
-          <Button
-            variant="danger"
-            size="sm"
-            style={{ width: "32px" }}
-            onClick={() => beginEditing(info)}
-          >
-            <PencilFill />
-          </Button>
+          gameStatus === SkullKingGameStatus.BiddingOpen ||
+            gameStatus === SkullKingGameStatus.GameOver ? (
+            <Button
+              variant="link"
+              size="sm"
+              style={{ width: "32px" }}
+              onClick={() => beginEditing(info)}
+            >
+              <Pencil color="red" />
+            </Button>
+          ) : (
+            <Button variant="link" size="sm" style={{ width: "32px" }} disabled>
+              <Pencil />
+            </Button>
+          )
         );
       } else {
         scores.push(<div style={{ width: "32px" }} />);
@@ -120,13 +123,9 @@ export const SkullKing = (props: GameProps) => {
     }
 
     return (
-      <Row
-        style={{
-          maxWidth: `${(playerStates.length + 1) * skullKingScoreBoxWidth}px`,
-        }}
-      >
+      <Stack direction="horizontal" gap={1}>
         {scores}
-      </Row>
+      </Stack>
     );
   }
 
@@ -151,7 +150,11 @@ export const SkullKing = (props: GameProps) => {
   }
 
   function stopEditing() {
-    setGameStatus(SkullKingGameStatus.BiddingOpen);
+    setGameStatus(
+      round < 11
+        ? SkullKingGameStatus.BiddingOpen
+        : SkullKingGameStatus.GameOver
+    );
 
     setPlayerStates(
       playerStates.map((x) => {
@@ -194,14 +197,14 @@ export const SkullKing = (props: GameProps) => {
       for (var i: number = 0; i < round - 1; i++) {
         scores.push(
           <div key={`score_${i}`}>
-            {getRoundInfo(getRoundInfos(i), i < round - 1, true)}
+            {getRoundInfo(getRoundInfos(i), i < round - 1)}
           </div>
         );
       }
       if (gameStatus !== SkullKingGameStatus.GameOver) {
         scores.push(
           <div key={`score_current`}>
-            {getRoundInfo(getCurrentRoundInfos(), false, false)}
+            {getRoundInfo(getCurrentRoundInfos(), false)}
           </div>
         );
       }
@@ -295,6 +298,25 @@ export const SkullKing = (props: GameProps) => {
     );
   }
 
+  function getRoundStatus(): string | undefined {
+    switch (gameStatus) {
+      case SkullKingGameStatus.EditingPastItem:
+        return "Editing";
+      case SkullKingGameStatus.GameOver:
+        return "Game over";
+      case SkullKingGameStatus.GameNotStarted:
+        return undefined;
+      default:
+        return `Round: ${round}`;
+    }
+  }
+
+  function resetGame(): void {
+    setGameStatus(SkullKingGameStatus.GameNotStarted);
+    setPlayerStates([]);
+    setRound(0);
+  }
+
   return (
     <>
       <div
@@ -304,7 +326,16 @@ export const SkullKing = (props: GameProps) => {
           top: "12px",
         }}
       >
-        <h2>Skull King</h2>
+        <h2>
+          <Stack direction="horizontal" gap={1}>
+            Skull King
+            {gameStatus !== SkullKingGameStatus.GameNotStarted && (
+              <Button variant="link" onClick={() => resetGame()}>
+                <XCircle color="red" />
+              </Button>
+            )}
+          </Stack>
+        </h2>
       </div>
       <div
         style={{
@@ -313,131 +344,53 @@ export const SkullKing = (props: GameProps) => {
           top: "74px",
         }}
       >
-        <div>
-          {(gameStatus === SkullKingGameStatus.GameNotStarted ||
-            gameStatus === SkullKingGameStatus.GameOver) && (
-            <>
-              <Button size="sm" onClick={() => startGame()}>
-                Start Game
-              </Button>
-              <SkullKingIncludedCards
-                {...includedCards}
-                updateKraken={(newValue) =>
-                  setIncludedCards({ ...includedCards, kraken: newValue })
-                }
-                updateWhiteWhale={(newValue) =>
-                  setIncludedCards({ ...includedCards, whiteWhale: newValue })
-                }
-                updateLootCoins={(newValue) =>
-                  setIncludedCards({ ...includedCards, lootCoins: newValue })
-                }
-                updateMermaids={(newValue) =>
-                  setIncludedCards({ ...includedCards, mermaids: newValue })
-                }
-              />
-              <p />
-            </>
-          )}
-        </div>
-        <div>
-          {gameStatus !== SkullKingGameStatus.GameNotStarted &&
-            gameStatus !== SkullKingGameStatus.GameOver &&
-            `Round: ${round}`}
-          {gameStatus === SkullKingGameStatus.GameOver && "Game over"}
-          <Container>
-            <Row>
+        <Stack gap={4}>
+          <div>
+            {gameStatus === SkullKingGameStatus.GameNotStarted && (
+              <Stack gap={3}>
+                <SkullKingIncludedCards
+                  {...includedCards}
+                  updateKraken={(newValue) =>
+                    setIncludedCards({ ...includedCards, kraken: newValue })
+                  }
+                  updateWhiteWhale={(newValue) =>
+                    setIncludedCards({ ...includedCards, whiteWhale: newValue })
+                  }
+                  updateLootCoins={(newValue) =>
+                    setIncludedCards({ ...includedCards, lootCoins: newValue })
+                  }
+                  updateMermaids={(newValue) =>
+                    setIncludedCards({ ...includedCards, mermaids: newValue })
+                  }
+                />
+                <div>
+                  <Button size="sm" onClick={() => startGame()}>
+                    Start Game
+                  </Button>
+                </div>
+              </Stack>
+            )}
+          </div>
+          <Stack>
+            {getRoundStatus()}
+            <Stack direction="horizontal" gap={1}>
               {playerStates.map((x, index) => (
-                <Col key={`playerNameTop_${index}`}>
-                  <b>{x.playerInfo.Name}</b>
-                </Col>
-              ))}
-            </Row>
-            {getAllScores()}
-          </Container>
-        </div>
-        <div>
-          {gameStatus === SkullKingGameStatus.EditingPastItem && (
-            <Stack gap={1}>
-              <Stack direction="horizontal" gap={1}>
-                {playerStates.map((x, index) => (
-                  <Col key={`playerNameTop_${index}`}>
-                    <b>{x.playerInfo.Name}</b>
-                  </Col>
-                ))}
-              </Stack>
-              <Stack direction="horizontal" gap={1}>
-                {playerStates.map((x, index) => (
-                  <Col key={`bidInput_${index}`}>
-                    <BidInputField
-                      setBid={(newBid) =>
-                        updateField(
-                          x.playerInfo,
-                          (info: SkullKingRoundInfo) => {
-                            return { ...info, bid: newBid };
-                          }
-                        )
-                      }
-                      startingValue={x.editRound?.bid}
-                    />
-                  </Col>
-                ))}
-              </Stack>
-              <Stack direction="horizontal" gap={1}>
-                {playerStates.map((x, index) => (
-                  <Stack
-                    direction="horizontal"
-                    gap={1}
-                    style={{ width: `${skullKingScoreBoxWidth}px` }}
-                  >
-                    <TricksTakenInputArea
-                      setTricksTaken={(tricksTaken) =>
-                        updateField(
-                          x.playerInfo,
-                          (info: SkullKingRoundInfo) => {
-                            return { ...info, taken: tricksTaken };
-                          }
-                        )
-                      }
-                      startingValue={x.editRound?.taken}
-                    />
-                    <BonusInputArea
-                      setBonus={(bonus) =>
-                        updateField(
-                          x.playerInfo,
-                          (info: SkullKingRoundInfo) => {
-                            return { ...info, bonus };
-                          }
-                        )
-                      }
-                      startingValue={x.editRound?.bonus}
-                    />
-                  </Stack>
-                ))}
-              </Stack>
-              <div>
-                <Button
-                  onClick={() => {
-                    stopEditing();
-                  }}
+                <div
+                  style={{ width: `${skullKingScoreBoxWidth}px` }}
+                  key={`playerNameTop_${index}`}
                 >
-                  Done Editing
-                </Button>
-              </div>
+                  <b>{x.playerInfo.Name}</b>
+                </div>
+              ))}
             </Stack>
-          )}
-          {gameStatus === SkullKingGameStatus.BiddingOpen && (
-            <div>
-              <Container>
-                <Row>
+            {getAllScores()}
+          </Stack>
+          <div>
+            {gameStatus === SkullKingGameStatus.EditingPastItem && (
+              <Stack gap={1}>
+                <Stack direction="horizontal">
                   {playerStates.map((x, index) => (
-                    <Col key={`playerNameTop_${index}`}>
-                      <b>{x.playerInfo.Name}</b>
-                    </Col>
-                  ))}
-                </Row>
-                <Row>
-                  {playerStates.map((x, index) => (
-                    <Col key={`bidInput_${index}`}>
+                    <Stack gap={1}>
                       <BidInputField
                         setBid={(newBid) =>
                           updateField(
@@ -447,51 +400,85 @@ export const SkullKing = (props: GameProps) => {
                             }
                           )
                         }
-                        startingValue={undefined}
+                        startingValue={x.editRound?.bid}
                       />
-                    </Col>
+                      <Stack
+                        direction="horizontal"
+                        style={{ width: `${skullKingScoreBoxWidth}px` }}
+                      >
+                        <TricksTakenInputArea
+                          setTricksTaken={(tricksTaken) =>
+                            updateField(
+                              x.playerInfo,
+                              (info: SkullKingRoundInfo) => {
+                                return { ...info, taken: tricksTaken };
+                              }
+                            )
+                          }
+                          startingValue={x.editRound?.taken}
+                        />
+                        <BonusInputArea
+                          setBonus={(bonus) =>
+                            updateField(
+                              x.playerInfo,
+                              (info: SkullKingRoundInfo) => {
+                                return { ...info, bonus };
+                              }
+                            )
+                          }
+                          startingValue={x.editRound?.bonus}
+                        />
+                      </Stack>
+                    </Stack>
                   ))}
-                </Row>
-              </Container>
-              <Button
-                onClick={() => {
-                  setGameStatus(SkullKingGameStatus.BiddingClosed);
-                }}
-              >
-                Lock in bids
-              </Button>
-            </div>
-          )}
-          {gameStatus === SkullKingGameStatus.BiddingClosed && (
-            <div
-              style={{
-                width: `${
-                  (playerStates.length + 1) * skullKingScoreBoxWidth
-                }px`,
-              }}
-            >
-              <Container>
-                <Row>
+                </Stack>
+                <div>
+                  <Button
+                    onClick={() => {
+                      stopEditing();
+                    }}
+                  >
+                    Done Editing
+                  </Button>
+                </div>
+              </Stack>
+            )}
+            {gameStatus === SkullKingGameStatus.BiddingOpen && (
+              <Stack gap={1}>
+                <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
-                    <Col key={`state_${index}`}>
-                      <b>{x.playerInfo.Name}</b>
-                    </Col>
+                    <BidInputField
+                      key={`bidInput_${index}`}
+                      setBid={(newBid) =>
+                        updateField(
+                          x.playerInfo,
+                          (info: SkullKingRoundInfo) => {
+                            return { ...info, bid: newBid };
+                          }
+                        )
+                      }
+                      startingValue={undefined}
+                    />
                   ))}
-                </Row>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    width: `${
-                      (playerStates.length + 1) * skullKingScoreBoxWidth
-                    }px`,
-                  }}
-                >
+                </Stack>
+                <div>
+                  <Button
+                    onClick={() => {
+                      setGameStatus(SkullKingGameStatus.BiddingClosed);
+                    }}
+                  >
+                    Lock in bids
+                  </Button>
+                </div>
+              </Stack>
+            )}
+            {gameStatus === SkullKingGameStatus.BiddingClosed && (
+              <Stack gap={1}>
+                <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
                     <Stack
-                      direction="horizontal"
-                      gap={1}
                       style={{ width: `${skullKingScoreBoxWidth}px` }}
+                      direction="horizontal"
                     >
                       <TricksTakenInputArea
                         setTricksTaken={(tricksTaken) =>
@@ -517,24 +504,26 @@ export const SkullKing = (props: GameProps) => {
                       />
                     </Stack>
                   ))}
+                </Stack>
+                <div>
+                  <Button
+                    onClick={() => {
+                      setGameStatus(
+                        round !== 10
+                          ? SkullKingGameStatus.BiddingOpen
+                          : SkullKingGameStatus.GameOver
+                      );
+                      setRound(round + 1);
+                      round !== 10 ? addNewRoundInfo() : finishGame();
+                    }}
+                  >
+                    Update results
+                  </Button>
                 </div>
-              </Container>
-              <Button
-                onClick={() => {
-                  setGameStatus(
-                    round !== 10
-                      ? SkullKingGameStatus.BiddingOpen
-                      : SkullKingGameStatus.GameOver
-                  );
-                  setRound(round + 1);
-                  round !== 10 ? addNewRoundInfo() : finishGame();
-                }}
-              >
-                Update results
-              </Button>
-            </div>
-          )}
-        </div>
+              </Stack>
+            )}
+          </div>
+        </Stack>
       </div>
     </>
   );

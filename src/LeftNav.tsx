@@ -78,66 +78,67 @@ export const LeftNav = (props: LeftNavProps) => {
                 Roll Through the Ages
               </Button>
             </div>
-          </Stack>
-          <div style={{ position: "absolute", bottom: "25px", left: "25px" }}>
-            {props.activePlayers.map((x) => (
-              <div
-                key={x.Name}
-                style={{ paddingRight: "24px", marginBottom: "10px" }}
-              >
-                <Stack direction="horizontal" gap={2}>
-                  <PlayerGeneral Name={x.Name} />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setEditPlayerVisible(x)}
-                  >
-                    <Pencil />
-                  </Button>
-                  {props.canRemovePlayer && (
+            <div style={{ height: "50px" }}></div>
+            <div>
+              {props.activePlayers.map((x) => (
+                <div
+                  key={x.Name}
+                  style={{ paddingRight: "24px", marginBottom: "10px" }}
+                >
+                  <Stack direction="horizontal" gap={2}>
+                    <PlayerGeneral Name={x.Name} />
                     <Button
                       size="sm"
-                      variant="link"
-                      onClick={() => removePlayer(x.Name)}
+                      variant="outline"
+                      onClick={() => setEditPlayerVisible(x)}
                     >
-                      <XCircle color="red" />
+                      <Pencil />
                     </Button>
-                  )}
-                  {!props.canRemovePlayer && (
-                    <Button size="sm" variant="link" disabled>
-                      <XCircle color="grey" />
-                    </Button>
-                  )}
-                </Stack>
-              </div>
-            ))}
-            <h3>
-              Player Info<span> </span>
-              <Button
-                disabled={!props.canAddPlayer}
-                onClick={() => {
-                  setAddPlayerVisible(true);
+                    {props.canRemovePlayer && (
+                      <Button
+                        size="sm"
+                        variant="link"
+                        onClick={() => removePlayer(x.Name)}
+                      >
+                        <XCircle color="red" />
+                      </Button>
+                    )}
+                    {!props.canRemovePlayer && (
+                      <Button size="sm" variant="link" disabled>
+                        <XCircle color="grey" />
+                      </Button>
+                    )}
+                  </Stack>
+                </div>
+              ))}
+              <h3>
+                Player Info<span> </span>
+                <Button
+                  disabled={!props.canAddPlayer}
+                  onClick={() => {
+                    setAddPlayerVisible(true);
+                  }}
+                >
+                  <PersonAdd />
+                </Button>
+              </h3>
+              <AddNewPlayer
+                defaultValue=""
+                show={addPlayerVisible}
+                onClose={() => setAddPlayerVisible(false)}
+                onSubmit={(name: string) => addPlayer(name)}
+              />
+              <EditExistingPlayer
+                currentName={editPlayerVisible?.Name ?? ""}
+                show={!!editPlayerVisible}
+                onClose={() => setEditPlayerVisible(undefined)}
+                onSubmit={(name: string) => {
+                  props.editPlayer(editPlayerVisible?.Name ?? "", name);
+                  setEditPlayerVisible(undefined);
                 }}
-              >
-                <PersonAdd />
-              </Button>
-            </h3>
-            <AddNewPlayer
-              defaultValue=""
-              show={addPlayerVisible}
-              onClose={() => setAddPlayerVisible(false)}
-              onSubmit={(name: string) => addPlayer(name)}
-            />
-            <EditExistingPlayer
-              currentName={editPlayerVisible?.Name ?? ""}
-              show={!!editPlayerVisible}
-              onClose={() => setEditPlayerVisible(undefined)}
-              onSubmit={(name: string) => {
-                props.editPlayer(editPlayerVisible?.Name ?? "", name);
-                setEditPlayerVisible(undefined);
-              }}
-            />
-          </div>
+              />
+            </div>
+          </Stack>
         </Nav>
       )}
     </div>

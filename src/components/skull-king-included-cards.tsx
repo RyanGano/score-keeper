@@ -18,7 +18,7 @@ export interface SkullKingIncludedCardsProps extends SkullKingCardInclusions {
 export const defaultSkullKingIncludedCards: SkullKingCardInclusions = {
   kraken: true,
   whiteWhale: true,
-  lootCoins: false,
+  lootCoins: true,
   mermaids: true,
 };
 
@@ -47,63 +47,66 @@ export function getCardCount(includedCards: SkullKingCardInclusions): number {
 
 export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
   return (
-    <Stack direction="horizontal" gap={3}>
-      <div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => props.updateMermaids(!props.mermaids)}
-        >
-          {props.mermaids ? (
-            <CheckSquare style={{ marginRight: "4" }} />
-          ) : (
-            <Square style={{ marginRight: "4" }} />
-          )}
-          Include Mermaids
-        </Button>
-      </div>
-      <div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => props.updateKraken(!props.kraken)}
-        >
-          {props.kraken ? (
-            <CheckSquare style={{ marginRight: "4" }} />
-          ) : (
-            <Square style={{ marginRight: "4" }} />
-          )}
-          Include Kraken
-        </Button>
-      </div>
-      <div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => props.updateWhiteWhale(!props.whiteWhale)}
-        >
-          {props.whiteWhale ? (
-            <CheckSquare style={{ marginRight: "4" }} />
-          ) : (
-            <Square style={{ marginRight: "4" }} />
-          )}
-          Include White Whale
-        </Button>
-      </div>
-      <div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => props.updateLootCoins(!props.lootCoins)}
-        >
-          {props.lootCoins ? (
-            <CheckSquare style={{ marginRight: "4" }} />
-          ) : (
-            <Square style={{ marginRight: "4" }} />
-          )}
-          Include Loot Coins
-        </Button>
-      </div>
+    <Stack gap={0}>
+      Include:
+      <Stack direction="horizontal" gap={0}>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => props.updateMermaids(!props.mermaids)}
+          >
+            {props.mermaids ? (
+              <CheckSquare style={{ marginRight: "4" }} />
+            ) : (
+              <Square style={{ marginRight: "4" }} />
+            )}
+            Mermaids
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => props.updateKraken(!props.kraken)}
+          >
+            {props.kraken ? (
+              <CheckSquare style={{ marginRight: "4" }} />
+            ) : (
+              <Square style={{ marginRight: "4" }} />
+            )}
+            Kraken
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => props.updateWhiteWhale(!props.whiteWhale)}
+          >
+            {props.whiteWhale ? (
+              <CheckSquare style={{ marginRight: "4" }} />
+            ) : (
+              <Square style={{ marginRight: "4" }} />
+            )}
+            White Whale
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => props.updateLootCoins(!props.lootCoins)}
+          >
+            {props.lootCoins ? (
+              <CheckSquare style={{ marginRight: "4" }} />
+            ) : (
+              <Square style={{ marginRight: "4" }} />
+            )}
+            Loot Coins
+          </Button>
+        </div>
+      </Stack>
     </Stack>
   );
 };

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyledInput } from "../common/styles";
 import { useState } from "react";
+import { skullKingScoreBoxWidth } from "./skull-king-score-box";
 
 export interface BidInputFieldProps {
   setBid: (newBid: number) => void;
@@ -26,8 +27,12 @@ export const BidInputField = (props: BidInputFieldProps) => {
   );
 
   return (
-    <div style={{ width: "100px" }}>
-      <StyledInput style={{ width: "100px" }} {...inputProps} placeholder="" />
+    <div style={{ width: `${skullKingScoreBoxWidth}px` }}>
+      <StyledInput
+        style={{ width: `${skullKingScoreBoxWidth}px` }}
+        {...inputProps}
+        placeholder=""
+      />
     </div>
   );
 };

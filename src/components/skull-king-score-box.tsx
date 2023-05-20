@@ -1,8 +1,6 @@
 import * as React from "react";
 import { calculateRoundScore } from "../games/skull-king";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import { Container } from "react-bootstrap";
+import { Stack } from "react-bootstrap";
 
 export interface SkullKingRoundInfo {
   id: string;
@@ -49,43 +47,60 @@ export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
   const roundScore = calculateRoundScore(props.roundInfo);
 
   const secondRow = props.displayFullInfo ? (
-    <Row>
-      <Col
+    <Stack
+      direction="horizontal"
+      style={{
+        paddingLeft: "0px",
+        width: `${skullKingScoreBoxWidth}px`,
+        maxWidth: `${skullKingScoreBoxWidth}px`,
+      }}
+    >
+      <div
         style={{
           backgroundColor: "#cccccc",
           borderStyle: "solid",
           borderWidth: ".5px",
           borderColor: "#888888",
+          width: `${skullKingScoreBoxWidth * 0.4}px`,
+          paddingLeft: "2px",
+          paddingRight: "2px",
         }}
       >
         {props.displayFullInfo ? `${roundScore}` : " "}
-      </Col>
-      <Col
+      </div>
+      <div
         style={{
           borderStyle: "solid",
           borderWidth: ".5px",
           borderColor: "#888888",
+          width: `${skullKingScoreBoxWidth * 0.6}px`,
+          paddingLeft: "2px",
+          paddingRight: "2px",
         }}
       >
         {props.displayFullInfo
           ? `${props.roundInfo.currentScore + roundScore}`
           : " "}
-      </Col>
-    </Row>
+      </div>
+    </Stack>
   ) : null;
 
   return (
-    <Container
+    <Stack
       style={{
-        width: "125px",
+        width: `${skullKingScoreBoxWidth}px`,
         maxWidth: `${skullKingScoreBoxWidth}px`,
         borderStyle: "solid",
         borderWidth: ".5px",
         borderColor: "#333333",
+        paddingLeft: "0px",
       }}
     >
-      <Row>
-        <Col
+      <Stack
+        direction="horizontal"
+        style={{ width: `${skullKingScoreBoxWidth}px` }}
+      >
+        <div
           style={{
             borderStyle: "solid",
             borderWidth: ".5px",
@@ -94,21 +109,28 @@ export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
               props.roundInfo,
               props.displayFullInfo
             ),
+            width: `${skullKingScoreBoxWidth * 0.4}px`,
+            alignContent: "center",
+            paddingLeft: "2px",
+            paddingRight: "2px",
           }}
-        >{`${props.roundInfo.bid}/${props.roundInfo.taken}`}</Col>
-        <Col
+        >{`${props.roundInfo.bid}/${props.roundInfo.taken}`}</div>
+        <div
           style={{
             borderStyle: "solid",
             borderWidth: ".5px",
             borderColor: "#888888",
+            width: `${skullKingScoreBoxWidth * 0.6}px`,
+            paddingLeft: "2px",
+            paddingRight: "2px",
           }}
         >
           {props.displayFullInfo
             ? `${roundScore - props.roundInfo.bonus}|${props.roundInfo.bonus}`
             : " "}
-        </Col>
-      </Row>
+        </div>
+      </Stack>
       {secondRow}
-    </Container>
+    </Stack>
   );
 };
