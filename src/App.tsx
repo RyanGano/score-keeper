@@ -94,7 +94,6 @@ function App() {
   }
 
   function setActiveGame(game: Game) {
-    console.log("Setting game:", game);
     setGame(game);
   }
 
@@ -120,7 +119,12 @@ function App() {
     <div className="App">
       {leftNav}
       {alert && (
-        <Alert variant="info" style={{zIndex:"150"}} onClose={() => setAlert(undefined)} dismissible>
+        <Alert
+          variant="info"
+          style={{ zIndex: "150" }}
+          onClose={() => setAlert(undefined)}
+          dismissible
+        >
           {alert.split("|").map((x, index) => (
             <div key={index}>{x}</div>
           ))}

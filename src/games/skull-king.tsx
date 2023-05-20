@@ -85,13 +85,14 @@ export const SkullKing = (props: GameProps) => {
 
   function getRoundInfo(
     info: SkullKingRoundInfo[],
+    key: string,
     displayFullInfo: boolean
   ): JSX.Element {
     let scores: JSX.Element[] = [];
     info.forEach((x, index) => {
       scores.push(
         <SkullKingScoreBox
-          key={`scorebox_${index}`}
+          key={`scorebox_${key}_${index}`}
           roundInfo={x}
           displayFullInfo={displayFullInfo}
         />
@@ -106,24 +107,33 @@ export const SkullKing = (props: GameProps) => {
             <Button
               variant="link"
               size="sm"
+              key={`scorebox_full_${key}`}
               style={{ width: "32px" }}
               onClick={() => beginEditing(info)}
             >
               <Pencil color="red" />
             </Button>
           ) : (
-            <Button variant="link" size="sm" style={{ width: "32px" }} disabled>
+            <Button
+              key={`scorebox_full_${key}`}
+              variant="link"
+              size="sm"
+              style={{ width: "32px" }}
+              disabled
+            >
               <Pencil />
             </Button>
           )
         );
       } else {
-        scores.push(<div style={{ width: "32px" }} />);
+        scores.push(
+          <div key={`scorebox_partial_${key}`} style={{ width: "32px" }} />
+        );
       }
     }
 
     return (
-      <Stack direction="horizontal" gap={1}>
+      <Stack key={`scorebox_stack_${key}`} direction="horizontal" gap={1}>
         {scores}
       </Stack>
     );
@@ -195,16 +205,18 @@ export const SkullKing = (props: GameProps) => {
     let scores: JSX.Element[] = [];
     if (round !== 0) {
       for (var i: number = 0; i < round - 1; i++) {
+        const newKey = `$item_${i}_${round}`;
         scores.push(
-          <div key={`score_${i}`}>
-            {getRoundInfo(getRoundInfos(i), i < round - 1)}
+          <div key={newKey}>
+            {getRoundInfo(getRoundInfos(i), newKey, i < round - 1)}
           </div>
         );
       }
       if (gameStatus !== SkullKingGameStatus.GameOver) {
+        const newKey = `$item_current_${round}`;
         scores.push(
-          <div key={`score_current`}>
-            {getRoundInfo(getCurrentRoundInfos(), false)}
+          <div key={newKey}>
+            {getRoundInfo(getCurrentRoundInfos(), newKey, false)}
           </div>
         );
       }
@@ -448,7 +460,7 @@ export const SkullKing = (props: GameProps) => {
                 <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
                     <BidInputField
-                      key={`bidInput_${index}`}
+                      key={`bidInput_${index}_${round}`}
                       setBid={(newBid) =>
                         updateField(
                           x.playerInfo,
@@ -477,6 +489,7 @@ export const SkullKing = (props: GameProps) => {
                 <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
                     <Stack
+                      key={`results_${index}_${round}`}
                       style={{ width: `${skullKingScoreBoxWidth}px` }}
                       direction="horizontal"
                     >
