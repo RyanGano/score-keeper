@@ -86,6 +86,7 @@ export const SkullKing = (props: GameProps) => {
   function getRoundInfo(
     info: SkullKingRoundInfo[],
     key: string,
+    currentScores: number[],
     displayFullInfo: boolean
   ): JSX.Element {
     let scores: JSX.Element[] = [];
@@ -95,6 +96,7 @@ export const SkullKing = (props: GameProps) => {
           key={`scorebox_${key}_${index}`}
           roundInfo={x}
           displayFullInfo={displayFullInfo}
+          currentScore={currentScores[index]}
         />
       );
     });
@@ -201,6 +203,19 @@ export const SkullKing = (props: GameProps) => {
       );
   }
 
+  function getCurrentScores(whichRound: number): number[] {
+    let scores = playerStates.map((x) => 0);
+
+    for (var i = 0; i < whichRound; i++) {
+      const roundInfos = getRoundInfos(i);
+      playerStates.map(
+        (x, index) => (scores[index] += calculateRoundScore(roundInfos[index]))
+      );
+    }
+
+    return scores;
+  }
+
   function getAllScores(): JSX.Element[] {
     let scores: JSX.Element[] = [];
     if (round !== 0) {
@@ -208,7 +223,12 @@ export const SkullKing = (props: GameProps) => {
         const newKey = `$item_${i}_${round}`;
         scores.push(
           <div key={newKey}>
-            {getRoundInfo(getRoundInfos(i), newKey, i < round - 1)}
+            {getRoundInfo(
+              getRoundInfos(i),
+              newKey,
+              getCurrentScores(i),
+              i < round - 1
+            )}
           </div>
         );
       }
@@ -216,22 +236,18 @@ export const SkullKing = (props: GameProps) => {
         const newKey = `$item_current_${round}`;
         scores.push(
           <div key={newKey}>
-            {getRoundInfo(getCurrentRoundInfos(), newKey, false)}
+            {getRoundInfo(
+              getCurrentRoundInfos(),
+              newKey,
+              getCurrentScores(round - 1),
+              false
+            )}
           </div>
         );
       }
     }
 
     return scores;
-  }
-
-  function getCurrentScore(roundInfo: SkullKingRoundInfo[]) {
-    if (roundInfo.length === 0) return 0;
-
-    let currentScore: number = 0;
-    roundInfo.forEach((x) => (currentScore += calculateRoundScore(x)));
-
-    return currentScore;
   }
 
   function updateField(
@@ -267,7 +283,6 @@ export const SkullKing = (props: GameProps) => {
           x.currentRound !== null
             ? {
                 ...x.currentRound,
-                currentScore: getCurrentScore(x.roundScores),
               }
             : { ...defaultSkullKingRoundInfo };
         return {
@@ -276,7 +291,6 @@ export const SkullKing = (props: GameProps) => {
           currentRound: {
             ...defaultSkullKingRoundInfo,
             id: `${x.playerInfo.Name}_${round + 1}`,
-            currentScore: getCurrentScore(x.roundScores),
             possibleTricks:
               getCardCount(includedCards) /
                 (playerStates.length * (round + 1)) >=
@@ -297,7 +311,6 @@ export const SkullKing = (props: GameProps) => {
           x.currentRound !== null
             ? {
                 ...x.currentRound,
-                currentScore: getCurrentScore(x.roundScores),
               }
             : { ...defaultSkullKingRoundInfo };
         return {
@@ -402,7 +415,7 @@ export const SkullKing = (props: GameProps) => {
               <Stack gap={1}>
                 <Stack direction="horizontal">
                   {playerStates.map((x, index) => (
-                    <Stack gap={1}>
+                    <Stack key={`edit_${index}`} gap={1}>
                       <BidInputField
                         setBid={(newBid) =>
                           updateField(

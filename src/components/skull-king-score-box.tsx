@@ -8,7 +8,6 @@ export interface SkullKingRoundInfo {
   bid: number;
   taken: number;
   bonus: number;
-  currentScore: number;
 }
 
 export const defaultSkullKingRoundInfo: SkullKingRoundInfo = {
@@ -17,12 +16,12 @@ export const defaultSkullKingRoundInfo: SkullKingRoundInfo = {
   bid: 0,
   taken: 0,
   bonus: 0,
-  currentScore: 0,
 };
 
 export interface SkullKingScoreBoxProps {
   roundInfo: SkullKingRoundInfo;
   displayFullInfo: boolean;
+  currentScore: number;
 }
 
 export const skullKingScoreBoxWidth = 125;
@@ -78,9 +77,7 @@ export const SkullKingScoreBox = (props: SkullKingScoreBoxProps) => {
           paddingRight: "2px",
         }}
       >
-        {props.displayFullInfo
-          ? `${props.roundInfo.currentScore + roundScore}`
-          : " "}
+        {props.displayFullInfo ? `${props.currentScore + roundScore}` : " "}
       </div>
     </Stack>
   ) : null;
