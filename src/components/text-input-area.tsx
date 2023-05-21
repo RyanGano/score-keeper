@@ -17,14 +17,17 @@ export const TextInputArea = (props: TextInputAreaProps) => {
   const [value, setValue] = useState(props.startingValue);
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter") {
-      e.preventDefault();
-      props.onEnter?.();
-    }
+    // if (e.code === "Enter") {
+    //   e.preventDefault();
+    //   props.onEnter?.();
+    // }
+    e.preventDefault();
+    console.log(e.code);
+    setValue(e.code);
   };
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value);
+    // setValue(e.target.value);
 
     if (props.updateOnlyOnBlur !== true) props.setNewValue(e.target.value);
   }
@@ -42,16 +45,19 @@ export const TextInputArea = (props: TextInputAreaProps) => {
     : { width: `${props.width ?? skullKingScoreBoxWidth}px` };
 
   return (
-    <Form.Control
-      type="textarea"
-      defaultValue={props.startingValue}
-      style={fieldStyle}
-      onKeyDown={handleKeypress}
-      onChange={onChange}
-      onBlur={onBlur}
-      autoFocus={props.autoFocus}
-      onFocus={onFocus}
-      placeholder={props.placeholder}
-    />
+    <>
+      <Form.Control
+        type="textarea"
+        defaultValue={props.startingValue}
+        style={fieldStyle}
+        onKeyDown={handleKeypress}
+        onChange={onChange}
+        onBlur={onBlur}
+        autoFocus={props.autoFocus}
+        onFocus={onFocus}
+        placeholder={props.placeholder}
+      />
+      {value}
+    </>
   );
 };
