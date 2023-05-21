@@ -42,7 +42,7 @@ export const TextInputArea = (props: TextInputAreaProps) => {
     : { width: `${props.width ?? skullKingScoreBoxWidth}px` };
 
   return (
-    <>
+    <Form onSubmit={(e) => e.preventDefault()}>
       <Form.Control
         type="textarea"
         defaultValue={props.startingValue}
@@ -54,7 +54,6 @@ export const TextInputArea = (props: TextInputAreaProps) => {
         onFocus={onFocus}
         placeholder={props.placeholder}
       />
-      {value}
-    </>
+    </Form>
   );
 };
