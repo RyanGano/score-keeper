@@ -16,7 +16,7 @@ export const EditExistingPlayer = (props: EditExistingPlayerProps) => {
   return (
     <>
       <SimpleModal
-        title="Reset Game"
+        title="Edit Player"
         content={
           <Form>
             <Form.Group className="mb-3" controlId="nameChange">

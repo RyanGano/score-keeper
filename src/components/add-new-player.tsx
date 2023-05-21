@@ -1,65 +1,41 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import { StyledInput } from "../common/styles";
-
-function useInput(defaultValue: string) {
-  const [value, setValue] = useState(defaultValue);
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value);
-  }
-  return {
-    value,
-    onChange,
-  };
-}
+import { SimpleModal } from "../common/simple-modal";
+import Form from "react-bootstrap/esm/Form";
+import { TextInputArea } from "./text-input-area";
 
 export interface AddNewPlayerProps {
-  defaultValue: string;
   show: boolean;
   onClose: () => void;
   onSubmit: (name: string) => void;
 }
 
 export const AddNewPlayer = (props: AddNewPlayerProps) => {
-  const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    //it triggers by pressing the enter key
-    if (e.code === "Enter") {
-      props.onSubmit(inputProps.value);
-    }
-  };
-
-  const inputProps = useInput(props.defaultValue);
+  const [currentValue, setCurrentValue] = useState<string>("");
 
   return (
     <>
-      <Modal
+      <SimpleModal
+        title="Add New Player"
+        content={
+          <Form>
+            <Form.Group className="mb-3" controlId="name">
+              <Form.Label>Player name:</Form.Label>
+              <TextInputArea
+                setNewValue={setCurrentValue}
+                placeholder="name"
+                width={NaN}
+                autoFocus={true}
+                onEnter={() => props.onSubmit(currentValue)}
+              />
+            </Form.Group>
+          </Form>
+        }
+        defaultButtonContent="Add Player"
+        alternateButtonContent="Cancel"
+        onAccept={() => props.onSubmit(currentValue)}
+        onCancel={props.onClose}
         show={props.show}
-        onHide={() => props.onClose()}
-        aria-labelledby="ModalHeader"
-      >
-        <Modal.Body>
-          <div>
-            <div>Enter player name:</div>
-            <StyledInput
-              {...inputProps}
-              placeholder=""
-              onKeyPress={handleKeypress}
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.onClose()}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => props.onSubmit(inputProps.value)}
-          >
-            Add Player
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      />
     </>
   );
 };

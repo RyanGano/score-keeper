@@ -1,7 +1,6 @@
 import * as React from "react";
-import { GameProps } from "../App";
 
-export const RollThroughTheAges = (props: GameProps) => {
+export const RollThroughTheAges = () => {
   return (
     <div
       style={{

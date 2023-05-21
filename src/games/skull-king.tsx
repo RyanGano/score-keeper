@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import { GameProps } from "../App";
 import { PlayerGeneralProps } from "../components/player-general";
 import {
   SkullKingRoundInfo,
@@ -8,7 +7,7 @@ import {
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
 } from "../components/skull-king-score-box";
-import { Pencil } from "react-bootstrap-icons";
+import { Gear, Pencil } from "react-bootstrap-icons";
 import {
   SkullKingCardInclusions,
   SkullKingIncludedCards,
@@ -18,6 +17,9 @@ import {
 import Stack from "react-bootstrap/esm/Stack";
 import { NumericInputArea } from "../components/numeric-input-area";
 import { ResetGame } from "../common/reset-game";
+import { PlayerList } from "../common/player-list";
+import { SimpleModal } from "../common/simple-modal";
+import useCookies from "react-cookie/cjs/useCookies";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -49,7 +51,8 @@ enum SkullKingGameStatus {
   EditingPastItem,
 }
 
-export const SkullKing = (props: GameProps) => {
+export const SkullKing = () => {
+  const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [playerStates, setPlayerStates] = useState<SkullKingPlayerState[]>([]);
   const [round, setRound] = useState<number>(0);
   const [gameStatus, setGameStatus] = useState<SkullKingGameStatus>(
@@ -58,11 +61,30 @@ export const SkullKing = (props: GameProps) => {
   const [includedCards, setIncludedCards] = useState<SkullKingCardInclusions>({
     ...defaultSkullKingIncludedCards,
   });
+  const [showGameSettings, setShowGameSettings] = useState<boolean>(
+    players.length === 0
+  );
+  const [cookies, setCookie] = useCookies(["players_sk"]);
+
+  const [maxPlayers] = useState<number>(8);
+  const [minPlayers] = useState<number>(2);
+
+  if (!cookies.players_sk && players.length === 0) {
+    setPlayers([{ Name: "Player 1" }, { Name: "Player 2" }]);
+  }
+  if (cookies.players_sk && players.length === 0) {
+    setPlayers(
+      cookies?.players_sk.split("|").map((x: string) => {
+        return { Name: x };
+      })
+    );
+  }
 
   function startGame() {
-    if (props.getPlayers !== undefined) {
+    setShowGameSettings(false);
+    if (players?.length !== 0) {
       setPlayerStates(
-        props.getPlayers().map((x, index) => {
+        players.map((x, index) => {
           return {
             playerInfo: x,
             roundScores: [],
@@ -79,8 +101,6 @@ export const SkullKing = (props: GameProps) => {
       setGameStatus(SkullKingGameStatus.BiddingOpen);
     }
   }
-
-  props.setMaxPlayerCount(8);
 
   function getRoundInfo(
     info: SkullKingRoundInfo[],
@@ -355,6 +375,77 @@ export const SkullKing = (props: GameProps) => {
     round !== 10 ? addNewRoundInfo() : finishGame();
   }
 
+  function addPlayer(name: string) {
+    if (players.length === maxPlayers) return;
+
+    if (players.findIndex((x) => x.Name === name) !== -1) {
+      return `Player ${name} already exists.`;
+    }
+
+    const newPlayers = [
+      ...players,
+      {
+        Name: name,
+      } as PlayerGeneralProps,
+    ];
+    setPlayers(newPlayers);
+    setCookie("players_sk", newPlayers.map((x) => x.Name).join("|"));
+  }
+
+  function editPlayer(originalName: string, newName: string) {
+    if (
+      originalName !== newName &&
+      players.findIndex((x) => x.Name === newName) !== -1
+    ) {
+      return `Player ${newName} already exists.`;
+    }
+    const newPlayers = [...players].map((x) =>
+      x.Name !== originalName ? x : { Name: newName }
+    );
+    setPlayers(newPlayers);
+    setCookie("players_sk", newPlayers.map((x) => x.Name).join("|"));
+  }
+
+  function removePlayer(name: string) {
+    const newPlayers = [...players].filter((x) => x.Name !== name);
+    setPlayers(newPlayers);
+    setCookie("players_sk", newPlayers.map((x) => x.Name).join("|"));
+  }
+
+  const settingsContent = (
+    <Stack gap={4}>
+      <PlayerList
+        addPlayer={addPlayer}
+        removePlayer={removePlayer}
+        editPlayer={editPlayer}
+        activePlayers={players}
+        canAddPlayer={players.length < maxPlayers}
+        canRemovePlayer={players.length > minPlayers}
+      />
+      <div>
+        {gameStatus === SkullKingGameStatus.GameNotStarted && (
+          <Stack gap={3}>
+            <SkullKingIncludedCards
+              {...includedCards}
+              updateKraken={(newValue) =>
+                setIncludedCards({ ...includedCards, kraken: newValue })
+              }
+              updateWhiteWhale={(newValue) =>
+                setIncludedCards({ ...includedCards, whiteWhale: newValue })
+              }
+              updateLootCoins={(newValue) =>
+                setIncludedCards({ ...includedCards, lootCoins: newValue })
+              }
+              updateMermaids={(newValue) =>
+                setIncludedCards({ ...includedCards, mermaids: newValue })
+              }
+            />
+          </Stack>
+        )}
+      </div>
+    </Stack>
+  );
+
   return (
     <>
       <div
@@ -370,6 +461,16 @@ export const SkullKing = (props: GameProps) => {
             {gameStatus !== SkullKingGameStatus.GameNotStarted && (
               <ResetGame onAccept={resetGame} />
             )}
+            {gameStatus === SkullKingGameStatus.GameNotStarted ||
+            gameStatus === SkullKingGameStatus.GameOver ? (
+              <Button variant="link" onClick={() => setShowGameSettings(true)}>
+                <Gear />
+              </Button>
+            ) : (
+              <Button variant="link" disabled>
+                <Gear />
+              </Button>
+            )}
           </Stack>
         </h2>
       </div>
@@ -381,33 +482,16 @@ export const SkullKing = (props: GameProps) => {
         }}
       >
         <Stack gap={4}>
-          <div>
-            {gameStatus === SkullKingGameStatus.GameNotStarted && (
-              <Stack gap={3}>
-                <SkullKingIncludedCards
-                  {...includedCards}
-                  updateKraken={(newValue) =>
-                    setIncludedCards({ ...includedCards, kraken: newValue })
-                  }
-                  updateWhiteWhale={(newValue) =>
-                    setIncludedCards({ ...includedCards, whiteWhale: newValue })
-                  }
-                  updateLootCoins={(newValue) =>
-                    setIncludedCards({ ...includedCards, lootCoins: newValue })
-                  }
-                  updateMermaids={(newValue) =>
-                    setIncludedCards({ ...includedCards, mermaids: newValue })
-                  }
-                />
-                <div>
-                  <Button size="sm" onClick={() => startGame()}>
-                    Start Game
-                  </Button>
-                </div>
-              </Stack>
-            )}
-          </div>
-          <Stack>
+          <SimpleModal
+            title="Skull King Settings"
+            content={settingsContent}
+            defaultButtonContent="Start Game"
+            alternateButtonContent="Cancel"
+            onAccept={startGame}
+            onCancel={() => setShowGameSettings(false)}
+            show={showGameSettings}
+          />
+          <Stack gap={4}>
             {getRoundStatus()}
             <Stack direction="horizontal" gap={1}>
               {playerStates.map((x, index) => (
