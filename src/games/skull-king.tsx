@@ -8,7 +8,7 @@ import {
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
 } from "../components/skull-king-score-box";
-import { Pencil, XCircle } from "react-bootstrap-icons";
+import { Pencil } from "react-bootstrap-icons";
 import {
   SkullKingCardInclusions,
   SkullKingIncludedCards,
@@ -17,7 +17,7 @@ import {
 } from "../components/skull-king-included-cards";
 import Stack from "react-bootstrap/esm/Stack";
 import { NumericInputArea } from "../components/numeric-input-area";
-import { SimpleModal } from "../common/simple-modal";
+import { ResetGame } from "../common/reset-game";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -58,7 +58,6 @@ export const SkullKing = (props: GameProps) => {
   const [includedCards, setIncludedCards] = useState<SkullKingCardInclusions>({
     ...defaultSkullKingIncludedCards,
   });
-  const [showResetGameModal, setShowResetGameModal] = useState<boolean>(false);
 
   function startGame() {
     if (props.getPlayers !== undefined) {
@@ -337,7 +336,6 @@ export const SkullKing = (props: GameProps) => {
   }
 
   function resetGame(): void {
-    setShowResetGameModal(false);
     setGameStatus(SkullKingGameStatus.GameNotStarted);
     setPlayerStates([]);
     setRound(0);
@@ -345,15 +343,6 @@ export const SkullKing = (props: GameProps) => {
 
   return (
     <>
-      <SimpleModal
-        title="Reset Game"
-        content={<>Are you sure you want to reset the game?</>}
-        defaultButtonContent="Reset"
-        alternateButtonContent="Cancel"
-        onAccept={resetGame}
-        onCancel={() => setShowResetGameModal(false)}
-        show={showResetGameModal}
-      />
       <div
         style={{
           position: "absolute",
@@ -365,12 +354,7 @@ export const SkullKing = (props: GameProps) => {
           <Stack direction="horizontal" gap={1}>
             Skull King
             {gameStatus !== SkullKingGameStatus.GameNotStarted && (
-              <Button
-                variant="link"
-                onClick={() => setShowResetGameModal(true)}
-              >
-                <XCircle color="red" />
-              </Button>
+              <ResetGame onAccept={resetGame} />
             )}
           </Stack>
         </h2>
