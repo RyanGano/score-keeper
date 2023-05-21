@@ -27,7 +27,6 @@ export interface EditExistingPlayerProps {
 
 export const EditExistingPlayer = (props: EditExistingPlayerProps) => {
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    //it triggers by pressing the enter key
     if (e.code === "Enter") {
       props.onSubmit(inputProps.value);
     }
