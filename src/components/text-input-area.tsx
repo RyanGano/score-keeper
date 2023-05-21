@@ -17,18 +17,15 @@ export const TextInputArea = (props: TextInputAreaProps) => {
   const [value, setValue] = useState(props.startingValue);
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // if (e.code === "Enter") {
-    //   e.preventDefault();
-    //   props.onEnter?.();
-    // }
-    e.preventDefault();
-    console.log(e.code);
-    setValue(e.code);
+    if (e.code === "Enter" || e.code === "Accept" || e.code === "Execute") {
+      e.preventDefault();
+      props.onEnter?.();
+      setValue(e.code);
+    }
   };
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // setValue(e.target.value);
-
+    setValue(e.target.value);
     if (props.updateOnlyOnBlur !== true) props.setNewValue(e.target.value);
   }
 
