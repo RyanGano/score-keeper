@@ -8,9 +8,6 @@ import {
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
 } from "../components/skull-king-score-box";
-import { BidInputField } from "../components/bid-input-field";
-import { TricksTakenInputArea } from "../components/tricks-taken-input-area";
-import { BonusInputArea } from "../components/bonus-input-area";
 import { Pencil, XCircle } from "react-bootstrap-icons";
 import {
   SkullKingCardInclusions,
@@ -19,6 +16,7 @@ import {
   getCardCount,
 } from "../components/skull-king-included-cards";
 import Stack from "react-bootstrap/esm/Stack";
+import { NumericInputArea } from "../components/numeric-input-area";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -416,8 +414,8 @@ export const SkullKing = (props: GameProps) => {
                 <Stack direction="horizontal">
                   {playerStates.map((x, index) => (
                     <Stack key={`edit_${index}`} gap={1}>
-                      <BidInputField
-                        setBid={(newBid) =>
+                      <NumericInputArea
+                        setNewValue={(newBid) =>
                           updateField(
                             x.playerInfo,
                             (info: SkullKingRoundInfo) => {
@@ -426,13 +424,15 @@ export const SkullKing = (props: GameProps) => {
                           )
                         }
                         startingValue={x.editRound?.bid}
+                        placeholder="bid"
+                        width={skullKingScoreBoxWidth}
                       />
                       <Stack
                         direction="horizontal"
                         style={{ width: `${skullKingScoreBoxWidth}px` }}
                       >
-                        <TricksTakenInputArea
-                          setTricksTaken={(tricksTaken) =>
+                        <NumericInputArea
+                          setNewValue={(tricksTaken) =>
                             updateField(
                               x.playerInfo,
                               (info: SkullKingRoundInfo) => {
@@ -441,9 +441,11 @@ export const SkullKing = (props: GameProps) => {
                             )
                           }
                           startingValue={x.editRound?.taken}
+                          placeholder="tricks"
+                          width={skullKingScoreBoxWidth / 2}
                         />
-                        <BonusInputArea
-                          setBonus={(bonus) =>
+                        <NumericInputArea
+                          setNewValue={(bonus) =>
                             updateField(
                               x.playerInfo,
                               (info: SkullKingRoundInfo) => {
@@ -452,6 +454,8 @@ export const SkullKing = (props: GameProps) => {
                             )
                           }
                           startingValue={x.editRound?.bonus}
+                          placeholder="bonus"
+                          width={skullKingScoreBoxWidth / 2}
                         />
                       </Stack>
                     </Stack>
@@ -472,9 +476,9 @@ export const SkullKing = (props: GameProps) => {
               <Stack gap={1}>
                 <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
-                    <BidInputField
+                    <NumericInputArea
                       key={`bidInput_${index}_${round}`}
-                      setBid={(newBid) =>
+                      setNewValue={(newBid) =>
                         updateField(
                           x.playerInfo,
                           (info: SkullKingRoundInfo) => {
@@ -483,6 +487,8 @@ export const SkullKing = (props: GameProps) => {
                         )
                       }
                       startingValue={undefined}
+                      placeholder="bid"
+                      width={skullKingScoreBoxWidth}
                     />
                   ))}
                 </Stack>
@@ -506,8 +512,8 @@ export const SkullKing = (props: GameProps) => {
                       style={{ width: `${skullKingScoreBoxWidth}px` }}
                       direction="horizontal"
                     >
-                      <TricksTakenInputArea
-                        setTricksTaken={(tricksTaken) =>
+                      <NumericInputArea
+                        setNewValue={(tricksTaken) =>
                           updateField(
                             x.playerInfo,
                             (info: SkullKingRoundInfo) => {
@@ -516,9 +522,11 @@ export const SkullKing = (props: GameProps) => {
                           )
                         }
                         startingValue={undefined}
+                        placeholder="tricks"
+                        width={skullKingScoreBoxWidth / 2}
                       />
-                      <BonusInputArea
-                        setBonus={(bonus) =>
+                      <NumericInputArea
+                        setNewValue={(bonus) =>
                           updateField(
                             x.playerInfo,
                             (info: SkullKingRoundInfo) => {
@@ -527,6 +535,8 @@ export const SkullKing = (props: GameProps) => {
                           )
                         }
                         startingValue={undefined}
+                        placeholder="bonus"
+                        width={skullKingScoreBoxWidth / 2}
                       />
                     </Stack>
                   ))}
