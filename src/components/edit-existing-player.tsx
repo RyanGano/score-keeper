@@ -1,22 +1,7 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import { StyledInput } from "../common/styles";
-
-function useInput(defaultValue: string) {
-  const [modified, setModified] = useState<boolean>(false);
-  const [value, setValue] = useState(defaultValue);
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value);
-    setModified(true);
-  }
-
-  return {
-    value,
-    onChange,
-    modified,
-  };
-}
+import { SimpleModal } from "../common/simple-modal";
+import Form from "react-bootstrap/esm/Form";
+import { TextInputArea } from "./text-input-area";
 
 export interface EditExistingPlayerProps {
   currentName: string;
@@ -26,45 +11,32 @@ export interface EditExistingPlayerProps {
 }
 
 export const EditExistingPlayer = (props: EditExistingPlayerProps) => {
-  const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter") {
-      props.onSubmit(inputProps.value);
-    }
-  };
-
-  const inputProps = useInput(props.currentName);
-
-  if (!inputProps.modified) inputProps.value = props.currentName;
+  const [currentValue, setCurrentValue] = useState<string>("");
 
   return (
     <>
-      <Modal
+      <SimpleModal
+        title="Reset Game"
+        content={
+          <Form>
+            <Form.Group className="mb-3" controlId="nameChange">
+              <Form.Label>Update player name:</Form.Label>
+              <TextInputArea
+                setNewValue={setCurrentValue}
+                startingValue={props.currentName}
+                onEnter={() => props.onSubmit(currentValue)}
+                width={NaN}
+                autoFocus={true}
+              />
+            </Form.Group>
+          </Form>
+        }
+        defaultButtonContent="Edit Player"
+        alternateButtonContent="Cancel"
+        onAccept={() => props.onSubmit(currentValue)}
+        onCancel={props.onClose}
         show={props.show}
-        onHide={() => props.onClose()}
-        aria-labelledby="ModalHeader"
-      >
-        <Modal.Body>
-          <div>
-            <div>Update player name:</div>
-            <StyledInput
-              {...inputProps}
-              placeholder=""
-              onKeyPress={handleKeypress}
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.onClose()}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => props.onSubmit(inputProps.value)}
-          >
-            Edit Player
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      />
     </>
   );
 };

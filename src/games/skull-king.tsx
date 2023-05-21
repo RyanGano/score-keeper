@@ -341,6 +341,20 @@ export const SkullKing = (props: GameProps) => {
     setRound(0);
   }
 
+  function lockInBids(): void {
+    setGameStatus(SkullKingGameStatus.BiddingClosed);
+  }
+
+  function finishRound(): void {
+    setGameStatus(
+      round !== 10
+        ? SkullKingGameStatus.BiddingOpen
+        : SkullKingGameStatus.GameOver
+    );
+    setRound(round + 1);
+    round !== 10 ? addNewRoundInfo() : finishGame();
+  }
+
   return (
     <>
       <div
@@ -425,6 +439,8 @@ export const SkullKing = (props: GameProps) => {
                         startingValue={x.editRound?.bid}
                         placeholder="bid"
                         width={skullKingScoreBoxWidth}
+                        autoFocus={index === 0}
+                        onEnter={stopEditing}
                       />
                       <Stack
                         direction="horizontal"
@@ -442,6 +458,7 @@ export const SkullKing = (props: GameProps) => {
                           startingValue={x.editRound?.taken}
                           placeholder="tricks"
                           width={skullKingScoreBoxWidth / 2}
+                          onEnter={stopEditing}
                         />
                         <NumericInputArea
                           setNewValue={(bonus) =>
@@ -455,6 +472,7 @@ export const SkullKing = (props: GameProps) => {
                           startingValue={x.editRound?.bonus}
                           placeholder="bonus"
                           width={skullKingScoreBoxWidth / 2}
+                          onEnter={stopEditing}
                         />
                       </Stack>
                     </Stack>
@@ -488,17 +506,13 @@ export const SkullKing = (props: GameProps) => {
                       startingValue={undefined}
                       placeholder="bid"
                       width={skullKingScoreBoxWidth}
+                      autoFocus={index === 0}
+                      onEnter={lockInBids}
                     />
                   ))}
                 </Stack>
                 <div>
-                  <Button
-                    onClick={() => {
-                      setGameStatus(SkullKingGameStatus.BiddingClosed);
-                    }}
-                  >
-                    Lock in bids
-                  </Button>
+                  <Button onClick={lockInBids}>Lock in bids</Button>
                 </div>
               </Stack>
             )}
@@ -523,6 +537,8 @@ export const SkullKing = (props: GameProps) => {
                         startingValue={undefined}
                         placeholder="tricks"
                         width={skullKingScoreBoxWidth / 2}
+                        autoFocus={index === 0}
+                        onEnter={finishRound}
                       />
                       <NumericInputArea
                         setNewValue={(bonus) =>
@@ -536,24 +552,13 @@ export const SkullKing = (props: GameProps) => {
                         startingValue={undefined}
                         placeholder="bonus"
                         width={skullKingScoreBoxWidth / 2}
+                        onEnter={finishRound}
                       />
                     </Stack>
                   ))}
                 </Stack>
                 <div>
-                  <Button
-                    onClick={() => {
-                      setGameStatus(
-                        round !== 10
-                          ? SkullKingGameStatus.BiddingOpen
-                          : SkullKingGameStatus.GameOver
-                      );
-                      setRound(round + 1);
-                      round !== 10 ? addNewRoundInfo() : finishGame();
-                    }}
-                  >
-                    Update results
-                  </Button>
+                  <Button onClick={finishRound}>Update results</Button>
                 </div>
               </Stack>
             )}

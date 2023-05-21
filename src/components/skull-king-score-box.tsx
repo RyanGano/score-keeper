@@ -24,7 +24,7 @@ export interface SkullKingScoreBoxProps {
   currentScore: number;
 }
 
-export const skullKingScoreBoxWidth = 125;
+export const skullKingScoreBoxWidth = 150;
 
 function validateSkullKingRoundInfo(info: SkullKingRoundInfo) {
   // if (info.id === "") throw new Error(`InvalidId: ${info}`);

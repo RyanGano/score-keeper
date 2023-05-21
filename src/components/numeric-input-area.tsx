@@ -1,38 +1,29 @@
 import * as React from "react";
-import { StyledInput } from "../common/styles";
-import { useState } from "react";
-import { skullKingScoreBoxWidth } from "./skull-king-score-box";
+import { TextInputArea } from "./text-input-area";
 
 export interface NumericInputAreaProps {
   setNewValue: (vewValue: number) => void;
   startingValue?: number;
   placeholder?: string;
   width?: number;
+  onEnter?: () => void;
+  autoFocus?: boolean;
 }
 
 export const NumericInputArea = (props: NumericInputAreaProps) => {
-  function useInput(defaultValue: string) {
-    const [value, setValue] = useState(defaultValue);
-    function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-      setValue(e.target.value);
-      const newValue = parseInt(e.target.value);
-      props.setNewValue(!isNaN(newValue) ? newValue : 0);
-    }
-    return {
-      value,
-      onChange,
-    };
+  function onChange(newValue: string): void {
+    const valueAsInt = parseInt(newValue);
+    props.setNewValue(!isNaN(valueAsInt) ? valueAsInt : 0);
   }
 
-  const numericInputProps = useInput(
-    !!props.startingValue ? props.startingValue.toString() : ""
-  );
-
   return (
-    <StyledInput
-      style={{ width: `${props.width ?? skullKingScoreBoxWidth}px` }}
-      {...numericInputProps}
+    <TextInputArea
+      setNewValue={onChange}
+      startingValue={props.startingValue?.toString()}
       placeholder={props.placeholder}
+      onEnter={() => props.onEnter?.()}
+      width={props.width}
+      autoFocus={props.autoFocus}
     />
   );
 };
