@@ -17,7 +17,11 @@ function App() {
   }
 
   const leftNav = (
-    <LeftNav setGame={setActiveGame} collapsed={game !== undefined} />
+    <LeftNav
+      setGame={setActiveGame}
+      collapsed={game !== undefined}
+      appVersion="v0.0.1"
+    />
   );
 
   return (

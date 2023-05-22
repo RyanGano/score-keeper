@@ -8,6 +8,7 @@ import Nav from "react-bootstrap/esm/Nav";
 export interface LeftNavProps {
   setGame: (game: Game) => void;
   collapsed: boolean;
+  appVersion: string;
 }
 
 export const LeftNav = (props: LeftNavProps) => {
@@ -57,6 +58,15 @@ export const LeftNav = (props: LeftNavProps) => {
               </Button>
             </div>
           </Stack>
+          <div
+            style={{
+              position: "absolute",
+              left: "24px",
+              bottom: "24px",
+            }}
+          >
+            {props.appVersion}
+          </div>
         </Nav>
       )}
     </div>
