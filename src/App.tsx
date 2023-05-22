@@ -30,7 +30,7 @@ function App() {
             <List />
           </Button>
         </div>
-        {!game && !showMenu && (
+        {game === undefined && !showMenu && (
           <p style={{ marginLeft: "10px" }}>
             To choose a game, open the
             <Button
@@ -50,7 +50,7 @@ function App() {
       </Stack>
 
       <Offcanvas
-        style={{ width: "250px", backgroundColor: "#eeeeee" }}
+        style={{ backgroundColor: "#eeeeee" }}
         show={showMenu}
         onHide={() => setShowMenu(false)}
       >
