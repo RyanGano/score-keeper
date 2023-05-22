@@ -3,9 +3,10 @@ import { SkullKing } from "./games/skull-king/skull-king";
 import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
 import Button from "react-bootstrap/esm/Button";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
-import { List } from "react-bootstrap-icons";
+import { InfoCircle, List } from "react-bootstrap-icons";
 import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
+import { NavLink } from "react-bootstrap";
 
 export enum Game {
   SkullKing,
@@ -63,22 +64,34 @@ function App() {
         </Offcanvas.Header>
         <Offcanvas.Body>
           <Stack>
-            <div>
+            <Stack direction="horizontal" gap={0}>
               <Button
                 variant="link"
                 onClick={() => setActiveGame(Game.SkullKing)}
               >
                 Skull King
               </Button>
-            </div>
-            <div>
+              <NavLink
+                target="_blank"
+                href="https://www.grandpabecksgames.com/pages/skull-king"
+              >
+                <InfoCircle />
+              </NavLink>
+            </Stack>
+            <Stack direction="horizontal" gap={0}>
               <Button
                 variant="link"
                 onClick={() => setActiveGame(Game.RollThroughTheAges)}
               >
                 Roll Through the Ages
               </Button>
-            </div>
+              <NavLink
+                target="_blank"
+                href="https://www.youtube.com/watch?v=2ZJjtVMvOow"
+              >
+                <InfoCircle />
+              </NavLink>
+            </Stack>
           </Stack>
         </Offcanvas.Body>
       </Offcanvas>
