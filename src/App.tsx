@@ -23,13 +23,30 @@ function App() {
 
   const leftNav = (
     <>
-      <Button
-        style={{ marginTop: "10px", marginLeft: "10px" }}
-        variant="link"
-        onClick={() => setShowMenu(true)}
-      >
-        <List />
-      </Button>
+      <Stack style={{ marginLeft: "10px", marginTop: "10px" }} gap={0}>
+        <div>
+          <Button variant="link" onClick={() => setShowMenu(true)}>
+            <List />
+          </Button>
+        </div>
+        {!game && !showMenu && (
+          <p style={{ marginLeft: "10px" }}>
+            To choose a game, open the
+            <Button
+              style={{
+                marginLeft: "-8px",
+                marginRight: "-12px",
+                marginTop: "-5px",
+              }}
+              variant="link"
+              onClick={() => setShowMenu(true)}
+            >
+              menu
+            </Button>
+            .
+          </p>
+        )}
+      </Stack>
 
       <Offcanvas
         style={{ width: "250px", backgroundColor: "#eeeeee" }}
