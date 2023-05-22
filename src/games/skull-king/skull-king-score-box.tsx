@@ -1,5 +1,5 @@
 import * as React from "react";
-import { calculateRoundScore } from "../games/skull-king";
+import { calculateRoundScore } from "./skull-king";
 import { Stack } from "react-bootstrap";
 
 export interface SkullKingRoundInfo {

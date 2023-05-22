@@ -5,7 +5,7 @@ export interface NumericInputAreaProps {
   setNewValue: (vewValue: number) => void;
   startingValue?: number;
   placeholder?: string;
-  width?: number;
+  width: number;
   onEnter?: () => void;
   autoFocus?: boolean;
 }

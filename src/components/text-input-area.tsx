@@ -1,5 +1,4 @@
 import * as React from "react";
-import { skullKingScoreBoxWidth } from "./skull-king-score-box";
 import Form from "react-bootstrap/esm/Form";
 import { useState } from "react";
 
@@ -7,7 +6,7 @@ export interface TextInputAreaProps {
   setNewValue: (vewValue: string) => void;
   startingValue?: string;
   placeholder?: string;
-  width?: number;
+  width: number;
   onEnter?: () => void;
   updateOnlyOnBlur?: boolean;
   autoFocus?: boolean;
@@ -38,7 +37,7 @@ export const TextInputArea = (props: TextInputAreaProps) => {
 
   const fieldStyle = isNaN(props.width ?? 0)
     ? {}
-    : { width: `${props.width ?? skullKingScoreBoxWidth}px` };
+    : { width: `${props.width}px` };
 
   return (
     <Form onSubmit={(e) => e.preventDefault()}>

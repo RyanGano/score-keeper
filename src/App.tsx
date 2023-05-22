@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { SkullKing } from "./games/skull-king";
-import { RollThroughTheAges } from "./games/roll-through-the-ages";
+import { SkullKing } from "./games/skull-king/skull-king";
+import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
 import Button from "react-bootstrap/esm/Button";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import { List } from "react-bootstrap-icons";

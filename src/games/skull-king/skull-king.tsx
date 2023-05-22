@@ -1,24 +1,24 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import { PlayerGeneralProps } from "../components/player-general";
+import { PlayerGeneralProps } from "../../components/player-general";
 import {
   SkullKingRoundInfo,
   SkullKingScoreBox,
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
-} from "../components/skull-king-score-box";
+} from "./skull-king-score-box";
 import { Gear, Pencil } from "react-bootstrap-icons";
 import {
   SkullKingCardInclusions,
   SkullKingIncludedCards,
   defaultSkullKingIncludedCards,
   getCardCount,
-} from "../components/skull-king-included-cards";
+} from "./skull-king-included-cards";
 import Stack from "react-bootstrap/esm/Stack";
-import { NumericInputArea } from "../components/numeric-input-area";
-import { ResetGame } from "../common/reset-game";
-import { PlayerList } from "../common/player-list";
-import { SimpleModal } from "../common/simple-modal";
+import { NumericInputArea } from "../../components/numeric-input-area";
+import { ResetGame } from "../../common/reset-game";
+import { PlayerList } from "../../common/player-list";
+import { SimpleModal } from "../../common/simple-modal";
 import useCookies from "react-cookie/cjs/useCookies";
 
 interface SkullKingPlayerState {
