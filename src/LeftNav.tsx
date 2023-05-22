@@ -57,13 +57,13 @@ export const LeftNav = (props: LeftNavProps) => {
                 Roll Through the Ages
               </Button>
             </div>
-            {props.appVersion}
           </Stack>
           <div
             style={{
               position: "absolute",
-              left: "24px",
-              bottom: "24px",
+              right: "12px",
+              top: "12px",
+              fontSize: "8pt",
             }}
           >
             {props.appVersion}
