@@ -448,13 +448,7 @@ export const SkullKing = () => {
 
   return (
     <>
-      <div
-        style={{
-          position: "absolute",
-          left: "74px",
-          top: "12px",
-        }}
-      >
+      <div className="game-header">
         <h2>
           <Stack direction="horizontal" gap={1}>
             Skull King

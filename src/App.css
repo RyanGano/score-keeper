@@ -1,16 +1,5 @@
-.App-link {
-  color: #61dafb;
-}
-
-.scorekeepersidebar {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 100;
-  background-color: #ccddff;
-  min-height: 100vh !important;
-  padding: 12px 24px 0;
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+.game-header {
+  position: absolute;
+  left: 56px;
+  top: 12px;
 }
