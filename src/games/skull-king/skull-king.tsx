@@ -485,7 +485,7 @@ export const SkullKing = () => {
             onCancel={() => setShowGameSettings(false)}
             show={showGameSettings}
           />
-          <Stack gap={4}>
+          <Stack>
             {getRoundStatus()}
             <Stack direction="horizontal" gap={1}>
               {playerStates.map((x, index) => (
