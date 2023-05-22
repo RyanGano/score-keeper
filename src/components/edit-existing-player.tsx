@@ -18,18 +18,16 @@ export const EditExistingPlayer = (props: EditExistingPlayerProps) => {
       <SimpleModal
         title="Edit Player"
         content={
-          <Form onSubmit={(e) => e.preventDefault()}>
-            <Form.Group className="mb-3" controlId="nameChange">
-              <Form.Label>Update player name:</Form.Label>
-              <TextInputArea
-                setNewValue={setCurrentValue}
-                startingValue={props.currentName}
-                onEnter={() => props.onSubmit(currentValue)}
-                width={NaN}
-                autoFocus={true}
-              />
-            </Form.Group>
-          </Form>
+          <>
+            <Form.Label>Update player name:</Form.Label>
+            <TextInputArea
+              setNewValue={setCurrentValue}
+              startingValue={props.currentName}
+              onEnter={() => props.onSubmit(currentValue)}
+              width={NaN}
+              autoFocus={true}
+            />
+          </>
         }
         defaultButtonContent="Edit Player"
         alternateButtonContent="Cancel"

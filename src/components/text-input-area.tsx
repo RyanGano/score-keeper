@@ -17,10 +17,9 @@ export const TextInputArea = (props: TextInputAreaProps) => {
   const [value, setValue] = useState(props.startingValue);
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter" || e.code === "Accept" || e.code === "Execute") {
+    if (e.key === "Enter") {
       e.preventDefault();
       props.onEnter?.();
-      setValue(e.code);
     }
   };
 

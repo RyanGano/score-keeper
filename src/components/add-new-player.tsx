@@ -18,18 +18,14 @@ export const AddNewPlayer = (props: AddNewPlayerProps) => {
         title="Add New Player"
         content={
           <>
-            {/* <Form>
-              <Form.Group className="mb-3" controlId="name"> */}
             <Form.Label>Player name:</Form.Label>
             <TextInputArea
               setNewValue={setCurrentValue}
               placeholder="name"
               width={NaN}
-              autoFocus={true}
               onEnter={() => props.onSubmit(currentValue)}
+              autoFocus={true}
             />
-            {/* </Form.Group>
-            </Form> */}
           </>
         }
         defaultButtonContent="Add Player"
