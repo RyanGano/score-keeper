@@ -18,7 +18,7 @@ export const EditExistingPlayer = (props: EditExistingPlayerProps) => {
       <SimpleModal
         title="Edit Player"
         content={
-          <Form>
+          <Form onSubmit={(e) => e.preventDefault()}>
             <Form.Group className="mb-3" controlId="nameChange">
               <Form.Label>Update player name:</Form.Label>
               <TextInputArea
