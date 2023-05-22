@@ -20,7 +20,7 @@ function App() {
     <LeftNav
       setGame={setActiveGame}
       collapsed={game !== undefined}
-      appVersion="v0.0.2"
+      appVersion="v0.0.3"
     />
   );
 

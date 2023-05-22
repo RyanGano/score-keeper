@@ -486,7 +486,7 @@ export const SkullKing = () => {
             title="Skull King Settings"
             content={settingsContent}
             defaultButtonContent="Start Game"
-            alternateButtonContent="Cancel"
+            alternateButtonContent="Close"
             onAccept={startGame}
             onCancel={() => setShowGameSettings(false)}
             show={showGameSettings}
