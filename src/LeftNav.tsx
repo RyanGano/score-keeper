@@ -57,6 +57,7 @@ export const LeftNav = (props: LeftNavProps) => {
                 Roll Through the Ages
               </Button>
             </div>
+            {props.appVersion}
           </Stack>
           <div
             style={{
