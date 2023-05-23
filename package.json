@@ -29,6 +29,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "major": "yarn version --major && yarn store-version",
+    "minor": "yarn version --minor && yarn store-version",
+    "patch": "yarn version --patch && yarn store-version",
     "store-version": "yarn genversion --es6 --semi src/version.ts"
   },
   "eslintConfig": {
