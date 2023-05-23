@@ -7,6 +7,7 @@ import { InfoCircle, List } from "react-bootstrap-icons";
 import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
 import { NavLink } from "react-bootstrap";
+import { version } from "./version";
 
 export enum Game {
   SkullKing,
@@ -58,7 +59,7 @@ function App() {
           <Offcanvas.Title>
             <Stack direction="horizontal" gap={2}>
               Score Keeper
-              <div style={{ fontSize: "8pt" }}>v0.0.6</div>
+              <div style={{ fontSize: "8pt" }}>v{version}</div>
             </Stack>
           </Offcanvas.Title>
         </Offcanvas.Header>
