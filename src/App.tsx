@@ -58,7 +58,7 @@ function App() {
           <Offcanvas.Title>
             <Stack direction="horizontal" gap={2}>
               Score Keeper
-              <div style={{ fontSize: "8pt" }}>v0.0.6</div>
+              <div style={{ fontSize: "8pt" }}>v0.0.7</div>
             </Stack>
           </Offcanvas.Title>
         </Offcanvas.Header>
