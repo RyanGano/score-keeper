@@ -1,9 +1,10 @@
 import * as React from "react";
+import { GameHeader } from "../../common/common-styles";
 
 export const RollThroughTheAges = () => {
   return (
-    <div className="game-header">
+    <GameHeader>
       <h2>Roll Through the Ages</h2>
-    </div>
+    </GameHeader>
   );
 };

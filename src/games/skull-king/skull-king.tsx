@@ -20,6 +20,7 @@ import { ResetGame } from "../../common/reset-game";
 import { PlayerList } from "../../common/player-list";
 import { SimpleModal } from "../../common/simple-modal";
 import useCookies from "react-cookie/cjs/useCookies";
+import { GameHeader } from "../../common/common-styles";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -448,7 +449,7 @@ export const SkullKing = () => {
 
   return (
     <>
-      <div className="game-header">
+      <GameHeader>
         <h2>
           <Stack direction="horizontal" gap={1}>
             Skull King
@@ -467,7 +468,7 @@ export const SkullKing = () => {
             )}
           </Stack>
         </h2>
-      </div>
+      </GameHeader>
       <div
         style={{
           position: "absolute",

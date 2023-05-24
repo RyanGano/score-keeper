@@ -1,6 +1,6 @@
-import { CheckSquare, Square } from "react-bootstrap-icons";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/esm/Stack";
+import { CheckboxChecked, CheckboxUnchecked } from "./skull-king-styles";
 
 export interface SkullKingCardInclusions {
   kraken: boolean;
@@ -56,11 +56,7 @@ export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
             size="sm"
             onClick={() => props.updateMermaids(!props.mermaids)}
           >
-            {props.mermaids ? (
-              <CheckSquare style={{ marginRight: "4" }} />
-            ) : (
-              <Square style={{ marginRight: "4" }} />
-            )}
+            {props.mermaids ? <CheckboxChecked /> : <CheckboxUnchecked />}
             Mermaids
           </Button>
         </div>
@@ -70,11 +66,7 @@ export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
             size="sm"
             onClick={() => props.updateKraken(!props.kraken)}
           >
-            {props.kraken ? (
-              <CheckSquare style={{ marginRight: "4" }} />
-            ) : (
-              <Square style={{ marginRight: "4" }} />
-            )}
+            {props.kraken ? <CheckboxChecked /> : <CheckboxUnchecked />}
             Kraken
           </Button>
         </div>
@@ -84,11 +76,7 @@ export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
             size="sm"
             onClick={() => props.updateWhiteWhale(!props.whiteWhale)}
           >
-            {props.whiteWhale ? (
-              <CheckSquare style={{ marginRight: "4" }} />
-            ) : (
-              <Square style={{ marginRight: "4" }} />
-            )}
+            {props.whiteWhale ? <CheckboxChecked /> : <CheckboxUnchecked />}
             White Whale
           </Button>
         </div>
@@ -98,11 +86,7 @@ export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
             size="sm"
             onClick={() => props.updateLootCoins(!props.lootCoins)}
           >
-            {props.lootCoins ? (
-              <CheckSquare style={{ marginRight: "4" }} />
-            ) : (
-              <Square style={{ marginRight: "4" }} />
-            )}
+            {props.lootCoins ? <CheckboxChecked /> : <CheckboxUnchecked />}
             Loot Coins
           </Button>
         </div>
