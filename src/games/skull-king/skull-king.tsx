@@ -21,6 +21,7 @@ import { PlayerList } from "../../common/player-list";
 import { SimpleModal } from "../../common/simple-modal";
 import useCookies from "react-cookie/cjs/useCookies";
 import { GameHeader } from "../../common/common-styles";
+import { addPlayer, editPlayer } from "../../common/player-utility";
 
 interface SkullKingPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -376,35 +377,24 @@ export const SkullKing = () => {
     round !== 10 ? addNewRoundInfo() : finishGame();
   }
 
-  function addPlayer(name: string) {
-    if (players.length === maxPlayers) return;
-
-    if (players.findIndex((x) => x.Name === name) !== -1) {
-      return `Player ${name} already exists.`;
-    }
-
-    const newPlayers = [
-      ...players,
-      {
-        Name: name,
-      } as PlayerGeneralProps,
-    ];
-    setPlayers(newPlayers);
-    setCookie("players_sk", newPlayers.map((x) => x.Name).join("|"));
+  function addPlayerLocal(newName: string) {
+    return addPlayer(
+      players,
+      setPlayers,
+      (value: string) => setCookie("players_sk", value),
+      maxPlayers,
+      newName
+    );
   }
 
-  function editPlayer(originalName: string, newName: string) {
-    if (
-      originalName !== newName &&
-      players.findIndex((x) => x.Name === newName) !== -1
-    ) {
-      return `Player ${newName} already exists.`;
-    }
-    const newPlayers = [...players].map((x) =>
-      x.Name !== originalName ? x : { Name: newName }
+  function editPlayerLocal(originalName: string, newName: string) {
+    return editPlayer(
+      players,
+      setPlayers,
+      (value: string) => setCookie("players_sk", value),
+      originalName,
+      newName
     );
-    setPlayers(newPlayers);
-    setCookie("players_sk", newPlayers.map((x) => x.Name).join("|"));
   }
 
   function removePlayer(name: string) {
@@ -416,9 +406,9 @@ export const SkullKing = () => {
   const settingsContent = (
     <Stack gap={4}>
       <PlayerList
-        addPlayer={addPlayer}
+        addPlayer={addPlayerLocal}
         removePlayer={removePlayer}
-        editPlayer={editPlayer}
+        editPlayer={editPlayerLocal}
         activePlayers={players}
         canAddPlayer={players.length < maxPlayers}
         canRemovePlayer={players.length > minPlayers}
