@@ -12,6 +12,15 @@ import {
   CheckboxChecked,
   CheckboxUnchecked,
 } from "../skull-king/skull-king-styles";
+import { Gear } from "react-bootstrap-icons";
+import { ResetGame } from "../../common/reset-game";
+import { Developments } from "./components/developments";
+
+enum GameStatus {
+  GameNotStarted,
+  GameStarted,
+  GameOver,
+}
 
 export const RollThroughTheAges = () => {
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
@@ -20,6 +29,10 @@ export const RollThroughTheAges = () => {
   );
   const [startingPlayer, setStartingPlayer] = useState<boolean>(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(2);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(
+    GameStatus.GameNotStarted
+  );
+  const [developmentsScore, setDevelopmentsScore] = useState<number>(0);
   const [cookies, setCookie] = useCookies(["players_rtta"]);
 
   const minPlayers = 1;
@@ -91,15 +104,44 @@ export const RollThroughTheAges = () => {
     </Stack>
   );
 
+  function startGame() {
+    setShowGameSettings(false);
+    setGameStatus(GameStatus.GameStarted);
+  }
+
+  function resetGame() {
+    setGameStatus(GameStatus.GameNotStarted);
+  }
+
   return (
     <GameHeader>
-      <h2>Roll Through the Ages</h2>
+      <h2>
+        <Stack direction="horizontal" gap={1}>
+          Roll Through the Ages
+          {gameStatus !== GameStatus.GameNotStarted && (
+            <ResetGame onAccept={resetGame} />
+          )}
+          {gameStatus === GameStatus.GameNotStarted ||
+          gameStatus === GameStatus.GameOver ? (
+            <Button variant="link" onClick={() => setShowGameSettings(true)}>
+              <Gear />
+            </Button>
+          ) : (
+            <Button variant="link" disabled>
+              <Gear />
+            </Button>
+          )}
+        </Stack>
+      </h2>
+      {/* Game area */}
+      {`Score ${developmentsScore}`}
+      <Developments updateDevelopmentScore={setDevelopmentsScore} />
       <SimpleModal
         title="Roll Through the Ages Settings"
         content={settingsContent}
         defaultButtonContent="Start Game"
         alternateButtonContent="Close"
-        onAccept={() => setShowGameSettings(false)}
+        onAccept={() => startGame()}
         onCancel={() => setShowGameSettings(false)}
         show={showGameSettings}
       />

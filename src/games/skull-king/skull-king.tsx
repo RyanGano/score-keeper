@@ -45,7 +45,7 @@ export function calculateRoundScore(info: SkullKingRoundInfo): number {
   return Math.abs(info.taken - info.bid) * -10;
 }
 
-enum SkullKingGameStatus {
+enum GameStatus {
   GameNotStarted,
   BiddingOpen,
   BiddingClosed,
@@ -57,8 +57,8 @@ export const SkullKing = () => {
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [playerStates, setPlayerStates] = useState<SkullKingPlayerState[]>([]);
   const [round, setRound] = useState<number>(0);
-  const [gameStatus, setGameStatus] = useState<SkullKingGameStatus>(
-    SkullKingGameStatus.GameNotStarted
+  const [gameStatus, setGameStatus] = useState<GameStatus>(
+    GameStatus.GameNotStarted
   );
   const [includedCards, setIncludedCards] = useState<SkullKingCardInclusions>({
     ...defaultSkullKingIncludedCards,
@@ -100,7 +100,7 @@ export const SkullKing = () => {
         })
       );
       setRound(1);
-      setGameStatus(SkullKingGameStatus.BiddingOpen);
+      setGameStatus(GameStatus.BiddingOpen);
     }
   }
 
@@ -122,11 +122,11 @@ export const SkullKing = () => {
       );
     });
 
-    if (gameStatus !== SkullKingGameStatus.EditingPastItem) {
+    if (gameStatus !== GameStatus.EditingPastItem) {
       if (displayFullInfo) {
         scores.push(
-          gameStatus === SkullKingGameStatus.BiddingOpen ||
-            gameStatus === SkullKingGameStatus.GameOver ? (
+          gameStatus === GameStatus.BiddingOpen ||
+            gameStatus === GameStatus.GameOver ? (
             <Button
               variant="link"
               size="sm"
@@ -163,7 +163,7 @@ export const SkullKing = () => {
   }
 
   function beginEditing(roundInfo: SkullKingRoundInfo[]) {
-    setGameStatus(SkullKingGameStatus.EditingPastItem);
+    setGameStatus(GameStatus.EditingPastItem);
 
     setPlayerStates(
       playerStates.map((x) => {
@@ -183,11 +183,7 @@ export const SkullKing = () => {
   }
 
   function stopEditing() {
-    setGameStatus(
-      round < 11
-        ? SkullKingGameStatus.BiddingOpen
-        : SkullKingGameStatus.GameOver
-    );
+    setGameStatus(round < 11 ? GameStatus.BiddingOpen : GameStatus.GameOver);
 
     setPlayerStates(
       playerStates.map((x) => {
@@ -253,7 +249,7 @@ export const SkullKing = () => {
           </div>
         );
       }
-      if (gameStatus !== SkullKingGameStatus.GameOver) {
+      if (gameStatus !== GameStatus.GameOver) {
         const newKey = `$item_current_${round}`;
         scores.push(
           <div key={newKey}>
@@ -346,11 +342,11 @@ export const SkullKing = () => {
 
   function getRoundStatus(): string | undefined {
     switch (gameStatus) {
-      case SkullKingGameStatus.EditingPastItem:
+      case GameStatus.EditingPastItem:
         return "Editing";
-      case SkullKingGameStatus.GameOver:
+      case GameStatus.GameOver:
         return "Game over";
-      case SkullKingGameStatus.GameNotStarted:
+      case GameStatus.GameNotStarted:
         return undefined;
       default:
         return `Round: ${round}`;
@@ -358,21 +354,17 @@ export const SkullKing = () => {
   }
 
   function resetGame(): void {
-    setGameStatus(SkullKingGameStatus.GameNotStarted);
+    setGameStatus(GameStatus.GameNotStarted);
     setPlayerStates([]);
     setRound(0);
   }
 
   function lockInBids(): void {
-    setGameStatus(SkullKingGameStatus.BiddingClosed);
+    setGameStatus(GameStatus.BiddingClosed);
   }
 
   function finishRound(): void {
-    setGameStatus(
-      round !== 10
-        ? SkullKingGameStatus.BiddingOpen
-        : SkullKingGameStatus.GameOver
-    );
+    setGameStatus(round !== 10 ? GameStatus.BiddingOpen : GameStatus.GameOver);
     setRound(round + 1);
     round !== 10 ? addNewRoundInfo() : finishGame();
   }
@@ -414,7 +406,7 @@ export const SkullKing = () => {
         canRemovePlayer={players.length > minPlayers}
       />
       <div>
-        {gameStatus === SkullKingGameStatus.GameNotStarted && (
+        {gameStatus === GameStatus.GameNotStarted && (
           <Stack gap={3}>
             <SkullKingIncludedCards
               {...includedCards}
@@ -443,11 +435,11 @@ export const SkullKing = () => {
         <h2>
           <Stack direction="horizontal" gap={1}>
             Skull King
-            {gameStatus !== SkullKingGameStatus.GameNotStarted && (
+            {gameStatus !== GameStatus.GameNotStarted && (
               <ResetGame onAccept={resetGame} />
             )}
-            {gameStatus === SkullKingGameStatus.GameNotStarted ||
-            gameStatus === SkullKingGameStatus.GameOver ? (
+            {gameStatus === GameStatus.GameNotStarted ||
+            gameStatus === GameStatus.GameOver ? (
               <Button variant="link" onClick={() => setShowGameSettings(true)}>
                 <Gear />
               </Button>
@@ -491,7 +483,7 @@ export const SkullKing = () => {
             {getAllScores()}
           </Stack>
           <div>
-            {gameStatus === SkullKingGameStatus.EditingPastItem && (
+            {gameStatus === GameStatus.EditingPastItem && (
               <Stack gap={1}>
                 <Stack direction="horizontal">
                   {playerStates.map((x, index) => (
@@ -558,7 +550,7 @@ export const SkullKing = () => {
                 </div>
               </Stack>
             )}
-            {gameStatus === SkullKingGameStatus.BiddingOpen && (
+            {gameStatus === GameStatus.BiddingOpen && (
               <Stack gap={1}>
                 <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
@@ -585,7 +577,7 @@ export const SkullKing = () => {
                 </div>
               </Stack>
             )}
-            {gameStatus === SkullKingGameStatus.BiddingClosed && (
+            {gameStatus === GameStatus.BiddingClosed && (
               <Stack gap={1}>
                 <Stack direction="horizontal" gap={1}>
                   {playerStates.map((x, index) => (
