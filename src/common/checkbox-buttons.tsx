@@ -36,3 +36,25 @@ export const CheckboxButton = (props: CheckboxButtonProps) => {
     </Stack>
   );
 };
+
+export const CheckboxButtonGapless = (props: CheckboxButtonProps) => {
+  return (
+    <Stack
+      direction="horizontal"
+      className="text-dark fs-6 btn"
+      onClick={() => props.onChange(!props.selected)}
+      style={{ margin: "0px", padding: "0px" }}
+    >
+      {props.text ? (
+        <>
+          {props.selected ? <CheckboxChecked /> : <CheckboxUnchecked />}
+          {props.text}
+        </>
+      ) : props.selected ? (
+        <CheckSquare />
+      ) : (
+        <Square />
+      )}
+    </Stack>
+  );
+};

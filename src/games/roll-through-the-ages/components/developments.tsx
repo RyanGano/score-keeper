@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Stack from "react-bootstrap/esm/Stack";
 import { Development, DevelopmentProps } from "./development";
 
@@ -86,6 +86,8 @@ const defaultDevelopmentProps: DevelopmentProps[] = [
 
 export interface DevelopmentsProps {
   updateDevelopmentScore: (score: number) => void;
+  cityCount: number;
+  monumentCount: number;
 }
 
 export const Developments = (props: DevelopmentsProps) => {
@@ -93,6 +95,30 @@ export const Developments = (props: DevelopmentsProps) => {
   const [checkedDevelopments, setCheckDevelopments] = useState<
     DevelopmentProps[]
   >([]);
+  const [cityCount, setCityCount] = useState(props.cityCount);
+
+  const getDevelopmentScore = useCallback((development: DevelopmentProps) => {
+    return (
+      development.points + (development.name === "Empire" ? props.cityCount : 0)
+    );
+  }, [props.cityCount]);
+
+  const updateDevelopmentScore = useCallback(
+    (developments: DevelopmentProps[]) => {
+      const points = developments.map((x) => getDevelopmentScore(x));
+      props.updateDevelopmentScore(
+        points.length === 0 ? 0 : points.reduce((a, b) => a + b)
+      );
+    },
+    [getDevelopmentScore, props]
+  );
+
+  useEffect(() => {
+    if (props.cityCount !== cityCount) {
+      setCityCount(props.cityCount);
+      updateDevelopmentScore(checkedDevelopments);
+    }
+  }, [checkedDevelopments, cityCount, props.cityCount, updateDevelopmentScore]);
 
   function updateCheckedDevelopments(
     developmentName: string,
@@ -106,10 +132,7 @@ export const Developments = (props: DevelopmentsProps) => {
         ];
 
     setCheckDevelopments(checkedItems);
-    const points = checkedItems.map((x) => x.points);
-    props.updateDevelopmentScore(
-      points.length === 0 ? 0 : points.reduce((a, b) => a + b)
-    );
+    updateDevelopmentScore(checkedItems);
   }
 
   return (

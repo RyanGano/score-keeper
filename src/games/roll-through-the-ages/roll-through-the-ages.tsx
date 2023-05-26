@@ -12,6 +12,7 @@ import { Gear } from "react-bootstrap-icons";
 import { ResetGame } from "../../common/reset-game";
 import { Developments } from "./components/developments";
 import { CheckboxButton } from "../../common/checkbox-buttons";
+import { City, defaultCities } from "./components/city";
 
 enum GameStatus {
   GameNotStarted,
@@ -28,6 +29,11 @@ export const RollThroughTheAges = () => {
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(2);
   const [gameStatus, setGameStatus] = useState<GameStatus>(
     GameStatus.GameNotStarted
+  );
+  const [cities, setCities] = useState(
+    defaultCities.map((x) => {
+      return { cost: x.cost, completed: x.cost === 0 };
+    })
   );
   const [developmentsScore, setDevelopmentsScore] = useState<number>(0);
   const [cookies, setCookie] = useCookies(["players_rtta"]);
@@ -113,6 +119,14 @@ export const RollThroughTheAges = () => {
     setGameStatus(GameStatus.GameNotStarted);
   }
 
+  function updateCities(whichCity: number, completed: boolean): void {
+    const updatedCityInfo = cities.map((x, index) =>
+      index === whichCity ? { ...x, completed } : { ...x }
+    );
+
+    setCities(updatedCityInfo);
+  }
+
   return (
     <>
       <GameHeader>
@@ -145,8 +159,22 @@ export const RollThroughTheAges = () => {
         />
       </GameHeader>
       {/* Game area */}
+      <Stack direction="horizontal" gap={1} style={{ minHeight: "108px" }}>
+        {cities.map((x, index) => (
+          <City
+            key={index}
+            cost={x.cost}
+            setCompleted={(completed) => updateCities(index, completed)}
+            index={index + 1}
+          />
+        ))}
+      </Stack>
       {`Score ${developmentsScore}`}
-      <Developments updateDevelopmentScore={setDevelopmentsScore} />
+      <Developments
+        updateDevelopmentScore={setDevelopmentsScore}
+        cityCount={cities.filter((x) => x.completed).length}
+        monumentCount={0}
+      />
     </>
   );
 };
