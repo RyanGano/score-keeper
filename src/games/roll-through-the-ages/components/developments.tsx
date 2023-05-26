@@ -116,6 +116,7 @@ export const Developments = (props: DevelopmentsProps) => {
     <Stack gap={0}>
       {developments.map((x) => (
         <Development
+          key={x.name}
           {...x}
           setChecked={(isChecked) =>
             updateCheckedDevelopments(x.name, isChecked)
