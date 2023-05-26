@@ -1,10 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Stack from "react-bootstrap/esm/Stack";
-import {
-  CheckboxChecked,
-  CheckboxUnchecked,
-} from "../../skull-king/skull-king-styles";
+import { CheckSquare, Square } from "react-bootstrap-icons";
 
 export interface DevelopmentProps {
   cost: number;
@@ -19,7 +16,7 @@ export const Development = (props: DevelopmentProps) => {
 
   return (
     <div
-      className="text-dark btn"
+      className="text-dark fs-6 btn"
       onClick={() => {
         setSelected(!selected);
         props.setChecked?.(!selected);
@@ -27,9 +24,10 @@ export const Development = (props: DevelopmentProps) => {
     >
       <Stack direction="horizontal" gap={2}>
         {props.cost}
-        {selected ? <CheckboxChecked /> : <CheckboxUnchecked />}
+        {selected ? <CheckSquare /> : <Square />}
         <div style={{ width: "90px", display: "flex" }}>{props.name}</div>
         <div>{props.points}</div>
+        <div></div>
         <div>{props.effect}</div>
       </Stack>
     </div>

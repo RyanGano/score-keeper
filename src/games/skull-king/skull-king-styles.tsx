@@ -1,4 +1,3 @@
-import { CheckSquare, Square } from "react-bootstrap-icons";
 import Stack from "react-bootstrap/esm/Stack";
 import styled from "styled-components";
 
@@ -51,12 +50,4 @@ export const CurrentScoreArea = styled.div`
   width: 90px;
   padding-left: 2px;
   padding-right: 2px;
-`;
-
-export const CheckboxChecked = styled(CheckSquare)`
-  margin-right: 4px;
-`;
-
-export const CheckboxUnchecked = styled(Square)`
-  margin-right: 4px;
 `;

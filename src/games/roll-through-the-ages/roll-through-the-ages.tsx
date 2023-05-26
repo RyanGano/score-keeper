@@ -8,13 +8,10 @@ import { PlayerGeneralProps } from "../../components/player-general";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import useCookies from "react-cookie/cjs/useCookies";
 import Button from "react-bootstrap/esm/Button";
-import {
-  CheckboxChecked,
-  CheckboxUnchecked,
-} from "../skull-king/skull-king-styles";
 import { Gear } from "react-bootstrap-icons";
 import { ResetGame } from "../../common/reset-game";
 import { Developments } from "./components/developments";
+import { CheckboxButton } from "../../common/checkbox-buttons";
 
 enum GameStatus {
   GameNotStarted,
@@ -80,26 +77,29 @@ export const RollThroughTheAges = () => {
         canRemovePlayer={players.length > minPlayers}
       />
       <div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => setStartingPlayer(!startingPlayer)}
-        >
-          {startingPlayer ? <CheckboxChecked /> : <CheckboxUnchecked />}
-          First Player
-        </Button>
+        <CheckboxButton
+          text="First Player"
+          selected={startingPlayer}
+          onChange={setStartingPlayer}
+        />
       </div>
       <Stack direction="horizontal">
         Number of Players:
-        <Button variant="link" size="sm" onClick={() => setNumberOfPlayers(2)}>
-          {numberOfPlayers === 2 ? <CheckboxChecked /> : <CheckboxUnchecked />}2
-        </Button>
-        <Button variant="link" size="sm" onClick={() => setNumberOfPlayers(3)}>
-          {numberOfPlayers === 3 ? <CheckboxChecked /> : <CheckboxUnchecked />}3
-        </Button>
-        <Button variant="link" size="sm" onClick={() => setNumberOfPlayers(4)}>
-          {numberOfPlayers === 4 ? <CheckboxChecked /> : <CheckboxUnchecked />}4
-        </Button>
+        <CheckboxButton
+          text="2"
+          selected={numberOfPlayers === 2}
+          onChange={(_) => setNumberOfPlayers(2)}
+        />
+        <CheckboxButton
+          text="3"
+          selected={numberOfPlayers === 3}
+          onChange={(_) => setNumberOfPlayers(3)}
+        />
+        <CheckboxButton
+          text="4"
+          selected={numberOfPlayers === 4}
+          onChange={(_) => setNumberOfPlayers(4)}
+        />
       </Stack>
     </Stack>
   );
@@ -114,37 +114,39 @@ export const RollThroughTheAges = () => {
   }
 
   return (
-    <GameHeader>
-      <h2>
-        <Stack direction="horizontal" gap={1}>
-          Roll Through the Ages
-          {gameStatus !== GameStatus.GameNotStarted && (
-            <ResetGame onAccept={resetGame} />
-          )}
-          {gameStatus === GameStatus.GameNotStarted ||
-          gameStatus === GameStatus.GameOver ? (
-            <Button variant="link" onClick={() => setShowGameSettings(true)}>
-              <Gear />
-            </Button>
-          ) : (
-            <Button variant="link" disabled>
-              <Gear />
-            </Button>
-          )}
-        </Stack>
-      </h2>
+    <>
+      <GameHeader>
+        <h2>
+          <Stack direction="horizontal" gap={1}>
+            Roll Through the Ages
+            {gameStatus !== GameStatus.GameNotStarted && (
+              <ResetGame onAccept={resetGame} />
+            )}
+            {gameStatus === GameStatus.GameNotStarted ||
+            gameStatus === GameStatus.GameOver ? (
+              <Button variant="link" onClick={() => setShowGameSettings(true)}>
+                <Gear />
+              </Button>
+            ) : (
+              <Button variant="link" disabled>
+                <Gear />
+              </Button>
+            )}
+          </Stack>
+        </h2>
+        <SimpleModal
+          title="Roll Through the Ages Settings"
+          content={settingsContent}
+          defaultButtonContent="Start Game"
+          alternateButtonContent="Close"
+          onAccept={() => startGame()}
+          onCancel={() => setShowGameSettings(false)}
+          show={showGameSettings}
+        />
+      </GameHeader>
       {/* Game area */}
       {`Score ${developmentsScore}`}
       <Developments updateDevelopmentScore={setDevelopmentsScore} />
-      <SimpleModal
-        title="Roll Through the Ages Settings"
-        content={settingsContent}
-        defaultButtonContent="Start Game"
-        alternateButtonContent="Close"
-        onAccept={() => startGame()}
-        onCancel={() => setShowGameSettings(false)}
-        show={showGameSettings}
-      />
-    </GameHeader>
+    </>
   );
 };
