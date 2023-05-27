@@ -1,37 +1,53 @@
 import Stack from "react-bootstrap/esm/Stack";
-import { CenteredTextBox } from "../../../common/common-styles";
+import { CenteredTextBoxWithBorder } from "../../../common/common-styles";
 
 export interface ScoreProps {
   development: number;
+  monument: number;
   bonus: number;
 }
 
 export const Score = (props: ScoreProps) => {
-  const subtotal = props.development + 0 + props.bonus;
+  const subtotal = props.development + props.monument + props.bonus;
   const total = {
     minWidth: 40,
   };
   return (
-    <Stack gap={1} style={{ margin: 8 }}>
+    <Stack gap={1}>
       <h5>Score</h5>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>{props.development}</CenteredTextBox>
+        <CenteredTextBoxWithBorder style={total}>
+          {props.development}
+        </CenteredTextBoxWithBorder>
         Developments
       </Stack>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>{0}</CenteredTextBox>+ Monuments
+        <CenteredTextBoxWithBorder style={total}>
+          {props.monument}
+        </CenteredTextBoxWithBorder>
+        + Monuments
       </Stack>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>{props.bonus}</CenteredTextBox>+ Bonuses
+        <CenteredTextBoxWithBorder style={total}>
+          {props.bonus}
+        </CenteredTextBoxWithBorder>
+        + Bonuses
       </Stack>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>{subtotal}</CenteredTextBox>= Subtotal
+        <CenteredTextBoxWithBorder style={total}>
+          {subtotal}
+        </CenteredTextBoxWithBorder>
+        = Subtotal
       </Stack>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>0</CenteredTextBox>- Disasters
+        <CenteredTextBoxWithBorder style={total}>0</CenteredTextBoxWithBorder>-
+        Disasters
       </Stack>
       <Stack direction="horizontal" gap={1}>
-        <CenteredTextBox style={total}>{subtotal - 0}</CenteredTextBox>= Total
+        <CenteredTextBoxWithBorder style={total}>
+          {subtotal - 0}
+        </CenteredTextBoxWithBorder>
+        = Total
       </Stack>
     </Stack>
   );

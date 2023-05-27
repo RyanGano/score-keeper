@@ -14,6 +14,7 @@ export interface CheckboxButtonProps {
   text?: string;
   selected: boolean;
   onChange: (value: boolean) => void;
+  enabled?: boolean;
 }
 
 export const CheckboxButton = (props: CheckboxButtonProps) => {
@@ -25,13 +26,21 @@ export const CheckboxButton = (props: CheckboxButtonProps) => {
     >
       {props.text ? (
         <>
-          {props.selected ? <CheckboxChecked /> : <CheckboxUnchecked />}
+          {props.selected ? (
+            <CheckboxChecked
+              color={props.enabled ?? true ? "#000000" : "#cccccc"}
+            />
+          ) : (
+            <CheckboxUnchecked
+              color={props.enabled ?? true ? "#000000" : "#cccccc"}
+            />
+          )}
           {props.text}
         </>
       ) : props.selected ? (
-        <CheckSquare />
+        <CheckSquare color={props.enabled ?? true ? "#000000" : "#cccccc"} />
       ) : (
-        <Square />
+        <Square color={props.enabled ?? true ? "#000000" : "#cccccc"} />
       )}
     </Stack>
   );
@@ -47,13 +56,21 @@ export const CheckboxButtonGapless = (props: CheckboxButtonProps) => {
     >
       {props.text ? (
         <>
-          {props.selected ? <CheckboxChecked /> : <CheckboxUnchecked />}
+          {props.selected ? (
+            <CheckboxChecked
+              color={props.enabled ?? true ? "#000000" : "#cccccc"}
+            />
+          ) : (
+            <CheckboxUnchecked
+              color={props.enabled ?? true ? "#000000" : "#cccccc"}
+            />
+          )}
           {props.text}
         </>
       ) : props.selected ? (
-        <CheckSquare />
+        <CheckSquare color={props.enabled ?? true ? "#000000" : "#cccccc"} />
       ) : (
-        <Square />
+        <Square color={props.enabled ?? true ? "#000000" : "#cccccc"} />
       )}
     </Stack>
   );

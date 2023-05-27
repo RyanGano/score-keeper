@@ -14,6 +14,7 @@ import { Developments } from "./components/developments";
 import { CheckboxButton } from "../../common/checkbox-buttons";
 import { Cities } from "./components/cities";
 import { Score } from "./components/score";
+import { Monuments } from "./components/monuments";
 
 enum GameStatus {
   GameNotStarted,
@@ -24,7 +25,7 @@ enum GameStatus {
 export const RollThroughTheAges = () => {
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
-    players.length === 0
+    players.length !== 0
   );
   const [startingPlayer, setStartingPlayer] = useState<boolean>(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(2);
@@ -32,8 +33,11 @@ export const RollThroughTheAges = () => {
     GameStatus.GameNotStarted
   );
   const [cityCount, setCityCount] = useState<number>(3);
+  const [monumentCount, setMonumentCount] = useState<number>(0);
+  const [monumentScore, setMonumentScore] = useState<number>(0);
   const [developmentsScore, setDevelopmentsScore] = useState<number>(0);
   const [cityBonus, setCityBonus] = useState<number>(0);
+  const [monumentBonus, setMonumentBonus] = useState<number>(0);
   const [cookies, setCookie] = useCookies(["players_rtta"]);
 
   const minPlayers = 1;
@@ -149,14 +153,26 @@ export const RollThroughTheAges = () => {
         />
       </GameHeader>
       {/* Game area */}
-      <Cities updateCompletedCityCount={setCityCount} />
-      <Developments
-        updateDevelopmentScore={setDevelopmentsScore}
-        updateCityBonusScore={setCityBonus}
-        cityCount={cityCount}
-        monumentCount={0}
-      />
-      <Score development={developmentsScore} bonus={cityBonus} />
+      <Stack gap={2} style={{ margin: 8 }}>
+        <Cities updateCompletedCityCount={setCityCount} />
+        <Developments
+          updateDevelopmentScore={setDevelopmentsScore}
+          updateCityBonusScore={setCityBonus}
+          updateMonumentBonusScore={setMonumentBonus}
+          cityCount={cityCount}
+          monumentCount={monumentCount}
+        />
+        <Monuments
+          updateCompletedMonumentCount={setMonumentCount}
+          updateMonumentScore={setMonumentScore}
+          numberOfPlayers={numberOfPlayers}
+        />
+        <Score
+          development={developmentsScore}
+          monument={monumentScore}
+          bonus={cityBonus + monumentBonus}
+        />
+      </Stack>
     </>
   );
 };

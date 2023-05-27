@@ -87,6 +87,7 @@ const defaultDevelopmentProps: DevelopmentProps[] = [
 export interface DevelopmentsProps {
   updateDevelopmentScore: (score: number) => void;
   updateCityBonusScore: (score: number) => void;
+  updateMonumentBonusScore: (score: number) => void;
   cityCount: number;
   monumentCount: number;
 }
@@ -97,12 +98,19 @@ export const Developments = (props: DevelopmentsProps) => {
     DevelopmentProps[]
   >([]);
   const [cityCount, setCityCount] = useState(props.cityCount);
+  const [monumentCount, setMonumentCount] = useState(props.monumentCount);
 
   const updateDevelopmentScore = useCallback(
     (developments: DevelopmentProps[]) => {
       const points = developments.map((x) => x.points);
       props.updateDevelopmentScore(
         points.length === 0 ? 0 : points.reduce((a, b) => a + b)
+      );
+
+      props.updateMonumentBonusScore(
+        developments.filter((x) => x.name === "Architecture").length === 1
+          ? props.monumentCount
+          : 0
       );
 
       props.updateCityBonusScore(
@@ -115,11 +123,13 @@ export const Developments = (props: DevelopmentsProps) => {
   );
 
   useEffect(() => {
-    if (props.cityCount !== cityCount) {
-      setCityCount(props.cityCount);
-      updateDevelopmentScore(checkedDevelopments);
-    }
-  }, [checkedDevelopments, cityCount, props.cityCount, updateDevelopmentScore]);
+    if (props.cityCount !== cityCount) setCityCount(props.cityCount);
+
+    if (props.monumentCount !== monumentCount)
+      setMonumentCount(props.monumentCount);
+
+    updateDevelopmentScore(checkedDevelopments);
+  }, [checkedDevelopments, cityCount, monumentCount, props.cityCount, props.monumentCount, updateDevelopmentScore]);
 
   function updateCheckedDevelopments(
     developmentName: string,
@@ -137,7 +147,7 @@ export const Developments = (props: DevelopmentsProps) => {
   }
 
   return (
-    <Stack gap={0} style={{ margin: 8 }}>
+    <Stack gap={0}>
       <h5>Developments</h5>
       {developments.map((x) => (
         <Development
