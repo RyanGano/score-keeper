@@ -4,16 +4,6 @@ import Stack from "react-bootstrap/esm/Stack";
 import { CheckboxButtonGapless } from "../../../common/checkbox-buttons";
 import { BuildingCheck } from "react-bootstrap-icons";
 
-export const defaultCities = [
-  { cost: 0 },
-  { cost: 0 },
-  { cost: 0 },
-  { cost: 3 },
-  { cost: 4 },
-  { cost: 5 },
-  { cost: 6 },
-];
-
 export interface CityProps {
   cost: number;
   setCompleted?: (isCompleted: boolean) => void;
