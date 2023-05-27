@@ -43,7 +43,7 @@ export const Disasters = (props: DisastersProps) => {
 
   return (
     <Stack gap={1}>
-      <h5>Disasters</h5>
+      <h5>{`Disasters: -${disasters.filter((x) => x).length} pts`}</h5>
       <Stack direction="vertical" gap={2}>
         <Stack direction="horizontal" gap={3}>
           {getDisasterSection(0)}

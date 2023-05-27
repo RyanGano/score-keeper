@@ -87,11 +87,11 @@ export const Monuments = (props: MonumentsProps) => {
     string[]
   >([]);
 
-  function updateMonumentScore(
+  function getMonumentScore(
     monuments: MonumentInfo[],
     monumentNamesOthersCompleted: string[]
   ) {
-    const monumentScore = monuments
+    return monuments
       .filter((x) => x.completed)
       .map((x) =>
         monumentNamesOthersCompleted.includes(x.name)
@@ -99,6 +99,16 @@ export const Monuments = (props: MonumentsProps) => {
           : x.scores[0]
       )
       .reduce((a, b) => a + b, 0);
+  }
+
+  function updateMonumentScore(
+    monuments: MonumentInfo[],
+    monumentNamesOthersCompleted: string[]
+  ) {
+    const monumentScore = getMonumentScore(
+      monuments,
+      monumentNamesOthersCompleted
+    );
 
     props.updateMonumentScore(monumentScore);
   }
@@ -136,7 +146,10 @@ export const Monuments = (props: MonumentsProps) => {
 
   return (
     <Stack gap={1} style={{ maxWidth: 505 }}>
-      <h5>Monuments</h5>
+      <h5>{`Monuments: ${getMonumentScore(
+        monuments,
+        monumentsCompletedByOthers
+      )} pts`}</h5>
       <Stack direction="horizontal" gap={1}>
         {monuments.slice(0, 4).map((x, index) => (
           <Monument

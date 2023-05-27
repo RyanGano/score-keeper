@@ -158,7 +158,9 @@ export const Developments = (props: DevelopmentsProps) => {
 
   return (
     <Stack gap={0}>
-      <h5>Developments</h5>
+      <h5>{`Developments: ${checkedDevelopments
+        .map((x) => x.points)
+        .reduce((a, b) => a + b, 0)} pts`}</h5>
       {developments.map((x) => (
         <Development
           key={x.name}
