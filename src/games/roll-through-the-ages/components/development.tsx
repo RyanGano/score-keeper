@@ -14,6 +14,20 @@ export interface DevelopmentProps {
 export const Development = (props: DevelopmentProps) => {
   const [selected, setSelected] = useState<boolean>(false);
 
+  const pointsStyle = selected
+    ? {
+        borderStyle: "solid",
+        borderWidth: "0.5px",
+        paddingRight: "4px",
+        paddingLeft: "4px",
+      }
+    : {
+        paddingRight: "4.5px",
+        paddingLeft: "4.5px",
+        marginTop: ".5px",
+        marginBottom: ".5px",
+      };
+
   return (
     <div
       className="text-dark fs-6 btn"
@@ -26,7 +40,7 @@ export const Development = (props: DevelopmentProps) => {
         {props.cost}
         {selected ? <CheckSquare /> : <Square />}
         <div style={{ width: "90px", display: "flex" }}>{props.name}</div>
-        <div>{props.points}</div>
+        <div style={pointsStyle}>{props.points}</div>
         <div></div>
         <div>{props.effect}</div>
       </Stack>

@@ -86,6 +86,7 @@ const defaultDevelopmentProps: DevelopmentProps[] = [
 
 export interface DevelopmentsProps {
   updateDevelopmentScore: (score: number) => void;
+  updateCityBonusScore: (score: number) => void;
   cityCount: number;
   monumentCount: number;
 }
@@ -97,20 +98,20 @@ export const Developments = (props: DevelopmentsProps) => {
   >([]);
   const [cityCount, setCityCount] = useState(props.cityCount);
 
-  const getDevelopmentScore = useCallback((development: DevelopmentProps) => {
-    return (
-      development.points + (development.name === "Empire" ? props.cityCount : 0)
-    );
-  }, [props.cityCount]);
-
   const updateDevelopmentScore = useCallback(
     (developments: DevelopmentProps[]) => {
-      const points = developments.map((x) => getDevelopmentScore(x));
+      const points = developments.map((x) => x.points);
       props.updateDevelopmentScore(
         points.length === 0 ? 0 : points.reduce((a, b) => a + b)
       );
+
+      props.updateCityBonusScore(
+        developments.filter((x) => x.name === "Empire").length === 1
+          ? props.cityCount
+          : 0
+      );
     },
-    [getDevelopmentScore, props]
+    [props]
   );
 
   useEffect(() => {
@@ -136,7 +137,8 @@ export const Developments = (props: DevelopmentsProps) => {
   }
 
   return (
-    <Stack gap={0}>
+    <Stack gap={0} style={{ margin: 8 }}>
+      <h5>Developments</h5>
       {developments.map((x) => (
         <Development
           key={x.name}
