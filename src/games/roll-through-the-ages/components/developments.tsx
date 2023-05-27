@@ -103,6 +103,9 @@ export const Developments = (props: DevelopmentsProps) => {
   const updateDevelopmentScore = useCallback(
     (developments: DevelopmentProps[]) => {
       const points = developments.map((x) => x.points);
+
+      if (checkedDevelopments.length === 0) return;
+
       props.updateDevelopmentScore(
         points.length === 0 ? 0 : points.reduce((a, b) => a + b)
       );
@@ -119,7 +122,7 @@ export const Developments = (props: DevelopmentsProps) => {
           : 0
       );
     },
-    [props]
+    [checkedDevelopments.length, props]
   );
 
   useEffect(() => {
@@ -129,7 +132,14 @@ export const Developments = (props: DevelopmentsProps) => {
       setMonumentCount(props.monumentCount);
 
     updateDevelopmentScore(checkedDevelopments);
-  }, [checkedDevelopments, cityCount, monumentCount, props.cityCount, props.monumentCount, updateDevelopmentScore]);
+  }, [
+    checkedDevelopments,
+    cityCount,
+    monumentCount,
+    props.cityCount,
+    props.monumentCount,
+    updateDevelopmentScore,
+  ]);
 
   function updateCheckedDevelopments(
     developmentName: string,

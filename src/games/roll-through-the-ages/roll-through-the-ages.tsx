@@ -1,6 +1,6 @@
 import * as React from "react";
 import { GameHeader } from "../../common/common-styles";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SimpleModal } from "../../common/simple-modal";
 import Stack from "react-bootstrap/esm/Stack";
 import { PlayerList } from "../../common/player-list";
@@ -24,6 +24,12 @@ enum GameStatus {
   GameOver,
 }
 
+const citiesIndex = 0;
+const developmentsIndex = 1;
+const monumentsIndex = 2;
+const disastersIndex = 3;
+const scoreIndex = 3;
+
 export const RollThroughTheAges = () => {
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
@@ -42,10 +48,197 @@ export const RollThroughTheAges = () => {
   const [cityBonus, setCityBonus] = useState<number>(0);
   const [monumentBonus, setMonumentBonus] = useState<number>(0);
   const [disasterCount, setDisasterCount] = useState<number>(0);
+  const [needsReset, setNeedsReset] = useState<boolean[]>(Array(5).fill(false));
   const [cookies, setCookie] = useCookies(["players_rtta"]);
+  const [monuments, setMonuments] = useState<JSX.Element | undefined>();
+  const [cities, setCities] = useState<JSX.Element | undefined>();
+  const [developments, setDevelopments] = useState<JSX.Element | undefined>();
+  const [disasters, setDisasters] = useState<JSX.Element | undefined>();
+  const [score, setScore] = useState<JSX.Element | undefined>();
 
   const minPlayers = 1;
   const maxPlayers = 1;
+
+  const clearReset = useCallback(
+    (which: number) => {
+      setNeedsReset([
+        ...needsReset.map((x, index) => (index === which ? false : x)),
+      ]);
+    },
+    [needsReset]
+  );
+
+  const updateScore = useCallback(
+    (
+      newValue: number,
+      currentValue: number,
+      updater: (newValue: number) => void,
+      caller: string
+    ) => {
+      updater(newValue);
+
+      if (gameStatus === GameStatus.GameNotStarted)
+        setGameStatus(GameStatus.GameStarted);
+    },
+    [gameStatus]
+  );
+
+  useEffect(() => {
+    if (needsReset[citiesIndex]) {
+      setCities(undefined);
+      clearReset(citiesIndex);
+      setCityCount(3);
+    }
+    if (cities === undefined) {
+      setCities(
+        <Cities
+          updateCompletedCityCount={(newValue) =>
+            updateScore(newValue, cityCount, setCityCount, "Cities")
+          }
+        />
+      );
+    }
+  }, [cities, cityCount, clearReset, needsReset, updateScore]);
+
+  useEffect(() => {
+    if (needsReset[developmentsIndex]) {
+      setDevelopments(undefined);
+      clearReset(developmentsIndex);
+      setDevelopmentsScore(0);
+      setCityBonus(0);
+      setMonumentBonus(0);
+    }
+
+    if (
+      developments === undefined ||
+      developments.props.monumentCount !== monumentCount ||
+      developments.props.cityCount !== cityCount
+    ) {
+      setDevelopments(
+        <Developments
+          updateDevelopmentScore={(newValue) =>
+            updateScore(
+              newValue,
+              developmentsScore,
+              setDevelopmentsScore,
+              "dev score"
+            )
+          }
+          updateCityBonusScore={(newValue) =>
+            updateScore(newValue, cityBonus, setCityBonus, "dev city bonus")
+          }
+          updateMonumentBonusScore={(newValue) =>
+            updateScore(
+              newValue,
+              monumentBonus,
+              setMonumentBonus,
+              "dev mon bonus"
+            )
+          }
+          cityCount={cityCount}
+          monumentCount={monumentCount}
+        />
+      );
+    }
+  }, [
+    cityBonus,
+    cityCount,
+    clearReset,
+    developments,
+    developmentsScore,
+    monumentBonus,
+    monumentCount,
+    needsReset,
+    updateScore,
+  ]);
+
+  useEffect(() => {
+    if (needsReset[monumentsIndex]) {
+      setMonuments(undefined);
+      clearReset(monumentsIndex);
+      setMonumentCount(0);
+      setMonumentBonus(0);
+    }
+    if (monuments === undefined) {
+      setMonuments(
+        <Monuments
+          updateCompletedMonumentCount={(newValue) =>
+            updateScore(newValue, monumentCount, setMonumentCount, "mon count")
+          }
+          updateMonumentScore={(newValue) =>
+            updateScore(newValue, monumentScore, setMonumentScore, "mon score")
+          }
+          numberOfPlayers={numberOfPlayers}
+        />
+      );
+    }
+  }, [
+    clearReset,
+    monumentCount,
+    monumentScore,
+    monuments,
+    needsReset,
+    numberOfPlayers,
+    updateScore,
+  ]);
+
+  useEffect(() => {
+    if (needsReset[disastersIndex]) {
+      setDisasters(undefined);
+      clearReset(disastersIndex);
+      setDisasterCount(disasterCount);
+    }
+    if (disasters === undefined) {
+      setDisasters(
+        <Disasters
+          updateDisasters={(newValue) =>
+            updateScore(
+              newValue,
+              disasterCount,
+              setDisasterCount,
+              "disaster count"
+            )
+          }
+        />
+      );
+    }
+  }, [clearReset, disasterCount, disasters, needsReset, updateScore]);
+
+  useEffect(() => {
+    if (needsReset[scoreIndex]) {
+      clearReset(scoreIndex);
+      setDevelopmentsScore(0);
+      setMonumentScore(0);
+      setCityBonus(0);
+      setMonumentBonus(0);
+      setDisasterCount(0);
+    }
+    if (
+      score === undefined ||
+      score.props.development !== developmentsScore ||
+      score.props.monument !== monumentScore ||
+      score.props.bonus !== cityBonus + monumentBonus ||
+      score.props.disaster !== disasterCount
+    ) {
+      setScore(
+        <Score
+          development={developmentsScore}
+          monument={monumentScore}
+          bonus={cityBonus + monumentBonus}
+          disaster={disasterCount}
+        />
+      );
+    }
+  }, [
+    cityBonus,
+    clearReset,
+    developmentsScore,
+    disasterCount,
+    monumentBonus,
+    monumentScore,
+    needsReset,
+    score,
+  ]);
 
   if (!cookies.players_rtta && players.length === 0) {
     setPlayers([{ Name: "Me" }]);
@@ -123,6 +316,7 @@ export const RollThroughTheAges = () => {
 
   function resetGame() {
     setGameStatus(GameStatus.GameNotStarted);
+    setNeedsReset(Array(5).fill(true));
   }
 
   return (
@@ -169,26 +363,11 @@ export const RollThroughTheAges = () => {
       </GameHeader>
       {/* Game area */}
       <Stack gap={2} style={{ margin: 8 }}>
-        <Cities updateCompletedCityCount={setCityCount} />
-        <Developments
-          updateDevelopmentScore={setDevelopmentsScore}
-          updateCityBonusScore={setCityBonus}
-          updateMonumentBonusScore={setMonumentBonus}
-          cityCount={cityCount}
-          monumentCount={monumentCount}
-        />
-        <Monuments
-          updateCompletedMonumentCount={setMonumentCount}
-          updateMonumentScore={setMonumentScore}
-          numberOfPlayers={numberOfPlayers}
-        />
-        <Disasters updateDisasters={setDisasterCount} />
-        <Score
-          development={developmentsScore}
-          monument={monumentScore}
-          bonus={cityBonus + monumentBonus}
-          disaster={disasterCount}
-        />
+        {cities}
+        {developments}
+        {monuments}
+        {disasters}
+        {score}
       </Stack>
     </>
   );
