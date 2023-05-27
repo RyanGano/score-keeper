@@ -15,6 +15,7 @@ import { CheckboxButton } from "../../common/checkbox-buttons";
 import { Cities } from "./components/cities";
 import { Score } from "./components/score";
 import { Monuments } from "./components/monuments";
+import { Disasters } from "./components/disasters";
 
 enum GameStatus {
   GameNotStarted,
@@ -38,6 +39,7 @@ export const RollThroughTheAges = () => {
   const [developmentsScore, setDevelopmentsScore] = useState<number>(0);
   const [cityBonus, setCityBonus] = useState<number>(0);
   const [monumentBonus, setMonumentBonus] = useState<number>(0);
+  const [disasterCount, setDisasterCount] = useState<number>(0);
   const [cookies, setCookie] = useCookies(["players_rtta"]);
 
   const minPlayers = 1;
@@ -167,10 +169,12 @@ export const RollThroughTheAges = () => {
           updateMonumentScore={setMonumentScore}
           numberOfPlayers={numberOfPlayers}
         />
+        <Disasters updateDisasters={setDisasterCount} />
         <Score
           development={developmentsScore}
           monument={monumentScore}
           bonus={cityBonus + monumentBonus}
+          disaster={disasterCount}
         />
       </Stack>
     </>
