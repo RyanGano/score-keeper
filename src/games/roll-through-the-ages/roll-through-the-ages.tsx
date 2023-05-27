@@ -8,7 +8,7 @@ import { PlayerGeneralProps } from "../../components/player-general";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import useCookies from "react-cookie/cjs/useCookies";
 import Button from "react-bootstrap/esm/Button";
-import { Gear } from "react-bootstrap-icons";
+import { Gear, QuestionCircle } from "react-bootstrap-icons";
 import { ResetGame } from "../../common/reset-game";
 import { Developments } from "./components/developments";
 import { CheckboxButton } from "../../common/checkbox-buttons";
@@ -16,6 +16,7 @@ import { Cities } from "./components/cities";
 import { Score } from "./components/score";
 import { Monuments } from "./components/monuments";
 import { Disasters } from "./components/disasters";
+import { hintPopupContent } from "./components/hint-area";
 
 enum GameStatus {
   GameNotStarted,
@@ -28,6 +29,7 @@ export const RollThroughTheAges = () => {
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length !== 0
   );
+  const [showHintPopup, setShowHintPopup] = useState<boolean>(false);
   const [startingPlayer, setStartingPlayer] = useState<boolean>(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(2);
   const [gameStatus, setGameStatus] = useState<GameStatus>(
@@ -142,6 +144,9 @@ export const RollThroughTheAges = () => {
                 <Gear />
               </Button>
             )}
+            <Button variant="link" onClick={() => setShowHintPopup(true)}>
+              <QuestionCircle />
+            </Button>
           </Stack>
         </h2>
         <SimpleModal
@@ -152,6 +157,14 @@ export const RollThroughTheAges = () => {
           onAccept={() => startGame()}
           onCancel={() => setShowGameSettings(false)}
           show={showGameSettings}
+        />
+        <SimpleModal
+          title="Game Help"
+          content={hintPopupContent}
+          defaultButtonContent="Close"
+          onAccept={() => setShowHintPopup(false)}
+          onCancel={() => setShowHintPopup(false)}
+          show={showHintPopup}
         />
       </GameHeader>
       {/* Game area */}

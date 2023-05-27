@@ -5,7 +5,7 @@ export interface SimpleModalProps {
   title: string;
   content: JSX.Element;
   defaultButtonContent: string;
-  alternateButtonContent: string;
+  alternateButtonContent?: string;
   onAccept: () => void;
   onCancel: () => void;
   show: boolean;
@@ -19,9 +19,11 @@ export const SimpleModal = (props: SimpleModalProps) => {
       </Modal.Header>
       <Modal.Body>{props.content}</Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={props.onCancel}>
-          {props.alternateButtonContent}
-        </Button>
+        {props.alternateButtonContent && (
+          <Button variant="secondary" onClick={props.onCancel}>
+            {props.alternateButtonContent}
+          </Button>
+        )}
         <Button variant="primary" onClick={props.onAccept}>
           {props.defaultButtonContent}
         </Button>
