@@ -9,7 +9,7 @@ export const hintPopupContent = (
     <ol>
       <li>Roll dice and collect goods and food</li>
       <li>Fee cities and resolve disasters</li>
-      <li>Build citites and/or monuments</li>
+      <li>Build cities and/or monuments</li>
       <li>May buy a development</li>
       <li>Discard goods in excess of 6</li>
     </ol>
