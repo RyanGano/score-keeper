@@ -165,7 +165,7 @@ export const Monuments = (props: MonumentsProps) => {
             setOtherPlayerCompletedFirst={(value) =>
               updateFirstPlayerStatus(x.name, value)
             }
-            setCompleted={(completed) => updateMonuments(index, completed)}
+            setCompleted={(completed) => updateMonuments(index + 4, completed)}
           />
         ))}
       </Stack>
