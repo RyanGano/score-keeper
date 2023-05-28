@@ -69,12 +69,7 @@ export const RollThroughTheAges = () => {
   );
 
   const updateScore = useCallback(
-    (
-      newValue: number,
-      currentValue: number,
-      updater: (newValue: number) => void,
-      caller: string
-    ) => {
+    (newValue: number, updater: (newValue: number) => void) => {
       updater(newValue);
 
       if (gameStatus === GameStatus.GameNotStarted)
@@ -93,12 +88,12 @@ export const RollThroughTheAges = () => {
       setCities(
         <Cities
           updateCompletedCityCount={(newValue) =>
-            updateScore(newValue, cityCount, setCityCount, "Cities")
+            updateScore(newValue, setCityCount)
           }
         />
       );
     }
-  }, [cities, cityCount, clearReset, needsReset, updateScore]);
+  }, [cities, clearReset, needsReset, updateScore]);
 
   useEffect(() => {
     if (needsReset[developmentsIndex]) {
@@ -117,23 +112,13 @@ export const RollThroughTheAges = () => {
       setDevelopments(
         <Developments
           updateDevelopmentScore={(newValue) =>
-            updateScore(
-              newValue,
-              developmentsScore,
-              setDevelopmentsScore,
-              "dev score"
-            )
+            updateScore(newValue, setDevelopmentsScore)
           }
           updateCityBonusScore={(newValue) =>
-            updateScore(newValue, cityBonus, setCityBonus, "dev city bonus")
+            updateScore(newValue, setCityBonus)
           }
           updateMonumentBonusScore={(newValue) =>
-            updateScore(
-              newValue,
-              monumentBonus,
-              setMonumentBonus,
-              "dev mon bonus"
-            )
+            updateScore(newValue, setMonumentBonus)
           }
           cityCount={cityCount}
           monumentCount={monumentCount}
@@ -141,12 +126,9 @@ export const RollThroughTheAges = () => {
       );
     }
   }, [
-    cityBonus,
     cityCount,
     clearReset,
     developments,
-    developmentsScore,
-    monumentBonus,
     monumentCount,
     needsReset,
     updateScore,
@@ -159,28 +141,23 @@ export const RollThroughTheAges = () => {
       setMonumentCount(0);
       setMonumentBonus(0);
     }
-    if (monuments === undefined) {
+    if (
+      monuments === undefined ||
+      monuments.props.numberOfPlayers !== numberOfPlayers
+    ) {
       setMonuments(
         <Monuments
           updateCompletedMonumentCount={(newValue) =>
-            updateScore(newValue, monumentCount, setMonumentCount, "mon count")
+            updateScore(newValue, setMonumentCount)
           }
           updateMonumentScore={(newValue) =>
-            updateScore(newValue, monumentScore, setMonumentScore, "mon score")
+            updateScore(newValue, setMonumentScore)
           }
           numberOfPlayers={numberOfPlayers}
         />
       );
     }
-  }, [
-    clearReset,
-    monumentCount,
-    monumentScore,
-    monuments,
-    needsReset,
-    numberOfPlayers,
-    updateScore,
-  ]);
+  }, [clearReset, monuments, needsReset, numberOfPlayers, updateScore]);
 
   useEffect(() => {
     if (needsReset[disastersIndex]) {
@@ -192,12 +169,7 @@ export const RollThroughTheAges = () => {
       setDisasters(
         <Disasters
           updateDisasters={(newValue) =>
-            updateScore(
-              newValue,
-              disasterCount,
-              setDisasterCount,
-              "disaster count"
-            )
+            updateScore(newValue, setDisasterCount)
           }
         />
       );
