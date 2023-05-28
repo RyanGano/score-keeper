@@ -1,6 +1,5 @@
-import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/esm/Stack";
-import { CheckboxChecked, CheckboxUnchecked } from "./skull-king-styles";
+import { CheckboxButton } from "../../common/checkbox-buttons";
 
 export interface SkullKingCardInclusions {
   kraken: boolean;
@@ -51,44 +50,32 @@ export const SkullKingIncludedCards = (props: SkullKingIncludedCardsProps) => {
       Include:
       <Stack direction="horizontal" gap={0}>
         <div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => props.updateMermaids(!props.mermaids)}
-          >
-            {props.mermaids ? <CheckboxChecked /> : <CheckboxUnchecked />}
-            Mermaids
-          </Button>
+          <CheckboxButton
+            text="Mermaids"
+            selected={props.mermaids}
+            onChange={props.updateMermaids}
+          />
         </div>
         <div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => props.updateKraken(!props.kraken)}
-          >
-            {props.kraken ? <CheckboxChecked /> : <CheckboxUnchecked />}
-            Kraken
-          </Button>
+          <CheckboxButton
+            text="Kraken"
+            selected={props.kraken}
+            onChange={props.updateKraken}
+          />
         </div>
         <div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => props.updateWhiteWhale(!props.whiteWhale)}
-          >
-            {props.whiteWhale ? <CheckboxChecked /> : <CheckboxUnchecked />}
-            White Whale
-          </Button>
+          <CheckboxButton
+            text="White Whale"
+            selected={props.whiteWhale}
+            onChange={props.updateWhiteWhale}
+          />
         </div>
         <div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => props.updateLootCoins(!props.lootCoins)}
-          >
-            {props.lootCoins ? <CheckboxChecked /> : <CheckboxUnchecked />}
-            Loot Coins
-          </Button>
+          <CheckboxButton
+            text="Loot Coins"
+            selected={props.lootCoins}
+            onChange={props.updateLootCoins}
+          />
         </div>
       </Stack>
     </Stack>
