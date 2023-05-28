@@ -8,7 +8,7 @@ import { PlayerGeneralProps } from "../../components/player-general";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import useCookies from "react-cookie/cjs/useCookies";
 import Button from "react-bootstrap/esm/Button";
-import { Gear, QuestionCircle } from "react-bootstrap-icons";
+import { Gear, QuestionCircle, StarFill } from "react-bootstrap-icons";
 import { ResetGame } from "../../common/reset-game";
 import { Developments } from "./components/developments";
 import { CheckboxButton } from "../../common/checkbox-buttons";
@@ -33,7 +33,7 @@ const scoreIndex = 3;
 export const RollThroughTheAges = () => {
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
-    players.length !== 0
+    players.length === 0
   );
   const [showHintPopup, setShowHintPopup] = useState<boolean>(false);
   const [startingPlayer, setStartingPlayer] = useState<boolean>(false);
@@ -291,6 +291,22 @@ export const RollThroughTheAges = () => {
     setNeedsReset(Array(5).fill(true));
   }
 
+  const playerInfo = (
+    <Stack
+      direction="horizontal"
+      gap={2}
+      onClick={() =>
+        gameStatus !== GameStatus.GameStarted && setShowGameSettings(true)
+      }
+    >
+      <div style={{ fontSize: "16pt" }}>Player:</div>
+      <div style={{ fontSize: "16pt", fontWeight: "500" }}>
+        {players[0]?.Name}
+      </div>
+      {startingPlayer && <StarFill />}
+    </Stack>
+  );
+
   return (
     <>
       <GameHeader>
@@ -335,6 +351,7 @@ export const RollThroughTheAges = () => {
       </GameHeader>
       {/* Game area */}
       <Stack gap={2} style={{ margin: 8 }}>
+        {playerInfo}
         {cities}
         {developments}
         {monuments}
