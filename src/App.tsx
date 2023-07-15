@@ -8,10 +8,12 @@ import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
 import { NavLink } from "react-bootstrap";
 import { version } from "./version";
+import { Yahtzee } from "./games/yahtzee/yahtzee";
 
 export enum Game {
   SkullKing,
   RollThroughTheAges,
+  Yahtzee,
 }
 
 function App() {
@@ -93,6 +95,20 @@ function App() {
                 <InfoCircle />
               </NavLink>
             </Stack>
+            <Stack direction="horizontal" gap={0}>
+              <Button
+                variant="link"
+                onClick={() => setActiveGame(Game.Yahtzee)}
+              >
+                Yahtzee
+              </Button>
+              <NavLink
+                target="_blank"
+                href="https://www.youtube.com/watch?v=2ZJjtVMvOow"
+              >
+                <InfoCircle />
+              </NavLink>
+            </Stack>
           </Stack>
         </Offcanvas.Body>
       </Offcanvas>
@@ -104,6 +120,7 @@ function App() {
       {leftNav}
       {game === Game.SkullKing && <SkullKing />}
       {game === Game.RollThroughTheAges && <RollThroughTheAges />}
+      {game === Game.Yahtzee && <Yahtzee />}
     </div>
   );
 }
