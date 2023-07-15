@@ -40,9 +40,9 @@ export function calculateRoundScore(info: SkullKingRoundInfo): number {
     return newScore;
   }
 
-  if (info.bid === 0) return info.possibleTricks * -10;
+  if (info.bid === 0) return info.possibleTricks * -10 + info.bonus;
 
-  return Math.abs(info.taken - info.bid) * -10;
+  return Math.abs(info.taken - info.bid) * -10 + info.bonus;
 }
 
 enum GameStatus {
