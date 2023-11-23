@@ -23,6 +23,10 @@ function App() {
     setGame(game);
   }
 
+  window.onbeforeunload = function () {
+    return "Do you really want to close and lose any in progress game information?";
+  };
+
   const leftNav = (
     <>
       <Stack style={{ marginLeft: "10px", marginTop: "10px" }} gap={0}>
