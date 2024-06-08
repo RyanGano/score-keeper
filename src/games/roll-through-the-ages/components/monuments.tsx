@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Stack from "react-bootstrap/esm/Stack";
 import { Monument } from "./monument";
 
@@ -65,12 +65,19 @@ interface MonumentInfo {
 }
 
 export interface MonumentsProps {
-  updateCompletedMonumentCount: (count: number) => void;
-  updateMonumentScore: (score: number) => void;
+  onCompletedMonumentCountChanged: (count: number) => void;
+  onMonumentScoreChanged: (score: number) => void;
   numberOfPlayers: number;
+  onCompleted: () => void;
 }
 
-export const Monuments = (props: MonumentsProps) => {
+export const Monuments = (props2: MonumentsProps) => {
+  const {
+    onCompletedMonumentCountChanged,
+    onMonumentScoreChanged,
+    numberOfPlayers,
+    onCompleted,
+  } = props2;
   const [monuments, setMonuments] = useState(
     defaultMonuments.map((x) => {
       return {
@@ -86,6 +93,21 @@ export const Monuments = (props: MonumentsProps) => {
   const [monumentsCompletedByOthers, setMonumentsCompletedByOthers] = useState<
     string[]
   >([]);
+
+  useEffect(() => {
+    if (
+      monuments.filter(
+        (x) =>
+          x.completed ||
+          !x.enabled(numberOfPlayers) ||
+          !!monumentsCompletedByOthers.find(
+            (monumentName) => monumentName === x.name
+          )
+      ).length === monuments.length
+    ) {
+      onCompleted();
+    }
+  }, [monuments, monumentsCompletedByOthers, numberOfPlayers, onCompleted]);
 
   function getMonumentScore(
     monuments: MonumentInfo[],
@@ -110,7 +132,7 @@ export const Monuments = (props: MonumentsProps) => {
       monumentNamesOthersCompleted
     );
 
-    props.updateMonumentScore(monumentScore);
+    onMonumentScoreChanged(monumentScore);
   }
 
   function updateMonuments(whichMonument: number, completed: boolean): void {
@@ -119,7 +141,7 @@ export const Monuments = (props: MonumentsProps) => {
     );
 
     setMonuments(updatedMonumentInfo);
-    props.updateCompletedMonumentCount(
+    onCompletedMonumentCountChanged(
       updatedMonumentInfo.filter((x) => x.completed).length
     );
 
@@ -137,7 +159,7 @@ export const Monuments = (props: MonumentsProps) => {
     if (completed) monumentNames.push(whichMonument);
 
     setMonumentsCompletedByOthers(monumentNames);
-    props.updateCompletedMonumentCount(
+    onCompletedMonumentCountChanged(
       monuments.filter((x) => x.completed).length
     );
 
@@ -158,7 +180,7 @@ export const Monuments = (props: MonumentsProps) => {
             scores={x.scores}
             cost={x.cost}
             shape={x.shape}
-            enabled={x.enabled(props.numberOfPlayers)}
+            enabled={x.enabled(numberOfPlayers)}
             setOtherPlayerCompletedFirst={(value) =>
               updateFirstPlayerStatus(x.name, value)
             }
@@ -174,7 +196,7 @@ export const Monuments = (props: MonumentsProps) => {
             scores={x.scores}
             cost={x.cost}
             shape={x.shape}
-            enabled={x.enabled(props.numberOfPlayers)}
+            enabled={x.enabled(numberOfPlayers)}
             setOtherPlayerCompletedFirst={(value) =>
               updateFirstPlayerStatus(x.name, value)
             }

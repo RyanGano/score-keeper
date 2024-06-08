@@ -85,14 +85,21 @@ const defaultDevelopmentProps: DevelopmentProps[] = [
 ];
 
 export interface DevelopmentsProps {
-  updateDevelopmentScore: (score: number) => void;
-  updateCityBonusScore: (score: number) => void;
-  updateMonumentBonusScore: (score: number) => void;
+  onDevelopmentScoreChanged: (score: number) => void;
+  onCityBonusScoreChanged: (score: number) => void;
+  onMonumentBonusScoreChanged: (score: number) => void;
+  onCompleted: () => void;
   cityCount: number;
   monumentCount: number;
 }
 
 export const Developments = (props: DevelopmentsProps) => {
+  const {
+    onDevelopmentScoreChanged,
+    onCityBonusScoreChanged,
+    onMonumentBonusScoreChanged,
+    onCompleted,
+  } = props;
   const [developments] = useState<DevelopmentProps[]>(defaultDevelopmentProps);
   const [checkedDevelopments, setCheckDevelopments] = useState<
     DevelopmentProps[]
@@ -106,30 +113,41 @@ export const Developments = (props: DevelopmentsProps) => {
 
       if (checkedDevelopments.length === 0) return;
 
-      props.updateDevelopmentScore(
+      onDevelopmentScoreChanged(
         points.length === 0 ? 0 : points.reduce((a, b) => a + b)
       );
 
-      props.updateMonumentBonusScore(
+      onMonumentBonusScoreChanged(
         developments.filter((x) => x.name === "Architecture").length === 1
-          ? props.monumentCount
+          ? monumentCount
           : 0
       );
 
-      props.updateCityBonusScore(
+      onCityBonusScoreChanged(
         developments.filter((x) => x.name === "Empire").length === 1
-          ? props.cityCount
+          ? cityCount
           : 0
       );
+
+      if (checkedDevelopments.length === 5) {
+        onCompleted();
+      }
     },
-    [checkedDevelopments.length, props]
+    [
+      checkedDevelopments.length,
+      cityCount,
+      monumentCount,
+      onCityBonusScoreChanged,
+      onCompleted,
+      onDevelopmentScoreChanged,
+      onMonumentBonusScoreChanged,
+    ]
   );
 
   useEffect(() => {
-    if (props.cityCount !== cityCount) setCityCount(props.cityCount);
+    if (cityCount !== props.cityCount) setCityCount(cityCount);
 
-    if (props.monumentCount !== monumentCount)
-      setMonumentCount(props.monumentCount);
+    if (monumentCount !== props.monumentCount) setMonumentCount(monumentCount);
 
     updateDevelopmentScore(checkedDevelopments);
   }, [

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SkullKing } from "./games/skull-king/skull-king";
 import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
 import Button from "react-bootstrap/esm/Button";
@@ -14,17 +14,30 @@ export enum Game {
   RollThroughTheAges,
 }
 
+export enum GameStatus {
+  Active,
+  Complete,
+  NotStarted,
+}
+
 function App() {
   const [game, setGame] = useState<Game | undefined>();
   const [showMenu, setShowMenu] = useState<boolean>(game === undefined);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.NotStarted);
 
   function setActiveGame(game: Game) {
     setShowMenu(false);
     setGame(game);
   }
 
+  const showOptionalPopup = useCallback(() => {
+    return gameStatus === GameStatus.Active
+      ? "Do you really want to close and lose any in progress game information?"
+      : null;
+  }, [gameStatus]);
+
   window.onbeforeunload = function () {
-    return "Do you really want to close and lose any in progress game information?";
+    return showOptionalPopup();
   };
 
   const leftNav = (
@@ -106,8 +119,8 @@ function App() {
   return (
     <div className="App">
       {leftNav}
-      {game === Game.SkullKing && <SkullKing />}
-      {game === Game.RollThroughTheAges && <RollThroughTheAges />}
+      {game === Game.SkullKing && <SkullKing onGameStatusChanged={status => setGameStatus(status)}/>}
+      {game === Game.RollThroughTheAges && <RollThroughTheAges onGameStatusChanged={status => setGameStatus(status)}/>}
     </div>
   );
 }

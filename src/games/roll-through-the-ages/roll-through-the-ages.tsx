@@ -17,12 +17,7 @@ import { Score } from "./components/score";
 import { Monuments } from "./components/monuments";
 import { Disasters } from "./components/disasters";
 import { hintPopupContent } from "./components/hint-area";
-
-enum GameStatus {
-  GameNotStarted,
-  GameStarted,
-  GameOver,
-}
+import { GameStatus } from "../../App";
 
 const citiesIndex = 0;
 const developmentsIndex = 1;
@@ -30,7 +25,12 @@ const monumentsIndex = 2;
 const disastersIndex = 3;
 const scoreIndex = 3;
 
-export const RollThroughTheAges = () => {
+export interface RollThroughTheAgesProps {
+  onGameStatusChanged: (status: GameStatus) => void;
+}
+
+export const RollThroughTheAges = (props: RollThroughTheAgesProps) => {
+  const { onGameStatusChanged } = props;
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
@@ -39,7 +39,7 @@ export const RollThroughTheAges = () => {
   const [startingPlayer, setStartingPlayer] = useState<boolean>(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(2);
   const [gameStatus, setGameStatus] = useState<GameStatus>(
-    GameStatus.GameNotStarted
+    GameStatus.NotStarted
   );
   const [cityCount, setCityCount] = useState<number>(3);
   const [monumentCount, setMonumentCount] = useState<number>(0);
@@ -59,6 +59,10 @@ export const RollThroughTheAges = () => {
   const minPlayers = 1;
   const maxPlayers = 1;
 
+  useEffect(() => {
+    onGameStatusChanged(gameStatus);
+  }, [gameStatus, onGameStatusChanged]);
+
   const clearReset = useCallback(
     (which: number) => {
       setNeedsReset([
@@ -72,8 +76,8 @@ export const RollThroughTheAges = () => {
     (newValue: number, updater: (newValue: number) => void) => {
       updater(newValue);
 
-      if (gameStatus === GameStatus.GameNotStarted)
-        setGameStatus(GameStatus.GameStarted);
+      if (gameStatus === GameStatus.NotStarted)
+        setGameStatus(GameStatus.Active);
     },
     [gameStatus]
   );
@@ -111,17 +115,18 @@ export const RollThroughTheAges = () => {
     ) {
       setDevelopments(
         <Developments
-          updateDevelopmentScore={(newValue) =>
+          onDevelopmentScoreChanged={(newValue) =>
             updateScore(newValue, setDevelopmentsScore)
           }
-          updateCityBonusScore={(newValue) =>
+          onCityBonusScoreChanged={(newValue) =>
             updateScore(newValue, setCityBonus)
           }
-          updateMonumentBonusScore={(newValue) =>
+          onMonumentBonusScoreChanged={(newValue) =>
             updateScore(newValue, setMonumentBonus)
           }
           cityCount={cityCount}
           monumentCount={monumentCount}
+          onCompleted={() => setGameStatus(GameStatus.Complete)}
         />
       );
     }
@@ -147,13 +152,14 @@ export const RollThroughTheAges = () => {
     ) {
       setMonuments(
         <Monuments
-          updateCompletedMonumentCount={(newValue) =>
+          onCompletedMonumentCountChanged={(newValue) =>
             updateScore(newValue, setMonumentCount)
           }
-          updateMonumentScore={(newValue) =>
+          onMonumentScoreChanged={(newValue) =>
             updateScore(newValue, setMonumentScore)
           }
           numberOfPlayers={numberOfPlayers}
+          onCompleted={() => setGameStatus(GameStatus.Complete)}
         />
       );
     }
@@ -283,11 +289,11 @@ export const RollThroughTheAges = () => {
 
   function startGame() {
     setShowGameSettings(false);
-    setGameStatus(GameStatus.GameStarted);
+    setGameStatus(GameStatus.Active);
   }
 
   function resetGame() {
-    setGameStatus(GameStatus.GameNotStarted);
+    setGameStatus(GameStatus.NotStarted);
     setNeedsReset(Array(5).fill(true));
   }
 
@@ -296,7 +302,7 @@ export const RollThroughTheAges = () => {
       direction="horizontal"
       gap={2}
       onClick={() =>
-        gameStatus !== GameStatus.GameStarted && setShowGameSettings(true)
+        gameStatus !== GameStatus.Active && setShowGameSettings(true)
       }
     >
       <div style={{ fontSize: "16pt" }}>Player:</div>
@@ -313,11 +319,11 @@ export const RollThroughTheAges = () => {
         <h2>
           <Stack direction="horizontal" gap={1}>
             Roll Through the Ages
-            {gameStatus !== GameStatus.GameNotStarted && (
+            {gameStatus !== GameStatus.NotStarted && (
               <ResetGame onAccept={resetGame} />
             )}
-            {gameStatus === GameStatus.GameNotStarted ||
-            gameStatus === GameStatus.GameOver ? (
+            {gameStatus === GameStatus.NotStarted ||
+            gameStatus === GameStatus.Complete ? (
               <Button variant="link" onClick={() => setShowGameSettings(true)}>
                 <Gear />
               </Button>
@@ -349,7 +355,6 @@ export const RollThroughTheAges = () => {
           show={showHintPopup}
         />
       </GameHeader>
-      {/* Game area */}
       <Stack gap={2} style={{ margin: 8 }}>
         {playerInfo}
         {cities}
