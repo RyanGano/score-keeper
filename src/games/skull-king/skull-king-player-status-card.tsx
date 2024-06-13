@@ -56,8 +56,8 @@ export const SkullKingPlayerStatusCard = (
         <div
           key={i}
           style={{
-            margin: 12,
-            padding: 24,
+            margin: 6,
+            padding: 12,
             backgroundColor: "#DDDDFF",
             borderRadius: 12,
             maxWidth: 75,
@@ -100,8 +100,8 @@ export const SkullKingPlayerStatusCard = (
         />
         <div
           style={{
-            margin: 12,
-            padding: 24,
+            margin: 6,
+            padding: 12,
             backgroundColor: "#DDDDFF",
             borderRadius: 12,
             maxWidth: 75,
@@ -134,8 +134,8 @@ export const SkullKingPlayerStatusCard = (
         <div
           key={i}
           style={{
-            margin: 12,
-            padding: 24,
+            margin: 6,
+            padding: 12,
             backgroundColor: currentTricksTaken === i ? "#DDFFDD" : "#DDDDFF",
             borderRadius: 12,
             maxWidth: 75,
@@ -171,8 +171,6 @@ export const SkullKingPlayerStatusCard = (
     setShowScoreUI(false);
   };
 
-  console.log("Player Rounds", player);
-
   return (
     <>
       <SimpleModal
@@ -193,8 +191,8 @@ export const SkullKingPlayerStatusCard = (
       />
       <div
         style={{
-          margin: 12,
-          padding: 24,
+          margin: 6,
+          padding: 12,
           backgroundColor: dealer
             ? !!onBidChange
               ? "#DDFFDD"
@@ -215,28 +213,28 @@ export const SkullKingPlayerStatusCard = (
         }
       >
         <Stack>
-          <h4>{player.playerInfo.Name}</h4>
-          <p>
-            <span style={{ fontWeight: 600 }}>{`Score: ${player.roundScores
-              .map((x) => calculateRoundScore(x))
-              .reduce((a, b) => a + b, 0)}`}</span>
-          </p>
+          <h5>{player.playerInfo.Name}</h5>
+          <span style={{ fontWeight: 600 }}>{`Score: ${player.roundScores
+            .map((x) => calculateRoundScore(x))
+            .reduce((a, b) => a + b, 0)}`}</span>
           {turnPhase === SkullKingGameStatus.BiddingOpen && (
             <p>
-              {player.currentRound?.possibleTricks !== 1 && (
+              {player.currentRound?.possibleTricks !== 1 ? (
                 <span>{`Last Round: ${calculateRoundScore(
                   player.roundScores[player.roundScores.length - 1]
                 )}`}</span>
+              ) : (
+                <br />
               )}
             </p>
           )}
           {turnPhase === SkullKingGameStatus.BiddingClosed && (
             <p>
-              <span>{`Taken: ${player.currentRound?.taken} / Bonus: ${player.currentRound?.bonus}`}</span>
+              <span>{`Results: ${player.currentRound?.taken} / ${player.currentRound?.bonus}`}</span>
             </p>
           )}
 
-          <h4>{`Bid: ${player.currentRound?.bid ?? 0}`}</h4>
+          <h5>{`Bid: ${player.currentRound?.bid ?? 0}`}</h5>
         </Stack>
       </div>
     </>

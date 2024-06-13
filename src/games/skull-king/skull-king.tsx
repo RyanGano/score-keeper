@@ -510,9 +510,9 @@ export const SkullKing = (props: SkullKingProps) => {
     gameStatus === SkullKingGameStatus.GameOver
       ? "Game Over"
       : gameStatus === SkullKingGameStatus.BiddingClosed
-      ? "Bidding Closed"
+      ? `Bidding Closed (round ${round})`
       : gameStatus === SkullKingGameStatus.BiddingOpen
-      ? "Bidding Open"
+      ? `Bidding Open (round ${round})`
       : "";
 
   const moveToNextGameStatus = () => {
@@ -702,16 +702,19 @@ export const SkullKing = (props: SkullKingProps) => {
   const getNewStyleUI = () => {
     return (
       <>
-        {gameStatus !== SkullKingGameStatus.GameOver && `Round: ${round}`}
+        {/* {gameStatus !== SkullKingGameStatus.GameOver && `Round: ${round}`} */}
 
         <div
           style={{
-            margin: 12,
-            padding: 24,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: 6,
+            padding: 12,
             backgroundColor: "#DDDDFF",
             borderRadius: 12,
-            minWidth: 200,
-            minHeight: 100,
+            minHeight: 50,
+            fontWeight: 600,
           }}
           onClick={() => setCurrentAutoFill(playerStates[0])}
         >
@@ -721,75 +724,80 @@ export const SkullKing = (props: SkullKingProps) => {
         </div>
         <div className={"d-flex flex-wrap"}>
           {playerStates.map((x, index) => (
-            <SkullKingPlayerStatusCard
-              key={x.playerInfo.Name}
-              player={x}
-              turnPhase={gameStatus}
-              forceShowUpdateUI={x === currentAutoFill}
-              onCancelledAutoUpdate={
-                x === currentAutoFill ? cancelAutoFill : undefined
-              }
-              onBidChange={
-                gameStatus === SkullKingGameStatus.BiddingOpen
-                  ? (newBid) => {
-                      setPlayerStates(
-                        playerStates.map((y) =>
-                          y.playerInfo === x.playerInfo
-                            ? ({
-                                ...y,
-                                currentRound: {
-                                  ...y.currentRound,
-                                  bid: newBid,
-                                },
-                              } as SkullKingPlayerState)
-                            : y
-                        )
-                      );
-                      currentAutoFill &&
-                        setCurrentAutoFill(
-                          index < playerStates.length
-                            ? playerStates[index + 1]
-                            : undefined
+            <div style={{ flexGrow: 1 }}>
+              <SkullKingPlayerStatusCard
+                key={x.playerInfo.Name}
+                player={x}
+                turnPhase={gameStatus}
+                forceShowUpdateUI={x === currentAutoFill}
+                onCancelledAutoUpdate={
+                  x === currentAutoFill ? cancelAutoFill : undefined
+                }
+                onBidChange={
+                  gameStatus === SkullKingGameStatus.BiddingOpen
+                    ? (newBid) => {
+                        setPlayerStates(
+                          playerStates.map((y) =>
+                            y.playerInfo === x.playerInfo
+                              ? ({
+                                  ...y,
+                                  currentRound: {
+                                    ...y.currentRound,
+                                    bid: newBid,
+                                  },
+                                } as SkullKingPlayerState)
+                              : y
+                          )
                         );
-                    }
-                  : undefined
-              }
-              onScoreChange={
-                gameStatus === SkullKingGameStatus.BiddingClosed
-                  ? (tricksTaken, bonus) => {
-                      setPlayerStates(
-                        playerStates.map((y) =>
-                          y.playerInfo === x.playerInfo
-                            ? ({
-                                ...y,
-                                currentRound: {
-                                  ...y.currentRound,
-                                  taken: tricksTaken,
-                                  bonus: bonus,
-                                },
-                              } as SkullKingPlayerState)
-                            : y
-                        )
-                      );
+                        currentAutoFill &&
+                          setCurrentAutoFill(
+                            index < playerStates.length
+                              ? playerStates[index + 1]
+                              : undefined
+                          );
+                      }
+                    : undefined
+                }
+                onScoreChange={
+                  gameStatus === SkullKingGameStatus.BiddingClosed
+                    ? (tricksTaken, bonus) => {
+                        setPlayerStates(
+                          playerStates.map((y) =>
+                            y.playerInfo === x.playerInfo
+                              ? ({
+                                  ...y,
+                                  currentRound: {
+                                    ...y.currentRound,
+                                    taken: tricksTaken,
+                                    bonus: bonus,
+                                  },
+                                } as SkullKingPlayerState)
+                              : y
+                          )
+                        );
 
-                      currentAutoFill &&
-                        setCurrentAutoFill(
-                          index < playerStates.length
-                            ? playerStates[index + 1]
-                            : undefined
-                        );
-                    }
-                  : undefined
-              }
-              dealer={((round ?? 0) - 1) % players.length === index}
-            />
+                        currentAutoFill &&
+                          setCurrentAutoFill(
+                            index < playerStates.length
+                              ? playerStates[index + 1]
+                              : undefined
+                          );
+                      }
+                    : undefined
+                }
+                dealer={((round ?? 0) - 1) % players.length === index}
+              />
+            </div>
           ))}
+
+          {playerStates.length % 2 === 1 && <div style={{ flex: "0 0 50%" }} />}
         </div>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            margin: 12,
+            alignItems: "center",
+            margin: 6,
           }}
         >
           <CaretLeftSquareFill
@@ -854,7 +862,7 @@ export const SkullKing = (props: SkullKingProps) => {
             )}
             <CheckboxButton
               selected={useOldStyleUI}
-              text={"Use old style UI"}
+              text={"Old UI"}
               onChange={(newValue) => setUseOldStyleUI(newValue)}
             />
           </Stack>
@@ -864,8 +872,9 @@ export const SkullKing = (props: SkullKingProps) => {
       <div
         style={{
           position: "absolute",
-          left: "24px",
+          left: "12px",
           top: "74px",
+          marginRight: 12,
         }}
       >
         {useOldStyleUI && getOldStyleUI()}
