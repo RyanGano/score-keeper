@@ -503,11 +503,6 @@ export const SkullKing = (props: SkullKingProps) => {
           </Stack>
         )}
       </div>
-      <CheckboxButton
-        text={"Use old style UI"}
-        selected={useOldStyleUI}
-        onChange={(newValue) => setUseOldStyleUI(newValue)}
-      />
     </Stack>
   );
 
@@ -857,6 +852,11 @@ export const SkullKing = (props: SkullKingProps) => {
                 <Gear />
               </Button>
             )}
+            <CheckboxButton
+              selected={useOldStyleUI}
+              text={"Use old style UI"}
+              onChange={(newValue) => setUseOldStyleUI(newValue)}
+            />
           </Stack>
         </h2>
       </GameHeader>
