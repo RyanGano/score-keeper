@@ -23,7 +23,9 @@ export enum GameStatus {
 function App() {
   const [game, setGame] = useState<Game | undefined>();
   const [showMenu, setShowMenu] = useState<boolean>(game === undefined);
-  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.NotStarted);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(
+    GameStatus.NotStarted
+  );
 
   function setActiveGame(game: Game) {
     setShowMenu(false);
@@ -119,8 +121,14 @@ function App() {
   return (
     <div className="App">
       {leftNav}
-      {game === Game.SkullKing && <SkullKing onGameStatusChanged={status => setGameStatus(status)}/>}
-      {game === Game.RollThroughTheAges && <RollThroughTheAges onGameStatusChanged={status => setGameStatus(status)}/>}
+      {game === Game.SkullKing && (
+        <SkullKing onGameStatusChanged={(status) => setGameStatus(status)} />
+      )}
+      {game === Game.RollThroughTheAges && (
+        <RollThroughTheAges
+          onGameStatusChanged={(status) => setGameStatus(status)}
+        />
+      )}
     </div>
   );
 }
