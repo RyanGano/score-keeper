@@ -57,10 +57,10 @@ export const SkullKingPlayerStatusCard = (
           key={i}
           style={{
             margin: 6,
-            padding: 12,
+            padding: 24,
             backgroundColor: "#DDDDFF",
             borderRadius: 12,
-            maxWidth: 75,
+            minWidth: 70,
             display: "flex",
             justifyContent: "center",
             fontWeight: 800,
@@ -101,7 +101,7 @@ export const SkullKingPlayerStatusCard = (
         <div
           style={{
             margin: 6,
-            padding: 12,
+            padding: 24,
             backgroundColor: "#DDDDFF",
             borderRadius: 12,
             maxWidth: 75,
@@ -135,10 +135,10 @@ export const SkullKingPlayerStatusCard = (
           key={i}
           style={{
             margin: 6,
-            padding: 12,
+            padding: 24,
             backgroundColor: currentTricksTaken === i ? "#DDFFDD" : "#DDDDFF",
             borderRadius: 12,
-            maxWidth: 75,
+            minWidth: 70,
             display: "flex",
             justifyContent: "center",
             fontWeight: 800,
@@ -182,7 +182,7 @@ export const SkullKingPlayerStatusCard = (
         show={showBidUI}
       />
       <SimpleModal
-        title={`Update Score - ${player.playerInfo.Name}`}
+        title={`Update Score - ${player.playerInfo.Name} (bid ${player.currentRound?.bid})`}
         content={<>{showScoreUI && getScoreContent()}</>}
         defaultButtonContent={"Save Score"}
         onAccept={() => saveScore()}
