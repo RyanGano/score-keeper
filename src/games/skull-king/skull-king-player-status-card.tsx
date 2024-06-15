@@ -3,6 +3,10 @@ import {
   SkullKingGameStatus,
   SkullKingPlayerState,
   calculateRoundScore,
+  defaultBlueColor,
+  defaultGreenColor,
+  disabledButtonColor,
+  enabledButtonColor,
 } from "./skull-king";
 import { SimpleModal } from "../../common/simple-modal";
 import { useEffect, useState } from "react";
@@ -17,6 +21,7 @@ export interface SkullKingPlayerStatusCardProps {
   onBidChange?: (newBid: number) => void;
   onScoreChange?: (taken: number, bonus: number) => void;
 }
+
 export const SkullKingPlayerStatusCard = (
   props: SkullKingPlayerStatusCardProps
 ) => {
@@ -46,7 +51,7 @@ export const SkullKingPlayerStatusCard = (
 
   const getBidContent = () => {
     if (!player.currentRound) {
-      return <></>;
+      return null;
     }
 
     const children = [];
@@ -58,7 +63,7 @@ export const SkullKingPlayerStatusCard = (
           style={{
             margin: 6,
             padding: 24,
-            backgroundColor: "#DDDDFF",
+            backgroundColor: defaultBlueColor,
             borderRadius: 12,
             minWidth: 70,
             display: "flex",
@@ -92,7 +97,7 @@ export const SkullKingPlayerStatusCard = (
         }}
       >
         <DashSquareFill
-          color={currentBonus > 0 ? "#AAAAFF" : "#CCCCCC"}
+          color={currentBonus > 0 ? enabledButtonColor : disabledButtonColor}
           size={36}
           onClick={() =>
             currentBonus > 0 ? setCurrentBonus(currentBonus - 10) : undefined
@@ -102,7 +107,7 @@ export const SkullKingPlayerStatusCard = (
           style={{
             margin: 6,
             padding: 24,
-            backgroundColor: "#DDDDFF",
+            backgroundColor: defaultBlueColor,
             borderRadius: 12,
             maxWidth: 75,
             minWidth: 70,
@@ -114,7 +119,7 @@ export const SkullKingPlayerStatusCard = (
           {currentBonus}
         </div>
         <PlusSquareFill
-          color={"#AAAAFF"}
+          color={enabledButtonColor}
           size={36}
           onClick={() => setCurrentBonus(currentBonus + 10)}
         />
@@ -136,7 +141,8 @@ export const SkullKingPlayerStatusCard = (
           style={{
             margin: 6,
             padding: 24,
-            backgroundColor: currentTricksTaken === i ? "#DDFFDD" : "#DDDDFF",
+            backgroundColor:
+              currentTricksTaken === i ? defaultGreenColor : defaultBlueColor,
             borderRadius: 12,
             minWidth: 70,
             display: "flex",
@@ -195,11 +201,11 @@ export const SkullKingPlayerStatusCard = (
           padding: 12,
           backgroundColor: dealer
             ? !!onBidChange
-              ? "#DDFFDD"
-              : "#DDDDFF"
+              ? defaultGreenColor
+              : defaultBlueColor
             : !!onBidChange
-            ? "#DDDDFF"
-            : "#DDFFDD",
+            ? defaultBlueColor
+            : defaultGreenColor,
           borderRadius: 12,
           minWidth: 150,
           minHeight: 100,

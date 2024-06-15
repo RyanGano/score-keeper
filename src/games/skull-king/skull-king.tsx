@@ -38,6 +38,11 @@ export interface SkullKingPlayerState {
   editRound: SkullKingRoundInfo | null;
 }
 
+export const defaultBlueColor = "#DDDDFF";
+export const defaultGreenColor = "#DDFFDD";
+export const enabledButtonColor = "#AAAAFF";
+export const disabledButtonColor = "#CCCCCC";
+
 export function calculateRoundScore(info: SkullKingRoundInfo): number {
   if (info.bid === info.taken) {
     const newScore =
@@ -700,28 +705,36 @@ export const SkullKing = (props: SkullKingProps) => {
   };
 
   const getNewStyleUI = () => {
+    if (
+      gameStatus !== SkullKingGameStatus.BiddingOpen &&
+      gameStatus !== SkullKingGameStatus.BiddingClosed &&
+      gameStatus !== SkullKingGameStatus.GameOver
+    )
+      return null;
+
     return (
       <>
-        {/* {gameStatus !== SkullKingGameStatus.GameOver && `Round: ${round}`} */}
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            margin: 6,
-            padding: 12,
-            backgroundColor: "#DDDDFF",
-            borderRadius: 12,
-            minHeight: 50,
-            fontWeight: 600,
-          }}
-          onClick={() => setCurrentAutoFill(playerStates[0])}
-        >
-          {gameStatus === SkullKingGameStatus.BiddingOpen
-            ? "Auto Bid"
-            : "Auto Score"}
-        </div>
+        {(gameStatus === SkullKingGameStatus.BiddingOpen ||
+          gameStatus === SkullKingGameStatus.BiddingClosed) && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 6,
+              padding: 12,
+              backgroundColor: "#DDDDFF",
+              borderRadius: 12,
+              minHeight: 50,
+              fontWeight: 600,
+            }}
+            onClick={() => setCurrentAutoFill(playerStates[0])}
+          >
+            {gameStatus === SkullKingGameStatus.BiddingOpen
+              ? "Auto Bid"
+              : "Auto Score"}
+          </div>
+        )}
         <div className={"d-flex flex-wrap"}>
           {playerStates.map((x, index) => (
             <div style={{ flexGrow: 1 }}>
@@ -803,8 +816,8 @@ export const SkullKing = (props: SkullKingProps) => {
           <CaretLeftSquareFill
             color={
               round > 1 || gameStatus === SkullKingGameStatus.BiddingClosed
-                ? "#AAAAFF"
-                : "#cccccc"
+                ? enabledButtonColor
+                : disabledButtonColor
             }
             size={36}
             onClick={() =>
@@ -817,8 +830,8 @@ export const SkullKing = (props: SkullKingProps) => {
           <CaretRightSquareFill
             color={
               gameStatus !== SkullKingGameStatus.GameOver
-                ? "#AAAAFF"
-                : "#cccccc"
+                ? enabledButtonColor
+                : disabledButtonColor
             }
             size={36}
             onClick={() =>
