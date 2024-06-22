@@ -529,7 +529,10 @@ export const SkullKing = (props: SkullKingProps) => {
   };
 
   const moveToPreviousGameStatus = () => {
-    if (gameStatus === SkullKingGameStatus.BiddingOpen) {
+    if (
+      gameStatus === SkullKingGameStatus.BiddingOpen ||
+      gameStatus === SkullKingGameStatus.GameOver
+    ) {
       setRound(round - 1);
       setGameStatus(SkullKingGameStatus.BiddingClosed);
       clearLastRoundInfo();
