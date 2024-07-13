@@ -17,22 +17,37 @@ export interface PlayerListProps {
   activePlayers: PlayerGeneralProps[];
   canAddPlayer: boolean;
   canRemovePlayer: boolean;
+  playerType?: "teams" | "players";
 }
 
 export const PlayerList = (props: PlayerListProps) => {
+  const {
+    addPlayer,
+    removePlayer,
+    editPlayer,
+    activePlayers,
+    canAddPlayer,
+    canRemovePlayer,
+    playerType,
+  } = props;
   const [addPlayerVisible, setAddPlayerVisible] = useState<boolean>(false);
   const [editPlayerVisible, setEditPlayerVisible] = useState<
     PlayerGeneralProps | undefined
   >();
   const [alert, setAlert] = useState<string | undefined>();
 
-  function addPlayer(name: string) {
-    addAlert(props.addPlayer(name));
+  function addPlayerLocal(name: string) {
+    addAlert(addPlayer(name));
     setAddPlayerVisible(false);
   }
 
-  function removePlayer(name: string) {
-    props.removePlayer(name);
+  function removePlayerLocal(name: string) {
+    removePlayer(name);
+  }
+
+  function editPlayerLocal(currentName: string, name: string) {
+    if (name.trim() === "") return "Name cannot be empty.";
+    return editPlayer(currentName, name);
   }
 
   function addAlert(newAlert?: string) {
@@ -57,18 +72,20 @@ export const PlayerList = (props: PlayerListProps) => {
         </Alert>
       )}
       <h5>
-        Player Info<span> </span>
-        <Button
-          variant="link"
-          disabled={!props.canAddPlayer}
-          onClick={() => {
-            setAddPlayerVisible(true);
-          }}
-        >
-          <PersonAdd />
-        </Button>
+        <Stack direction="horizontal" gap={1}>
+          {playerType === "teams" ? "Team Info" : "Player Info"}
+          <Button
+            variant="link"
+            disabled={!canAddPlayer}
+            onClick={() => {
+              setAddPlayerVisible(true);
+            }}
+          >
+            <PersonAdd />
+          </Button>
+        </Stack>
       </h5>
-      {props.activePlayers.map((x) => (
+      {activePlayers.map((x) => (
         <div
           key={x.Name}
           style={{ paddingRight: "24px", marginBottom: "10px" }}
@@ -82,16 +99,16 @@ export const PlayerList = (props: PlayerListProps) => {
             >
               <Pencil />
             </Button>
-            {props.canRemovePlayer && (
+            {canRemovePlayer && (
               <Button
                 size="sm"
                 variant="link"
-                onClick={() => removePlayer(x.Name)}
+                onClick={() => removePlayerLocal(x.Name)}
               >
                 <XCircle color="red" />
               </Button>
             )}
-            {!props.canRemovePlayer && (
+            {!canRemovePlayer && (
               <Button size="sm" variant="link" disabled>
                 <XCircle color="grey" />
               </Button>
@@ -102,14 +119,14 @@ export const PlayerList = (props: PlayerListProps) => {
       <AddNewPlayer
         show={addPlayerVisible}
         onClose={() => setAddPlayerVisible(false)}
-        onSubmit={(name: string) => addPlayer(name)}
+        onSubmit={(name: string) => addPlayerLocal(name)}
       />
       <EditExistingPlayer
         currentName={editPlayerVisible?.Name ?? ""}
         show={!!editPlayerVisible}
         onClose={() => setEditPlayerVisible(undefined)}
         onSubmit={(name: string) => {
-          addAlert(props.editPlayer(editPlayerVisible?.Name ?? "", name));
+          addAlert(editPlayerLocal(editPlayerVisible?.Name ?? "", name));
           setEditPlayerVisible(undefined);
         }}
       />

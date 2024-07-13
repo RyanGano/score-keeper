@@ -8,10 +8,15 @@ import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
 import { NavLink } from "react-bootstrap";
 import { version } from "./version";
+// import {
+//   FirstHandLastHand,
+//   gameName as firstHandLastHandGameName,
+// } from "./games/first-hand-last-hand/first-hand-last-hand";
 
 export enum Game {
   SkullKing,
   RollThroughTheAges,
+  // FirstHandLastHand,
 }
 
 export enum GameStatus {
@@ -112,6 +117,14 @@ function App() {
                 <InfoCircle />
               </NavLink>
             </Stack>
+            {/* <Stack direction="horizontal" gap={0}>
+              <Button
+                variant="link"
+                onClick={() => setActiveGame(Game.FirstHandLastHand)}
+              >
+                {firstHandLastHandGameName}
+              </Button>
+            </Stack> */}
           </Stack>
         </Offcanvas.Body>
       </Offcanvas>
@@ -129,6 +142,11 @@ function App() {
           onGameStatusChanged={(status) => setGameStatus(status)}
         />
       )}
+      {/* {game === Game.FirstHandLastHand && (
+        <FirstHandLastHand
+          onGameStatusChanged={(status) => setGameStatus(status)}
+        />
+      )} */}
     </div>
   );
 }
