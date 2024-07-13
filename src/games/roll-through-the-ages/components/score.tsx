@@ -9,7 +9,8 @@ export interface ScoreProps {
 }
 
 export const Score = (props: ScoreProps) => {
-  const subtotal = props.development + props.monument + props.bonus;
+  const { development, monument, bonus, disaster } = props;
+  const subtotal = development + monument + bonus;
   const total = {
     minWidth: 40,
   };
@@ -18,19 +19,19 @@ export const Score = (props: ScoreProps) => {
       <h5>Score</h5>
       <Stack direction="horizontal" gap={1}>
         <CenteredTextBoxWithBorder style={total}>
-          {props.development}
+          {development}
         </CenteredTextBoxWithBorder>
         Developments
       </Stack>
       <Stack direction="horizontal" gap={1}>
         <CenteredTextBoxWithBorder style={total}>
-          {props.monument}
+          {monument}
         </CenteredTextBoxWithBorder>
         + Monuments
       </Stack>
       <Stack direction="horizontal" gap={1}>
         <CenteredTextBoxWithBorder style={total}>
-          {props.bonus}
+          {bonus}
         </CenteredTextBoxWithBorder>
         + Bonuses
       </Stack>
@@ -42,13 +43,13 @@ export const Score = (props: ScoreProps) => {
       </Stack>
       <Stack direction="horizontal" gap={1}>
         <CenteredTextBoxWithBorder style={total}>
-          {props.disaster}
+          {disaster}
         </CenteredTextBoxWithBorder>
         - Disasters
       </Stack>
       <Stack direction="horizontal" gap={1}>
         <CenteredTextBoxWithBorder style={total}>
-          {subtotal - props.disaster}
+          {subtotal - disaster}
         </CenteredTextBoxWithBorder>
         = Total
       </Stack>
