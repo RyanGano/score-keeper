@@ -145,9 +145,10 @@ export const Developments = (props: DevelopmentsProps) => {
   );
 
   useEffect(() => {
-    if (cityCount !== props.cityCount) setCityCount(cityCount);
+    if (cityCount !== props.cityCount) setCityCount(props.cityCount);
 
-    if (monumentCount !== props.monumentCount) setMonumentCount(monumentCount);
+    if (monumentCount !== props.monumentCount)
+      setMonumentCount(props.monumentCount);
 
     updateDevelopmentScore(checkedDevelopments);
   }, [
