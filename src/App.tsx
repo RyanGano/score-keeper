@@ -103,6 +103,14 @@ function App() {
                 <InfoCircle />
               </NavLink>
             </Stack>
+            <NavLink
+              target="_blank"
+              href="https://zealous-plant-0d4e2e31e.5.azurestaticapps.net/"
+            >
+              <Button variant="link" style={{ marginLeft: 16 }}>
+                Try the new app here
+              </Button>
+            </NavLink>
             <Stack direction="horizontal" gap={0}>
               <Button
                 variant="link"
