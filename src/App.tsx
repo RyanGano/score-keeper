@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SkullKing } from "./games/skull-king/skull-king";
 import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
 import Button from "react-bootstrap/esm/Button";
@@ -45,9 +45,15 @@ function App() {
       : null;
   }, [gameStatus]);
 
-  window.onbeforeunload = function () {
-    return showOptionalPopup();
-  };
+  useEffect(() => {
+    window.onbeforeunload = function () {
+      return showOptionalPopup();
+    };
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [showOptionalPopup]);
 
   const leftNav = (
     <>
