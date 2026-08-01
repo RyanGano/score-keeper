@@ -9,6 +9,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
