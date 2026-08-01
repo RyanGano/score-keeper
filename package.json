@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
-    "react": "^18.2.0",
+    "react": "^19",
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-icons": "^1.10.2",
     "react-cookie": "^8",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19",
     "styled-components": "^6"
   },
   "devDependencies": {
@@ -23,8 +23,8 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.5",
     "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^10",
