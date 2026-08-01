@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import * as React from "react";
 import { useState } from "react";
 import Stack from "react-bootstrap/esm/Stack";

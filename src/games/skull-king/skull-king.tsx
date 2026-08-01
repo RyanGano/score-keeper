@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import type { PlayerGeneralProps } from "../../components/player-general";

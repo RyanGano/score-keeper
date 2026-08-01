@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import * as React from "react";
 import { GameHeader } from "../../common/common-styles";
 import { useCallback, useEffect, useState } from "react";
