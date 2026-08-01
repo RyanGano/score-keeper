@@ -4,17 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **yarn** (yarn.lock is committed). Create React App (react-scripts 5) toolchain.
+Package manager is **yarn** (yarn.lock is committed; `packageManager` pins the version). Vite 8 toolchain. Node 22+ (`.nvmrc`, `engines`).
 
-- `yarn start` — dev server at localhost:3000
-- `yarn build` — production build into `build/` (this is what Azure Static Web Apps deploys)
-- `yarn test` — Jest in watch mode via react-scripts
-- `yarn test --watchAll=false -t "name of test"` — run a single test non-interactively
+- `yarn start` — Vite dev server at localhost:3000
+- `yarn build` — `tsc --noEmit && vite build`, production build into `build/` (this is what Azure Static Web Apps deploys)
+- `yarn preview` — serve the built `build/` locally
+- `yarn test` — Vitest in watch mode; `yarn test:ci` for a single non-interactive run
+- `yarn test:ci -t "name of test"` — run a single test
+- `yarn coverage` — Vitest with v8 coverage
+- `yarn lint` — ESLint 10 flat config (`eslint.config.js`)
 - `yarn major` / `yarn minor` / `yarn patch` — bumps the version in `package.json` **and** regenerates `src/version.ts` (via `yarn store-version` → genversion). Never hand-edit `src/version.ts`; the version string is rendered in the app's nav menu.
 
-There is no lint script; ESLint runs through react-scripts (`eslintConfig` in package.json extends `react-app`). Type checking happens as part of `start`/`build` — tsconfig is `strict` with `noEmit`.
+Type checking is part of `build` (Vite's esbuild transform does not type-check, so `tsc --noEmit` runs first). tsconfig is `strict` plus `noImplicitOverride`, `noPropertyAccessFromIndexSignature`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax` — mark type-only imports with `import type`.
 
-`src/__tests__/` exists but is currently empty — there are no tests in the repo yet.
+**`yarn lint` currently exits non-zero** on 8 pre-existing `react-hooks` errors (setState-inside-useEffect in roll-through-the-ages and skull-king-player-status-card). It is intentionally not wired into CI.
+
+`src/__tests__/` exists but is currently empty — **there are no tests in the repo**. The Vitest harness is wired and working (jsdom, testing-library, a `window.matchMedia` stub in `src/setup-tests.ts` that react-bootstrap's Offcanvas needs), so new tests only need writing. `vitest.passWithNoTests` keeps CI green until then.
+
+## CI
+
+- `.github/workflows/ci.yml` — build + test on pushes and PRs to `main`.
+- `.github/workflows/build-main.yml` — Azure Static Web Apps deploy (see below).
 
 ## Deployment
 
@@ -24,11 +34,11 @@ There is no lint script; ESLint runs through react-scripts (`eslintConfig` in pa
 
 Single-page React app, no router. No backend — everything is client-side state.
 
-**Game selection lives in [src/App.tsx](src/App.tsx).** Adding a game means: add a member to the `Game` enum, add a `<Button>` in the Offcanvas menu that calls `setActiveGame`, and render the game component conditionally at the bottom. `first-hand-last-hand` is fully written but *commented out* in App.tsx in three places — uncomment all three to re-enable it.
+**Game selection lives in [src/App.tsx](src/App.tsx).** Adding a game means: add a member to the `Game` const object (and its derived union type), add a `<Button>` in the Offcanvas menu that calls `setActiveGame`, and render the game component conditionally at the bottom. `first-hand-last-hand` is fully written but *commented out* in App.tsx in three places — uncomment all three to re-enable it.
 
-**Game status flows child → parent.** Each game component takes `onGameStatusChanged: (status: GameStatus) => void` and reports `NotStarted` / `Active` / `Complete`. App.tsx uses that solely to hook `window.onbeforeunload` and warn before losing an in-progress game. Games with their own richer state machine (e.g. `SkullKingGameStatus`: GameNotStarted → BiddingOpen → BiddingClosed → GameOver / EditingPastItem) map it down to `GameStatus` in a `useEffect`.
+**Game status flows child → parent.** Each game component takes `onGameStatusChanged: (status: GameStatus) => void` and reports `NotStarted` / `Active` / `Complete`. App.tsx uses that solely to hook `window.onbeforeunload` (in a `useEffect`) and warn before losing an in-progress game. Games with their own richer state machine (e.g. `SkullKingGameStatus`: GameNotStarted → BiddingOpen → BiddingClosed → GameOver / EditingPastItem) map it down to `GameStatus` in a `useEffect`.
 
-**Player persistence is cookies only, one cookie per game**, named `players_<abbrev>` (`players_sk`, `players_rtta`, `players_fhlh`). The value is player names joined by `|`. Scores are never persisted — refreshing loses the game, which is why the beforeunload warning exists. The read pattern is an unconditional `if (!cookies.x && players.length === 0) setPlayers(defaults)` in the render body (not an effect) — this is the established idiom across all three games.
+**Player persistence is cookies only, one cookie per game**, named `players_<abbrev>` (`players_sk`, `players_rtta`, `players_fhlh`). The value is player names joined by `|`. `useCookies` comes from `react-cookie` (v8), which requires the `<CookiesProvider>` that wraps `<App />` in [src/index.tsx](src/index.tsx). Scores are never persisted — refreshing loses the game, which is why the beforeunload warning exists. The read pattern is an unconditional `if (!cookies.x && players.length === 0) setPlayers(defaults)` in the render body (not an effect) — this is the established idiom across all three games.
 
 **Shared plumbing in [src/common/](src/common/) and [src/components/](src/components/):**
 - `player-utility.ts` — `addPlayer`/`editPlayer` take `(players, setPlayers, setCookie, ...)` and return an error string on duplicate names; each game wraps these with its own cookie name. `removePlayer` is *not* shared and is reimplemented per game.
