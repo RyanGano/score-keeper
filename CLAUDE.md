@@ -22,7 +22,7 @@ There is no lint script; ESLint runs through react-scripts (`eslintConfig` in pa
 
 ## Architecture
 
-Single-page React app, no router (react-router is a dependency but unused). No backend — everything is client-side state.
+Single-page React app, no router. No backend — everything is client-side state.
 
 **Game selection lives in [src/App.tsx](src/App.tsx).** Adding a game means: add a member to the `Game` enum, add a `<Button>` in the Offcanvas menu that calls `setActiveGame`, and render the game component conditionally at the bottom. `first-hand-last-hand` is fully written but *commented out* in App.tsx in three places — uncomment all three to re-enable it.
 
