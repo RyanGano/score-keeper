@@ -81,13 +81,15 @@ export const getCurrentScores = (
   return scores;
 };
 
-export enum SkullKingGameStatus {
-  GameNotStarted,
-  BiddingOpen,
-  BiddingClosed,
-  GameOver,
-  EditingPastItem,
-}
+export const SkullKingGameStatus = {
+  GameNotStarted: "GameNotStarted",
+  BiddingOpen: "BiddingOpen",
+  BiddingClosed: "BiddingClosed",
+  GameOver: "GameOver",
+  EditingPastItem: "EditingPastItem",
+} as const;
+export type SkullKingGameStatus =
+  (typeof SkullKingGameStatus)[keyof typeof SkullKingGameStatus];
 
 export interface SkullKingProps {
   onGameStatusChanged: (status: GameStatus) => void;
@@ -117,7 +119,7 @@ export const SkullKing = (props: SkullKingProps) => {
   const [minPlayers] = useState<number>(2);
 
   useEffect(() => {
-    let newStatus = GameStatus.NotStarted;
+    let newStatus: GameStatus = GameStatus.NotStarted;
 
     switch (gameStatus) {
       case SkullKingGameStatus.GameNotStarted:

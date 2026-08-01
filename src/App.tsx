@@ -13,17 +13,19 @@ import { version } from "./version";
 //   gameName as firstHandLastHandGameName,
 // } from "./games/first-hand-last-hand/first-hand-last-hand";
 
-export enum Game {
-  SkullKing,
-  RollThroughTheAges,
-  // FirstHandLastHand,
-}
+export const Game = {
+  SkullKing: "SkullKing",
+  RollThroughTheAges: "RollThroughTheAges",
+  // FirstHandLastHand: "FirstHandLastHand",
+} as const;
+export type Game = (typeof Game)[keyof typeof Game];
 
-export enum GameStatus {
-  Active,
-  Complete,
-  NotStarted,
-}
+export const GameStatus = {
+  Active: "Active",
+  Complete: "Complete",
+  NotStarted: "NotStarted",
+} as const;
+export type GameStatus = (typeof GameStatus)[keyof typeof GameStatus];
 
 function App() {
   const [game, setGame] = useState<Game | undefined>();

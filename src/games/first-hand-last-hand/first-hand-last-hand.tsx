@@ -40,7 +40,7 @@ const maxTeams = 3;
 const minTeams = 2;
 
 export const FirstHandLastHand = (_props: FirstHandLastHandProps) => {
-  const [gameStatus, setGameStatus] = useState(GameStatus.NotStarted);
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.NotStarted);
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState(
     players.length === 0
