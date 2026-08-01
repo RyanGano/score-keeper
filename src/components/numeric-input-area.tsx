@@ -3,11 +3,11 @@ import { TextInputArea } from "./text-input-area";
 
 export interface NumericInputAreaProps {
   setNewValue: (vewValue: number) => void;
-  startingValue?: number;
-  placeholder?: string;
+  startingValue?: number | undefined;
+  placeholder?: string | undefined;
   width: number;
-  onEnter?: () => void;
-  autoFocus?: boolean;
+  onEnter?: (() => void) | undefined;
+  autoFocus?: boolean | undefined;
 }
 
 export const NumericInputArea = (props: NumericInputAreaProps) => {
