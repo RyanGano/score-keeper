@@ -45,6 +45,6 @@ Scoring rules are pure functions kept next to the game — e.g. `calculateRoundS
 ## Conventions
 
 - UI is react-bootstrap; import from the `esm` paths the codebase already uses (`react-bootstrap/esm/Button`), icons from `react-bootstrap-icons`.
-- Layout uses `Stack` with `gap`; one-off styling is inline `style={{}}`. `styled-components` is only used for the few shared styles in `common-styles.tsx` (`types.ts` at the repo root exists solely to declare that module).
+- Layout uses `Stack` with `gap`; one-off styling is inline `style={{}}`. `styled-components` is only used for the few shared styles in `common-styles.tsx`.
 - Components are arrow-function consts exported by name, with an exported `<Name>Props` interface, destructured from `props` at the top of the body.
 - Skull King colors are exported constants from `skull-king.tsx` (`defaultBlueColor`, `enabledButtonColor`, …) — reuse them instead of new literals.
