@@ -4,12 +4,12 @@ import { useState } from "react";
 
 export interface TextInputAreaProps {
   setNewValue: (vewValue: string) => void;
-  startingValue?: string;
-  placeholder?: string;
+  startingValue?: string | undefined;
+  placeholder?: string | undefined;
   width: number;
-  onEnter?: () => void;
-  updateOnlyOnBlur?: boolean;
-  autoFocus?: boolean;
+  onEnter?: (() => void) | undefined;
+  updateOnlyOnBlur?: boolean | undefined;
+  autoFocus?: boolean | undefined;
 }
 
 export const TextInputArea = (props: TextInputAreaProps) => {

@@ -14,12 +14,12 @@ import { DashSquareFill, PlusSquareFill } from "react-bootstrap-icons";
 
 export interface SkullKingPlayerStatusCardProps {
   player: SkullKingPlayerState;
-  dealer?: boolean;
-  forceShowUpdateUI?: boolean;
+  dealer?: boolean | undefined;
+  forceShowUpdateUI?: boolean | undefined;
   turnPhase: SkullKingGameStatus;
-  onCancelledAutoUpdate?: () => void;
-  onBidChange?: (newBid: number) => void;
-  onScoreChange?: (taken: number, bonus: number) => void;
+  onCancelledAutoUpdate?: (() => void) | undefined;
+  onBidChange?: ((newBid: number) => void) | undefined;
+  onScoreChange?: ((taken: number, bonus: number) => void) | undefined;
 }
 
 export const SkullKingPlayerStatusCard = (
