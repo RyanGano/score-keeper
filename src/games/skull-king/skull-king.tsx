@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import { PlayerGeneralProps } from "../../components/player-general";
+import type { PlayerGeneralProps } from "../../components/player-general";
 import {
-  SkullKingRoundInfo,
+  type SkullKingRoundInfo,
   SkullKingScoreBox,
   defaultSkullKingRoundInfo,
   skullKingScoreBoxWidth,
@@ -14,7 +14,7 @@ import {
   Pencil,
 } from "react-bootstrap-icons";
 import {
-  SkullKingCardInclusions,
+  type SkullKingCardInclusions,
   SkullKingIncludedCards,
   defaultSkullKingIncludedCards,
   getCardCount,

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SimpleModal } from "../../common/simple-modal";
 import Stack from "react-bootstrap/esm/Stack";
 import { PlayerList } from "../../common/player-list";
-import { PlayerGeneralProps } from "../../components/player-general";
+import type { PlayerGeneralProps } from "../../components/player-general";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import { useCookies } from "react-cookie";
 import Button from "react-bootstrap/esm/Button";

@@ -6,7 +6,7 @@ import Button from "react-bootstrap/esm/Button";
 import { Gear } from "react-bootstrap-icons";
 import { SimpleModal } from "../../common/simple-modal";
 import { useState } from "react";
-import { PlayerGeneralProps } from "../../components/player-general";
+import type { PlayerGeneralProps } from "../../components/player-general";
 import { useCookies } from "react-cookie";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import { PlayerList } from "../../common/player-list";

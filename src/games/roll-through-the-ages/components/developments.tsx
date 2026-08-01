@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import Stack from "react-bootstrap/esm/Stack";
-import { Development, DevelopmentProps } from "./development";
+import { Development, type DevelopmentProps } from "./development";
 
 const defaultDevelopmentProps: DevelopmentProps[] = [
   {

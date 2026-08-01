@@ -1,7 +1,7 @@
 import Stack from "react-bootstrap/esm/Stack";
 import {
   SkullKingGameStatus,
-  SkullKingPlayerState,
+  type SkullKingPlayerState,
   calculateRoundScore,
   defaultBlueColor,
   defaultGreenColor,
