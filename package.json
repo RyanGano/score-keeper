@@ -39,7 +39,9 @@
     "vitest": "^4.1.10"
   },
   "scripts": {
+    "preinstall": "node scripts/ensure-npm.cjs",
     "start": "vite",
+    "prebuild": "node scripts/ensure-npm.cjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
