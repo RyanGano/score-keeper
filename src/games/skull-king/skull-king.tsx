@@ -24,7 +24,7 @@ import { NumericInputArea } from "../../components/numeric-input-area";
 import { ResetGame } from "../../common/reset-game";
 import { PlayerList } from "../../common/player-list";
 import { SimpleModal } from "../../common/simple-modal";
-import useCookies from "react-cookie/cjs/useCookies";
+import { useCookies } from "react-cookie";
 import { GameHeader } from "../../common/common-styles";
 import { addPlayer, editPlayer } from "../../common/player-utility";
 import { GameStatus } from "../../App";

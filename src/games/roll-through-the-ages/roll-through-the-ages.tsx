@@ -6,7 +6,7 @@ import Stack from "react-bootstrap/esm/Stack";
 import { PlayerList } from "../../common/player-list";
 import { PlayerGeneralProps } from "../../components/player-general";
 import { addPlayer, editPlayer } from "../../common/player-utility";
-import useCookies from "react-cookie/cjs/useCookies";
+import { useCookies } from "react-cookie";
 import Button from "react-bootstrap/esm/Button";
 import { Gear, QuestionCircle, StarFill } from "react-bootstrap-icons";
 import { ResetGame } from "../../common/reset-game";
