@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "npm@10.9.4",
   "engines": {
     "node": ">=22"
   },
@@ -46,9 +46,10 @@
     "test": "vitest",
     "test:ci": "vitest run",
     "coverage": "vitest run --coverage",
-    "major": "yarn version --major && yarn store-version",
-    "minor": "yarn version --minor && yarn store-version",
-    "patch": "yarn version --patch && yarn store-version",
-    "store-version": "yarn genversion --es6 --semi src/version.ts"
+    "major": "npm version major",
+    "minor": "npm version minor",
+    "patch": "npm version patch",
+    "version": "npm run store-version && git add src/version.ts",
+    "store-version": "genversion --es6 --semi src/version.ts"
   }
 }
