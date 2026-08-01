@@ -71,7 +71,7 @@ export const SkullKingPlayerStatusCard = (
             fontWeight: 800,
           }}
           onClick={
-            !!onBidChange
+            onBidChange
               ? () => {
                   player.currentRound!.bid = i;
                   setShowBidUI(false);
@@ -200,10 +200,10 @@ export const SkullKingPlayerStatusCard = (
           margin: 6,
           padding: 12,
           backgroundColor: dealer
-            ? !!onBidChange
+            ? onBidChange
               ? defaultGreenColor
               : defaultBlueColor
-            : !!onBidChange
+            : onBidChange
             ? defaultBlueColor
             : defaultGreenColor,
           borderRadius: 12,
@@ -211,9 +211,9 @@ export const SkullKingPlayerStatusCard = (
           minHeight: 100,
         }}
         onClick={() =>
-          !!onBidChange
+          onBidChange
             ? setShowBidUI(true)
-            : !!onScoreChange
+            : onScoreChange
             ? setShowScoreUI(true)
             : undefined
         }

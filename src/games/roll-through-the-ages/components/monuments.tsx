@@ -9,14 +9,14 @@ export const defaultMonuments = [
     scores: [1, 0],
     cost: 3,
     shape: [1, 2],
-    enabled: (playerCount: number) => true,
+    enabled: (_playerCount: number) => true,
   },
   {
     name: "Stone Circle",
     scores: [2, 1],
     cost: 5,
     shape: [2, 3],
-    enabled: (playerCount: number) => true,
+    enabled: (_playerCount: number) => true,
   },
   {
     name: "Temple",
@@ -44,14 +44,14 @@ export const defaultMonuments = [
     scores: [10, 5],
     cost: 13,
     shape: [13],
-    enabled: (playerCount: number) => true,
+    enabled: (_playerCount: number) => true,
   },
   {
     name: "Obelisk",
     scores: [6, 3],
     cost: 9,
     shape: [1, 1, 1, 1, 1, 1, 1, 1, 1],
-    enabled: (playerCount: number) => true,
+    enabled: (_playerCount: number) => true,
   },
 ];
 

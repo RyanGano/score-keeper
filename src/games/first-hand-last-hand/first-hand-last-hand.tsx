@@ -39,7 +39,7 @@ const defaultPlayers: PlayerGeneralProps[] = [
 const maxTeams = 3;
 const minTeams = 2;
 
-export const FirstHandLastHand = (props: FirstHandLastHandProps) => {
+export const FirstHandLastHand = (_props: FirstHandLastHandProps) => {
   const [gameStatus, setGameStatus] = useState(GameStatus.NotStarted);
   const [players, setPlayers] = useState<PlayerGeneralProps[]>([]);
   const [showGameSettings, setShowGameSettings] = useState(
@@ -213,7 +213,7 @@ interface PlayerRoundProps {
 }
 
 const PlayerRound = (props: PlayerRoundProps) => {
-  const { startingScore, bookScore, cardScore } = props;
+  const { startingScore, cardScore } = props;
 
   return (
     <Stack>
