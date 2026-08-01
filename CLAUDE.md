@@ -4,20 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **yarn** (yarn.lock is committed; `packageManager` pins the version). Vite 8 toolchain. Node 22+ (`.nvmrc`, `engines`).
+Package manager is **npm** — `package-lock.json` is committed and is the only lockfile. Vite 8 toolchain. Node 22+ (`.nvmrc`, `engines`).
 
-- `yarn start` — Vite dev server at localhost:3000
-- `yarn build` — `tsc --noEmit && vite build`, production build into `build/` (this is what Azure Static Web Apps deploys)
-- `yarn preview` — serve the built `build/` locally
-- `yarn test` — Vitest in watch mode; `yarn test:ci` for a single non-interactive run
-- `yarn test:ci -t "name of test"` — run a single test
-- `yarn coverage` — Vitest with v8 coverage
-- `yarn lint` — ESLint 10 flat config (`eslint.config.js`)
-- `yarn major` / `yarn minor` / `yarn patch` — bumps the version in `package.json` **and** regenerates `src/version.ts` (via `yarn store-version` → genversion). Never hand-edit `src/version.ts`; the version string is rendered in the app's nav menu.
+> **Do not use yarn or pnpm.** `scripts/ensure-npm.cjs` runs from `preinstall`/`prebuild` and from `.yarnrc`'s `yarn-path`, and will fail the command with an explanation. The repo moved off yarn classic because it is unmaintained and floods the build log with `DEP0169`/`DEP0040` deprecation warnings on Node 22+, plus a spurious "Workspaces can only be enabled in private projects" for every dependency whose manifest has a `workspaces` key.
+
+- `npm ci` — exact install from the lockfile (what CI uses); `npm install` when changing dependencies
+- `npm start` — Vite dev server at localhost:3000
+- `npm run build` — `tsc --noEmit && vite build`, production build into `build/` (this is what Azure Static Web Apps deploys)
+- `npm run preview` — serve the built `build/` locally
+- `npm test` — Vitest in watch mode; `npm run test:ci` for a single non-interactive run
+- `npm run test:ci -- -t "name of test"` — run a single test (note the `--` before Vitest's own flags)
+- `npm run coverage` — Vitest with v8 coverage
+- `npm run lint` — ESLint 10 flat config (`eslint.config.js`)
+- `npm run major` / `minor` / `patch` — `npm version <type>`, which bumps `package.json`, then the `version` lifecycle hook regenerates `src/version.ts` (genversion) and stages it so it lands in the same commit, and npm tags it. Never hand-edit `src/version.ts`; the version string is rendered in the app's nav menu.
 
 Type checking is part of `build` (Vite's esbuild transform does not type-check, so `tsc --noEmit` runs first). tsconfig is `strict` plus `noImplicitOverride`, `noPropertyAccessFromIndexSignature`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax` — mark type-only imports with `import type`.
 
-**`yarn lint` currently exits non-zero** on 8 pre-existing `react-hooks` errors (setState-inside-useEffect in roll-through-the-ages and skull-king-player-status-card). It is intentionally not wired into CI.
+**`npm run lint` currently exits non-zero** on 8 pre-existing `react-hooks` errors (setState-inside-useEffect in roll-through-the-ages and skull-king-player-status-card). It is intentionally not wired into CI.
 
 `src/__tests__/` exists but is currently empty — **there are no tests in the repo**. The Vitest harness is wired and working (jsdom, testing-library, a `window.matchMedia` stub in `src/setup-tests.ts` that react-bootstrap's Offcanvas needs), so new tests only need writing. `vitest.passWithNoTests` keeps CI green until then.
 
