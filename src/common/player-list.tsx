@@ -3,7 +3,7 @@ import Button from "react-bootstrap/esm/Button";
 import { useState } from "react";
 import {
   PlayerGeneral,
-  PlayerGeneralProps,
+  type PlayerGeneralProps,
 } from "../components/player-general";
 import Stack from "react-bootstrap/esm/Stack";
 import { AddNewPlayer } from "../components/add-new-player";

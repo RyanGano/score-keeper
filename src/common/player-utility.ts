@@ -1,4 +1,4 @@
-import { PlayerGeneralProps } from "../components/player-general";
+import type { PlayerGeneralProps } from "../components/player-general";
 
 export function addPlayer(
   players: PlayerGeneralProps[],
