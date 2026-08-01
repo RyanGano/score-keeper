@@ -92,7 +92,7 @@ export const Monument = (props: MonumentProps) => {
     setOthersCompletedFirst(!othersCompletedFirst);
   }
 
-  const backgroundColor = isCompleted(blocks) ? "#00aa00" : null;
+  const backgroundColor = isCompleted(blocks) ? "#00aa00" : undefined;
 
   const nonSelectedStyle = {
     paddingLeft: 2,
