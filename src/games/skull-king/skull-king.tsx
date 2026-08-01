@@ -69,9 +69,9 @@ export const getCurrentScores = (
   whichRound: number,
   playerStates: SkullKingPlayerState[]
 ): number[] => {
-  let scores = playerStates.map((x) => 0);
+  const scores = playerStates.map(() => 0);
 
-  for (var i = 0; i < whichRound; i++) {
+  for (let i = 0; i < whichRound; i++) {
     const roundInfos = getRoundInfos(i, playerStates);
     playerStates.map(
       (x, index) => (scores[index] += calculateRoundScore(roundInfos[index]))
@@ -151,7 +151,7 @@ export const SkullKing = (props: SkullKingProps) => {
     setShowGameSettings(false);
     if (players?.length !== 0) {
       setPlayerStates(
-        players.map((x, index) => {
+        players.map((x) => {
           return {
             playerInfo: x,
             roundScores: [],
@@ -175,7 +175,7 @@ export const SkullKing = (props: SkullKingProps) => {
     currentScores: number[],
     displayFullInfo: boolean
   ): JSX.Element {
-    let scores: JSX.Element[] = [];
+    const scores: JSX.Element[] = [];
     info.forEach((x, index) => {
       scores.push(
         <SkullKingScoreBox
@@ -286,9 +286,9 @@ export const SkullKing = (props: SkullKingProps) => {
   }
 
   function getAllScores(): JSX.Element[] {
-    let scores: JSX.Element[] = [];
+    const scores: JSX.Element[] = [];
     if (round !== 0) {
-      for (var i: number = 0; i < round - 1; i++) {
+      for (let i: number = 0; i < round - 1; i++) {
         const newKey = `$item_${i}_${round}`;
         scores.push(
           <div key={newKey}>
@@ -330,12 +330,12 @@ export const SkullKing = (props: SkullKingProps) => {
           : {
               playerInfo: x.playerInfo,
               roundScores: [...x.roundScores],
-              currentRound: !!x.editRound
+              currentRound: x.editRound
                 ? x.currentRound
                 : x.currentRound !== null
                 ? buildRoundInfo(x.currentRound)
                 : { ...defaultSkullKingRoundInfo },
-              editRound: !!x.editRound
+              editRound: x.editRound
                 ? x.editRound !== null
                   ? buildRoundInfo(x.editRound)
                   : { ...defaultSkullKingRoundInfo }
@@ -448,7 +448,11 @@ export const SkullKing = (props: SkullKingProps) => {
         : SkullKingGameStatus.GameOver
     );
     setRound(round + 1);
-    round !== 10 ? addNewRoundInfo() : finishGame();
+    if (round !== 10) {
+      addNewRoundInfo();
+    } else {
+      finishGame();
+    }
   }
 
   function addPlayerLocal(newName: string) {
@@ -765,12 +769,13 @@ export const SkullKing = (props: SkullKingProps) => {
                               : y
                           )
                         );
-                        currentAutoFill &&
+                        if (currentAutoFill) {
                           setCurrentAutoFill(
                             index < playerStates.length
                               ? playerStates[index + 1]
                               : undefined
                           );
+                        }
                       }
                     : undefined
                 }
@@ -792,12 +797,13 @@ export const SkullKing = (props: SkullKingProps) => {
                           )
                         );
 
-                        currentAutoFill &&
+                        if (currentAutoFill) {
                           setCurrentAutoFill(
                             index < playerStates.length
                               ? playerStates[index + 1]
                               : undefined
                           );
+                        }
                       }
                     : undefined
                 }

@@ -253,7 +253,7 @@ export const RollThroughTheAges = (props: RollThroughTheAgesProps) => {
     <Stack gap={4}>
       <PlayerList
         addPlayer={addPlayerLocal}
-        removePlayer={(_) => {}}
+        removePlayer={() => {}}
         editPlayer={editPlayerLocal}
         activePlayers={players}
         canAddPlayer={players.length < maxPlayers}
@@ -271,17 +271,17 @@ export const RollThroughTheAges = (props: RollThroughTheAgesProps) => {
         <CheckboxButton
           text="2"
           selected={numberOfPlayers === 2}
-          onChange={(_) => setNumberOfPlayers(2)}
+          onChange={() => setNumberOfPlayers(2)}
         />
         <CheckboxButton
           text="3"
           selected={numberOfPlayers === 3}
-          onChange={(_) => setNumberOfPlayers(3)}
+          onChange={() => setNumberOfPlayers(3)}
         />
         <CheckboxButton
           text="4"
           selected={numberOfPlayers === 4}
-          onChange={(_) => setNumberOfPlayers(4)}
+          onChange={() => setNumberOfPlayers(4)}
         />
       </Stack>
     </Stack>

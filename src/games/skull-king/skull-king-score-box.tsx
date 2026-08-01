@@ -33,7 +33,7 @@ export interface SkullKingScoreBoxProps {
 
 export const skullKingScoreBoxWidth = 150;
 
-function validateSkullKingRoundInfo(info: SkullKingRoundInfo) {
+function validateSkullKingRoundInfo(_info: SkullKingRoundInfo) {
   // if (info.id === "") throw new Error(`InvalidId: ${info}`);
 }
 
