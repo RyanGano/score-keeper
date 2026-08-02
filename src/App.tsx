@@ -113,7 +113,7 @@ function App() {
             </Stack>
             <NavLink
               target="_blank"
-              href="https://zealous-plant-0d4e2e31e.5.azurestaticapps.net/"
+              href="https://skullk.ing/"
             >
               <Button variant="link" style={{ marginLeft: 16 }}>
                 Try the new app here
