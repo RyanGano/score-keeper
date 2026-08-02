@@ -3,7 +3,7 @@ import { SkullKing } from "./games/skull-king/skull-king";
 import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
 import Button from "react-bootstrap/esm/Button";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
-import { InfoCircle, List } from "react-bootstrap-icons";
+import { Cart, InfoCircle, List } from "react-bootstrap-icons";
 import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
 import { NavLink } from "react-bootstrap";
@@ -26,6 +26,16 @@ export const GameStatus = {
   NotStarted: "NotStarted",
 } as const;
 export type GameStatus = (typeof GameStatus)[keyof typeof GameStatus];
+
+const amazonAssociateTag = "aworldchanger-20";
+
+const amazonProductLink = (asin: string) =>
+  `https://www.amazon.com/dp/${asin}?tag=${amazonAssociateTag}`;
+
+const amazonSearchLink = (search: string) =>
+  `https://www.amazon.com/s?k=${encodeURIComponent(
+    search
+  )}&tag=${amazonAssociateTag}`;
 
 function App() {
   const [game, setGame] = useState<Game | undefined>();
@@ -110,6 +120,14 @@ function App() {
               >
                 <InfoCircle />
               </NavLink>
+              <NavLink
+                target="_blank"
+                rel="noreferrer"
+                title="Buy Skull King on Amazon"
+                href={amazonProductLink("B00CK1EJG8")}
+              >
+                <Cart />
+              </NavLink>
             </Stack>
             <NavLink
               target="_blank"
@@ -132,6 +150,14 @@ function App() {
               >
                 <InfoCircle />
               </NavLink>
+              <NavLink
+                target="_blank"
+                rel="noreferrer"
+                title="Buy Roll Through the Ages on Amazon"
+                href={amazonSearchLink("Roll Through the Ages board game")}
+              >
+                <Cart />
+              </NavLink>
             </Stack>
             {/* <Stack direction="horizontal" gap={0}>
               <Button
@@ -141,6 +167,9 @@ function App() {
                 {firstHandLastHandGameName}
               </Button>
             </Stack> */}
+            <p style={{ fontSize: "8pt", marginTop: 16, marginBottom: 0 }}>
+              As an Amazon Associate I earn from qualifying purchases.
+            </p>
           </Stack>
         </Offcanvas.Body>
       </Offcanvas>
