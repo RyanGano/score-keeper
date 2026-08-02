@@ -125,6 +125,7 @@ function App() {
                 rel="noreferrer"
                 title="Buy Skull King on Amazon"
                 href={amazonProductLink("B00CK1EJG8")}
+                style={{ marginLeft: 8 }}
               >
                 <Cart />
               </NavLink>
@@ -155,6 +156,7 @@ function App() {
                 rel="noreferrer"
                 title="Buy Roll Through the Ages on Amazon"
                 href={amazonSearchLink("Roll Through the Ages board game")}
+                style={{ marginLeft: 8 }}
               >
                 <Cart />
               </NavLink>
