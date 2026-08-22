@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { SkullKing } from "./games/skull-king/skull-king";
 import { RollThroughTheAges } from "./games/roll-through-the-ages/roll-through-the-ages";
+import {
+  GeneralPoints,
+  gameName as generalPointsGameName,
+} from "./games/general-points/general-points";
 import Button from "react-bootstrap/esm/Button";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import { Cart, InfoCircle, List } from "react-bootstrap-icons";
@@ -16,6 +20,7 @@ import { version } from "./version";
 export const Game = {
   SkullKing: "SkullKing",
   RollThroughTheAges: "RollThroughTheAges",
+  GeneralPoints: "GeneralPoints",
   // FirstHandLastHand: "FirstHandLastHand",
 } as const;
 export type Game = (typeof Game)[keyof typeof Game];
@@ -161,6 +166,14 @@ function App() {
                 <Cart />
               </NavLink>
             </Stack>
+            <Stack direction="horizontal" gap={0}>
+              <Button
+                variant="link"
+                onClick={() => setActiveGame(Game.GeneralPoints)}
+              >
+                {generalPointsGameName}
+              </Button>
+            </Stack>
             {/* <Stack direction="horizontal" gap={0}>
               <Button
                 variant="link"
@@ -186,6 +199,11 @@ function App() {
       )}
       {game === Game.RollThroughTheAges && (
         <RollThroughTheAges
+          onGameStatusChanged={(status) => setGameStatus(status)}
+        />
+      )}
+      {game === Game.GeneralPoints && (
+        <GeneralPoints
           onGameStatusChanged={(status) => setGameStatus(status)}
         />
       )}
