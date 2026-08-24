@@ -1,6 +1,5 @@
+import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
-import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
-import Popover from "react-bootstrap/esm/Popover";
 import Stack from "react-bootstrap/esm/Stack";
 import Table from "react-bootstrap/esm/Table";
 import { Pencil } from "react-bootstrap-icons";
@@ -15,15 +14,28 @@ import {
   type FirstHandLastHandTeamState,
 } from "../first-hand-last-hand-scoring";
 
-export interface RoundBreakdownProps {
+const breakdownWidth = 230;
+
+/** Where a breakdown is pinned, and which score it belongs to. */
+export interface BreakdownState {
   teamName: string;
   roundNumber: number;
   round: FirstHandLastHandRound;
+  top: number;
+  left: number;
 }
 
-/** Every line of a round's scoring, kept out of the table until asked for. */
+export interface RoundBreakdownProps {
+  breakdown: BreakdownState;
+}
+
+/**
+ * Every line of a round's scoring, kept out of the table until asked for.
+ * Pinned to the window under the score it explains rather than handed to
+ * react-bootstrap's Overlay, which cannot place itself under React 19.
+ */
 export const RoundBreakdown = (props: RoundBreakdownProps) => {
-  const { teamName, roundNumber, round } = props;
+  const { teamName, roundNumber, round, top, left } = props.breakdown;
 
   const line = (label: string, value: number, bold?: boolean) => (
     <Stack direction="horizontal" gap={3} key={label}>
@@ -43,41 +55,38 @@ export const RoundBreakdown = (props: RoundBreakdownProps) => {
   );
 
   return (
-    // Rendered on the body, and painted here rather than left to the
-    // stylesheet, so it always sits solid above the score pad beneath it.
-    <Popover
+    <div
       style={{
+        position: "fixed",
+        top: top,
+        left: left,
+        width: breakdownWidth,
         zIndex: 2000,
         backgroundColor: "#FFFFFF",
         border: "1px solid #BBBBBB",
         borderRadius: 8,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+        pointerEvents: "none",
       }}
     >
-      <Popover.Header
+      <div
         style={{
+          padding: "6px 10px",
           backgroundColor: "#F0F0F0",
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8,
+          borderBottom: "1px solid #BBBBBB",
         }}
       >
         {`${teamName} — round ${roundNumber}`}
-      </Popover.Header>
-      <Popover.Body
-        style={{
-          backgroundColor: "#FFFFFF",
-          borderBottomLeftRadius: 8,
-          borderBottomRightRadius: 8,
-        }}
-      >
-        <Stack gap={1} style={{ minWidth: 210 }}>
-          {bigPointFields.map((x) => line(x.label, round[x.field]))}
-          {line("Big points", getBigPoints(round), true)}
-          {line("Small points", round.smallPoints)}
-          {line("Round score", getRoundScore(round), true)}
-        </Stack>
-      </Popover.Body>
-    </Popover>
+      </div>
+      <Stack gap={1} style={{ padding: "8px 10px" }}>
+        {bigPointFields.map((x) => line(x.label, round[x.field]))}
+        {line("Big points", getBigPoints(round), true)}
+        {line("Small points", round.smallPoints)}
+        {line("Round score", getRoundScore(round), true)}
+      </Stack>
+    </div>
   );
 };
 
@@ -90,14 +99,37 @@ export const FirstHandLastHandScoreTable = (
   props: FirstHandLastHandScoreTableProps
 ) => {
   const { teamStates, onEditRound } = props;
+  const [breakdown, setBreakdown] = useState<BreakdownState | undefined>();
   const roundCount = teamStates[0]?.rounds.length ?? 0;
 
   if (roundCount === 0) return null;
 
   const runningTotals = teamStates.map(() => 0);
 
+  /** Pins the breakdown under the score it explains, kept inside the window. */
+  function showBreakdown(
+    score: HTMLElement,
+    teamName: string,
+    roundNumber: number,
+    round: FirstHandLastHandRound
+  ) {
+    const rect = score.getBoundingClientRect();
+
+    setBreakdown({
+      teamName,
+      roundNumber,
+      round,
+      top: rect.bottom + 4,
+      left: Math.max(
+        4,
+        Math.min(rect.left, window.innerWidth - breakdownWidth - 4)
+      ),
+    });
+  }
+
   return (
     <div style={{ overflowX: "auto" }}>
+      {breakdown && <RoundBreakdown breakdown={breakdown} />}
       <Table size="sm" bordered style={{ width: "auto" }}>
         <thead>
           <tr>
@@ -111,13 +143,7 @@ export const FirstHandLastHandScoreTable = (
           {Array.from({ length: roundCount }, (_, round) => (
             <tr key={round}>
               <td>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   {round + 1}
                   <Button
                     variant="link"
@@ -141,33 +167,42 @@ export const FirstHandLastHandScoreTable = (
                 runningTotals[index] += roundScore;
                 return (
                   <td key={x.teamInfo.Name}>
-                    <OverlayTrigger
-                      trigger={["hover", "focus"]}
-                      rootClose
-                      placement="bottom"
-                      container={document.body}
-                      overlay={
-                        <RoundBreakdown
-                          teamName={x.teamInfo.Name}
-                          roundNumber={round + 1}
-                          round={roundInfo}
-                        />
+                    <span
+                      tabIndex={0}
+                      aria-label={`Round ${round + 1} score for ${
+                        x.teamInfo.Name
+                      }`}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={(e) =>
+                        showBreakdown(
+                          e.currentTarget,
+                          x.teamInfo.Name,
+                          round + 1,
+                          roundInfo
+                        )
                       }
+                      onFocus={(e) =>
+                        showBreakdown(
+                          e.currentTarget,
+                          x.teamInfo.Name,
+                          round + 1,
+                          roundInfo
+                        )
+                      }
+                      onMouseLeave={() => setBreakdown(undefined)}
+                      onBlur={() => setBreakdown(undefined)}
                     >
-                      <span tabIndex={0} style={{ cursor: "pointer" }}>
-                        <span
-                          style={{
-                            color:
-                              roundScore < 0 ? negativeColor : undefined,
-                          }}
-                        >
-                          {roundScore}
-                        </span>
-                        <span style={{ color: mutedColor }}>
-                          {` (${runningTotals[index]})`}
-                        </span>
+                      <span
+                        style={{
+                          color: roundScore < 0 ? negativeColor : undefined,
+                        }}
+                      >
+                        {roundScore}
                       </span>
-                    </OverlayTrigger>
+                      <span style={{ color: mutedColor }}>
+                        {` (${runningTotals[index]})`}
+                      </span>
+                    </span>
                   </td>
                 );
               })}
