@@ -43,10 +43,33 @@ export const RoundBreakdown = (props: RoundBreakdownProps) => {
   );
 
   return (
-    // Rendered on the body, above the score pad and the game header.
-    <Popover style={{ zIndex: 1080 }}>
-      <Popover.Header>{`${teamName} — round ${roundNumber}`}</Popover.Header>
-      <Popover.Body>
+    // Rendered on the body, and painted here rather than left to the
+    // stylesheet, so it always sits solid above the score pad beneath it.
+    <Popover
+      style={{
+        zIndex: 2000,
+        backgroundColor: "#FFFFFF",
+        border: "1px solid #BBBBBB",
+        borderRadius: 8,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+      }}
+    >
+      <Popover.Header
+        style={{
+          backgroundColor: "#F0F0F0",
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+        }}
+      >
+        {`${teamName} — round ${roundNumber}`}
+      </Popover.Header>
+      <Popover.Body
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+        }}
+      >
         <Stack gap={1} style={{ minWidth: 210 }}>
           {bigPointFields.map((x) => line(x.label, round[x.field]))}
           {line("Big points", getBigPoints(round), true)}
