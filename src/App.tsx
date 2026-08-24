@@ -12,16 +12,16 @@ import Stack from "react-bootstrap/esm/Stack";
 import "./App.css";
 import { NavLink } from "react-bootstrap";
 import { version } from "./version";
-// import {
-//   FirstHandLastHand,
-//   gameName as firstHandLastHandGameName,
-// } from "./games/first-hand-last-hand/first-hand-last-hand";
+import {
+  FirstHandLastHand,
+  gameName as firstHandLastHandGameName,
+} from "./games/first-hand-last-hand/first-hand-last-hand";
 
 export const Game = {
   SkullKing: "SkullKing",
   RollThroughTheAges: "RollThroughTheAges",
   GeneralPoints: "GeneralPoints",
-  // FirstHandLastHand: "FirstHandLastHand",
+  FirstHandLastHand: "FirstHandLastHand",
 } as const;
 export type Game = (typeof Game)[keyof typeof Game];
 
@@ -174,14 +174,14 @@ function App() {
                 {generalPointsGameName}
               </Button>
             </Stack>
-            {/* <Stack direction="horizontal" gap={0}>
+            <Stack direction="horizontal" gap={0}>
               <Button
                 variant="link"
                 onClick={() => setActiveGame(Game.FirstHandLastHand)}
               >
                 {firstHandLastHandGameName}
               </Button>
-            </Stack> */}
+            </Stack>
             <p style={{ fontSize: "8pt", marginTop: 16, marginBottom: 0 }}>
               As an Amazon Associate I earn from qualifying purchases.
             </p>
@@ -207,11 +207,11 @@ function App() {
           onGameStatusChanged={(status) => setGameStatus(status)}
         />
       )}
-      {/* {game === Game.FirstHandLastHand && (
+      {game === Game.FirstHandLastHand && (
         <FirstHandLastHand
           onGameStatusChanged={(status) => setGameStatus(status)}
         />
-      )} */}
+      )}
     </div>
   );
 }
