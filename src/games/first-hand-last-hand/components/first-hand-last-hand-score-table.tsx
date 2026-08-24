@@ -43,7 +43,8 @@ export const RoundBreakdown = (props: RoundBreakdownProps) => {
   );
 
   return (
-    <Popover>
+    // Rendered on the body, above the score pad and the game header.
+    <Popover style={{ zIndex: 1080 }}>
       <Popover.Header>{`${teamName} — round ${roundNumber}`}</Popover.Header>
       <Popover.Body>
         <Stack gap={1} style={{ minWidth: 210 }}>
@@ -87,15 +88,29 @@ export const FirstHandLastHandScoreTable = (
           {Array.from({ length: roundCount }, (_, round) => (
             <tr key={round}>
               <td>
-                {round + 1}
-                <Button
-                  variant="link"
-                  title={`Edit round ${round + 1}`}
-                  style={{ padding: "0 6px", color: mutedColor }}
-                  onClick={() => onEditRound(round)}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
                 >
-                  <Pencil />
-                </Button>
+                  {round + 1}
+                  <Button
+                    variant="link"
+                    title={`Edit round ${round + 1}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                      border: "none",
+                      color: mutedColor,
+                    }}
+                    onClick={() => onEditRound(round)}
+                  >
+                    <Pencil />
+                  </Button>
+                </div>
               </td>
               {teamStates.map((x, index) => {
                 const roundInfo = x.rounds[round];
@@ -104,9 +119,10 @@ export const FirstHandLastHandScoreTable = (
                 return (
                   <td key={x.teamInfo.Name}>
                     <OverlayTrigger
-                      trigger="click"
+                      trigger={["hover", "focus"]}
                       rootClose
-                      placement="auto"
+                      placement="bottom"
+                      container={document.body}
                       overlay={
                         <RoundBreakdown
                           teamName={x.teamInfo.Name}
@@ -115,10 +131,7 @@ export const FirstHandLastHandScoreTable = (
                         />
                       }
                     >
-                      <span
-                        style={{ cursor: "pointer" }}
-                        title="Show how this round scored"
-                      >
+                      <span tabIndex={0} style={{ cursor: "pointer" }}>
                         <span
                           style={{
                             color:
