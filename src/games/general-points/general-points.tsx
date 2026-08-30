@@ -166,18 +166,32 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     setCookie(gameCookieName, newPlayers.map((x) => x.Name).join("|"));
   }
 
-  function startGame() {
-    setShowGameSettings(false);
-    if (players.length === 0) return;
-
+  /** Puts every player back on an empty round one. */
+  function beginFirstRound() {
     setPlayerStates(players.map((x) => ({ playerInfo: x, roundScores: [] })));
     setGameStatus(GeneralPointsGameStatus.GameActive);
   }
 
+  function startGame() {
+    setShowGameSettings(false);
+    if (players.length === 0) return;
+
+    beginFirstRound();
+  }
+
+  /**
+   * Clears the scores and starts over with the same players and options,
+   * exactly as if the game had just been started.
+   */
   function resetGame() {
-    setPlayerStates([]);
     setShowRoundEntry(false);
-    setGameStatus(GeneralPointsGameStatus.GameNotStarted);
+    if (players.length === 0) {
+      setPlayerStates([]);
+      setGameStatus(GeneralPointsGameStatus.GameNotStarted);
+      return;
+    }
+
+    beginFirstRound();
   }
 
   function addRound(roundScores: number[]) {
