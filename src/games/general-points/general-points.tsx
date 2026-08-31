@@ -25,6 +25,7 @@ const defaultPointsToFinish = 100;
 export const defaultBlueColor = "#DDDDFF";
 export const defaultGreenColor = "#DDFFDD";
 export const defaultGoldColor = "#FFF2CC";
+export const mutedColor = "#4D4D4D";
 
 export interface GeneralPointsPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -108,7 +109,8 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
   );
-  const [showRoundEntry, setShowRoundEntry] = useState<boolean>(false);
+  /** The round the entry popup is on, whether new or being corrected. */
+  const [entryRoundIndex, setEntryRoundIndex] = useState<number | undefined>();
   const [cookies, setCookie] = useCookies([gameCookieName]);
 
   useEffect(() => {
@@ -184,7 +186,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
    * exactly as if the game had just been started.
    */
   function resetGame() {
-    setShowRoundEntry(false);
+    setEntryRoundIndex(undefined);
     if (players.length === 0) {
       setPlayerStates([]);
       setGameStatus(GeneralPointsGameStatus.GameNotStarted);
@@ -194,17 +196,27 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     beginFirstRound();
   }
 
-  function addRound(roundScores: number[]) {
-    const newPlayerStates = playerStates.map((x, index) => ({
-      ...x,
-      roundScores: [...x.roundScores, roundScores[index] ?? 0],
-    }));
+  /** Stores a round, whether it is a new one or a correction to an old one. */
+  function saveRound(index: number, roundScores: number[]) {
+    const newPlayerStates = playerStates.map((x, playerIndex) => {
+      const newScore = roundScores[playerIndex] ?? 0;
+
+      return {
+        ...x,
+        roundScores:
+          index < x.roundScores.length
+            ? x.roundScores.map((old, i) => (i === index ? newScore : old))
+            : [...x.roundScores, newScore],
+      };
+    });
 
     setPlayerStates(newPlayerStates);
-    setShowRoundEntry(false);
-    if (isGameFinished(newPlayerStates, pointsToFinish)) {
-      setGameStatus(GeneralPointsGameStatus.GameOver);
-    }
+    setEntryRoundIndex(undefined);
+    setGameStatus(
+      isGameFinished(newPlayerStates, pointsToFinish)
+        ? GeneralPointsGameStatus.GameOver
+        : GeneralPointsGameStatus.GameActive
+    );
   }
 
   function undoLastRound() {
@@ -217,7 +229,8 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     setGameStatus(GeneralPointsGameStatus.GameActive);
   }
 
-  const round = (playerStates[0]?.roundScores.length ?? 0) + 1;
+  const roundCount = playerStates[0]?.roundScores.length ?? 0;
+  const round = roundCount + 1;
   const rankings = getRankings(playerStates, lowScoreWins);
 
   const settingsContent = (
@@ -262,13 +275,16 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
         onCancel={() => setShowGameSettings(false)}
         show={showGameSettings}
       />
-      <GeneralPointsRoundEntry
-        show={showRoundEntry}
-        round={round}
-        playerStates={playerStates}
-        onAccept={addRound}
-        onCancel={() => setShowRoundEntry(false)}
-      />
+      {entryRoundIndex !== undefined && (
+        <GeneralPointsRoundEntry
+          show
+          round={entryRoundIndex + 1}
+          isNewRound={entryRoundIndex === roundCount}
+          playerStates={playerStates}
+          onAccept={(roundScores) => saveRound(entryRoundIndex, roundScores)}
+          onCancel={() => setEntryRoundIndex(undefined)}
+        />
+      )}
       <GameHeader>
         <h2>
           <Stack direction="horizontal" gap={1}>
@@ -313,7 +329,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
                   fontWeight: 600,
                   cursor: "pointer",
                 }}
-                onClick={() => setShowRoundEntry(true)}
+                onClick={() => setEntryRoundIndex(roundCount)}
               >
                 {`Enter Round ${round} Scores`}
               </div>
@@ -372,7 +388,10 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
               </Stack>
             )}
 
-            <GeneralPointsScoreTable playerStates={playerStates} />
+            <GeneralPointsScoreTable
+              playerStates={playerStates}
+              onEditRound={(index) => setEntryRoundIndex(index)}
+            />
           </Stack>
         )}
       </div>
