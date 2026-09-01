@@ -89,6 +89,21 @@ export function getRankings(
   return rankings;
 }
 
+/**
+ * The player who starts a round. The first player chosen during setup starts
+ * round 1, and the start passes to the next player on each following round.
+ */
+export function getStartingPlayer(
+  playerStates: GeneralPointsPlayerState[],
+  firstPlayerIndex: number,
+  round: number
+): PlayerGeneralProps | undefined {
+  if (playerStates.length === 0) return undefined;
+
+  const index = (firstPlayerIndex + round - 1) % playerStates.length;
+  return playerStates[index]?.playerInfo;
+}
+
 export interface GeneralPointsProps {
   onGameStatusChanged: (status: GameStatus) => void;
 }
@@ -105,6 +120,8 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   const [pointsToFinish, setPointsToFinish] =
     useState<number>(defaultPointsToFinish);
   const [lowScoreWins, setLowScoreWins] = useState<boolean>(false);
+  const [firstPlayerIndex, setFirstPlayerIndex] = useState<number>(0);
+  const [gameFirstPlayerIndex, setGameFirstPlayerIndex] = useState<number>(0);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
   );
@@ -171,6 +188,9 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     if (players.length === 0) return;
 
     setPlayerStates(players.map((x) => ({ playerInfo: x, roundScores: [] })));
+    setGameFirstPlayerIndex(
+      firstPlayerIndex < players.length ? firstPlayerIndex : 0
+    );
     setGameStatus(GeneralPointsGameStatus.GameActive);
   }
 
@@ -205,6 +225,11 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
 
   const round = (playerStates[0]?.roundScores.length ?? 0) + 1;
   const rankings = getRankings(playerStates, lowScoreWins);
+  const startingPlayer = getStartingPlayer(
+    playerStates,
+    gameFirstPlayerIndex,
+    round
+  );
 
   const settingsContent = (
     <Stack gap={4}>
@@ -233,6 +258,22 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
           text="Low score wins"
           onChange={setLowScoreWins}
         />
+        <Form.Label style={{ marginBottom: 0 }}>First player:</Form.Label>
+        <Form.Select
+          style={{ maxWidth: 220 }}
+          value={firstPlayerIndex < players.length ? firstPlayerIndex : 0}
+          onChange={(e) => setFirstPlayerIndex(parseInt(e.target.value, 10))}
+        >
+          {players.map((x, index) => (
+            <option key={x.Name} value={index}>
+              {x.Name}
+            </option>
+          ))}
+        </Form.Select>
+        <div style={{ fontSize: "8pt" }}>
+          This player starts round 1, then the start passes to the next player
+          each round.
+        </div>
       </Stack>
     </Stack>
   );
@@ -252,6 +293,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
         show={showRoundEntry}
         round={round}
         playerStates={playerStates}
+        startingPlayerName={startingPlayer?.Name}
         onAccept={addRound}
         onCancel={() => setShowRoundEntry(false)}
       />
@@ -311,6 +353,20 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
                   ? "Game Over"
                   : `Round: ${round}`}
               </span>
+              {gameStatus === GeneralPointsGameStatus.GameActive &&
+                startingPlayer && (
+                  <span
+                    style={{
+                      padding: "2px 10px",
+                      borderRadius: 12,
+                      backgroundColor: defaultGreenColor,
+                      fontSize: "10pt",
+                    }}
+                    title="Whose turn it is to start this round"
+                  >
+                    {`${startingPlayer.Name} starts`}
+                  </span>
+                )}
               <Button
                 variant="link"
                 disabled={round === 1}

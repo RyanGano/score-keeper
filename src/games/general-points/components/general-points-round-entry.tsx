@@ -22,6 +22,7 @@ export interface GeneralPointsRoundEntryProps {
   show: boolean;
   round: number;
   playerStates: GeneralPointsPlayerState[];
+  startingPlayerName?: string | undefined;
   onAccept: (roundScores: number[]) => void;
   onCancel: () => void;
 }
@@ -29,7 +30,8 @@ export interface GeneralPointsRoundEntryProps {
 export const GeneralPointsRoundEntry = (
   props: GeneralPointsRoundEntryProps
 ) => {
-  const { show, round, playerStates, onAccept, onCancel } = props;
+  const { show, round, playerStates, startingPlayerName, onAccept, onCancel } =
+    props;
   const [values, setValues] = useState<string[]>([]);
   const [fastEnter, setFastEnter] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -108,7 +110,9 @@ export const GeneralPointsRoundEntry = (
             <Stack gap={0} style={{ flexGrow: 1 }}>
               <span style={{ fontWeight: 600 }}>{x.playerInfo.Name}</span>
               <span style={{ fontSize: "8pt" }}>
-                {`Total: ${getTotalScore(x)}`}
+                {x.playerInfo.Name === startingPlayerName
+                  ? `Total: ${getTotalScore(x)} • starts this round`
+                  : `Total: ${getTotalScore(x)}`}
               </span>
             </Stack>
             <Form.Control
