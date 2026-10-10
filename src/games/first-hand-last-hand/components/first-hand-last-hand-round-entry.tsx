@@ -2,6 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import Form from "react-bootstrap/esm/Form";
 import Stack from "react-bootstrap/esm/Stack";
+import { getSignedNumberInputMode } from "../../../common/signed-number-input-mode";
 import { SimpleModal } from "../../../common/simple-modal";
 import {
   bigPointFields,
@@ -156,7 +157,7 @@ export const FirstHandLastHandRoundEntry = (
               </span>
               <Form.Control
                 type="text"
-                inputMode="numeric"
+                inputMode={getSignedNumberInputMode(navigator)}
                 size="sm"
                 style={{ width: "64px" }}
                 placeholder="0"
