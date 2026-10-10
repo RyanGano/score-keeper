@@ -14,7 +14,11 @@ export interface SimpleModalProps {
 
 export const SimpleModal = (props: SimpleModalProps) => {
   return (
-    <Modal show={props.show} onHide={props.onCancel}>
+    <Modal
+      aria-label={props.title}
+      show={props.show}
+      onHide={props.onCancel}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>
