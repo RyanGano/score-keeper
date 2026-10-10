@@ -4,6 +4,7 @@ import Form from "react-bootstrap/esm/Form";
 import Stack from "react-bootstrap/esm/Stack";
 import { CheckboxButton } from "../../../common/checkbox-buttons";
 import { SimpleModal } from "../../../common/simple-modal";
+import { getSignedNumberInputMode } from "../../../common/signed-number-input-mode";
 import {
   defaultBlueColor,
   getTotalScore,
@@ -124,7 +125,7 @@ export const GeneralPointsRoundEntry = (
                 inputs.current[index] = input;
               }}
               type="text"
-              inputMode="numeric"
+              inputMode={getSignedNumberInputMode(navigator)}
               style={{ width: "100px" }}
               placeholder="score"
               value={values[index] ?? ""}
