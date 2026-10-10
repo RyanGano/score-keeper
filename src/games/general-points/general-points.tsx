@@ -109,9 +109,13 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
   );
+  const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
   /** The round the entry popup is on, whether new or being corrected. */
   const [entryRoundIndex, setEntryRoundIndex] = useState<number | undefined>();
   const [cookies, setCookie] = useCookies([gameCookieName]);
+  const roundCount = playerStates[0]?.roundScores.length ?? 0;
+  const round = roundCount + 1;
+  const rankings = getRankings(playerStates, lowScoreWins);
 
   useEffect(() => {
     let newStatus: GameStatus = GameStatus.NotStarted;
@@ -143,29 +147,80 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   }
 
   function addPlayerLocal(newName: string) {
-    return addPlayer(
+    const error = addPlayer(
       players,
       setPlayers,
       (value: string) => setCookie(gameCookieName, value),
       maxPlayers,
       newName
     );
+
+    if (
+      !error &&
+      players.length < maxPlayers &&
+      !players.some((x) => x.Name === newName)
+    ) {
+      setPlayerStates((current) =>
+        current.length === 0
+          ? current
+          : [
+              ...current,
+              {
+                playerInfo: { Name: newName },
+                roundScores: current[0]?.roundScores.map(() => 0) ?? [],
+              },
+            ]
+      );
+    }
+
+    return error;
   }
 
   function editPlayerLocal(originalName: string, newName: string) {
-    return editPlayer(
+    const error = editPlayer(
       players,
       setPlayers,
       (value: string) => setCookie(gameCookieName, value),
       originalName,
       newName
     );
+
+    if (!error) {
+      setPlayerStates((current) =>
+        current.map((x) =>
+          x.playerInfo.Name === originalName
+            ? { ...x, playerInfo: { ...x.playerInfo, Name: newName } }
+            : x
+        )
+      );
+    }
+
+    return error;
   }
 
-  function removePlayer(name: string) {
+  function removePlayerNow(name: string) {
     const newPlayers = [...players].filter((x) => x.Name !== name);
     setPlayers(newPlayers);
     setCookie(gameCookieName, newPlayers.map((x) => x.Name).join("|"));
+    setPlayerStates((current) =>
+      current.filter((x) => x.playerInfo.Name !== name)
+    );
+  }
+
+  function removePlayer(name: string) {
+    if (roundCount > 0) {
+      setPlayerToRemove(name);
+      return;
+    }
+
+    removePlayerNow(name);
+  }
+
+  function confirmRemovePlayer() {
+    if (playerToRemove === undefined) return;
+
+    removePlayerNow(playerToRemove);
+    setPlayerToRemove(undefined);
   }
 
   /** Puts every player back on an empty round one. */
@@ -179,6 +234,15 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     if (players.length === 0) return;
 
     beginFirstRound();
+  }
+
+  function saveGameSettings() {
+    if (gameStatus === GeneralPointsGameStatus.GameNotStarted) {
+      startGame();
+      return;
+    }
+
+    setShowGameSettings(false);
   }
 
   /**
@@ -229,10 +293,6 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     setGameStatus(GeneralPointsGameStatus.GameActive);
   }
 
-  const roundCount = playerStates[0]?.roundScores.length ?? 0;
-  const round = roundCount + 1;
-  const rankings = getRankings(playerStates, lowScoreWins);
-
   const settingsContent = (
     <Stack gap={4}>
       <PlayerList
@@ -269,11 +329,29 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
       <SimpleModal
         title={`${gameName} Settings`}
         content={settingsContent}
-        defaultButtonContent="Start Game"
+        defaultButtonContent={
+          gameStatus === GeneralPointsGameStatus.GameNotStarted
+            ? "Start Game"
+            : "Save Settings"
+        }
         alternateButtonContent="Close"
-        onAccept={startGame}
+        onAccept={saveGameSettings}
         onCancel={() => setShowGameSettings(false)}
         show={showGameSettings}
+      />
+      <SimpleModal
+        title="Remove Player"
+        content={
+          <>
+            Removing {playerToRemove} will delete their score history from this
+            game. Continue?
+          </>
+        }
+        defaultButtonContent="Remove Player"
+        alternateButtonContent="Cancel"
+        onAccept={confirmRemovePlayer}
+        onCancel={() => setPlayerToRemove(undefined)}
+        show={playerToRemove !== undefined}
       />
       {entryRoundIndex !== undefined && (
         <GeneralPointsRoundEntry
@@ -292,16 +370,13 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
             {gameStatus !== GeneralPointsGameStatus.GameNotStarted && (
               <ResetGame onAccept={resetGame} />
             )}
-            {gameStatus === GeneralPointsGameStatus.GameNotStarted ||
-            gameStatus === GeneralPointsGameStatus.GameOver ? (
-              <Button variant="link" onClick={() => setShowGameSettings(true)}>
-                <Gear />
-              </Button>
-            ) : (
-              <Button variant="link" disabled>
-                <Gear />
-              </Button>
-            )}
+            <Button
+              variant="link"
+              aria-label="Game settings"
+              onClick={() => setShowGameSettings(true)}
+            >
+              <Gear />
+            </Button>
           </Stack>
         </h2>
       </GameHeader>
