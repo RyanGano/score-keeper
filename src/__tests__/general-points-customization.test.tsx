@@ -133,4 +133,42 @@ describe("general-points customization", () => {
     expect(screen.getByText("Game Over")).toBeInTheDocument();
     expect(within(screen.getByRole("table")).getByText("12 (12)")).toBeInTheDocument();
   });
+
+  it("restores roster and scores when canceling game settings after removing a player", async () => {
+    const user = userEvent.setup();
+    renderGeneralPoints();
+
+    await user.click(screen.getByRole("button", { name: "Start Game" }));
+    await user.click(screen.getByText("Enter Round 1 Scores"));
+    const scoreInputs = await screen.findAllByPlaceholderText("score");
+    await user.type(scoreInputs[0], "15");
+    await user.type(scoreInputs[1], "8");
+    await user.click(screen.getByRole("button", { name: "Add Scores" }));
+
+    await user.click(screen.getByRole("button", { name: "Game settings" }));
+    await user.click(screen.getByRole("button", { name: "Remove Player 1" }));
+    const removeDialog = await screen.findByRole("dialog", {
+      name: "Remove Player",
+    });
+    await user.click(
+      within(removeDialog).getByRole("button", { name: "Remove Player" })
+    );
+
+    const settingsDialog = screen.getByRole("dialog", {
+      name: "General Points Settings",
+    });
+    await user.click(
+      within(settingsDialog).getByRole("button", { name: "Cancel" })
+    );
+
+    const scoreTable = screen.getByRole("table");
+    expect(
+      within(scoreTable).getByRole("columnheader", { name: "Player 1" })
+    ).toBeInTheDocument();
+    expect(
+      within(scoreTable).getByRole("columnheader", { name: "Player 2" })
+    ).toBeInTheDocument();
+    expect(within(scoreTable).getByText("15 (15)")).toBeInTheDocument();
+    expect(within(scoreTable).getByText("8 (8)")).toBeInTheDocument();
+  });
 });
