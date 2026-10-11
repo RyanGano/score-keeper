@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Stack from "react-bootstrap/esm/Stack";
 import Form from "react-bootstrap/esm/Form";
@@ -36,6 +36,13 @@ export interface GeneralPointsRanking {
   rank: number;
   playerInfo: PlayerGeneralProps;
   total: number;
+}
+
+interface GeneralPointsSettingsSnapshot {
+  players: PlayerGeneralProps[];
+  playerStates: GeneralPointsPlayerState[];
+  pointsToFinish: number;
+  lowScoreWins: boolean;
 }
 
 export const GeneralPointsGameStatus = {
@@ -110,6 +117,9 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     players.length === 0
   );
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
+  const settingsSnapshot = useRef<GeneralPointsSettingsSnapshot | undefined>(
+    undefined
+  );
   /** The round the entry popup is on, whether new or being corrected. */
   const [entryRoundIndex, setEntryRoundIndex] = useState<number | undefined>();
   const [cookies, setCookie] = useCookies([gameCookieName]);
@@ -134,6 +144,17 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
 
     onGameStatusChanged(newStatus);
   }, [gameStatus, onGameStatusChanged]);
+
+  useEffect(() => {
+    if (showGameSettings && settingsSnapshot.current === undefined) {
+      settingsSnapshot.current = {
+        players,
+        playerStates,
+        pointsToFinish,
+        lowScoreWins,
+      };
+    }
+  }, [showGameSettings, players, playerStates, pointsToFinish, lowScoreWins]);
 
   if (!cookies.players_gp && players.length === 0) {
     setPlayers([{ Name: "Player 1" }, { Name: "Player 2" }]);
@@ -237,12 +258,41 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   }
 
   function saveGameSettings() {
+    settingsSnapshot.current = undefined;
     if (gameStatus === GeneralPointsGameStatus.GameNotStarted) {
       startGame();
       return;
     }
 
     setShowGameSettings(false);
+  }
+
+  function cancelGameSettings() {
+    const snapshot = settingsSnapshot.current;
+    if (snapshot) {
+      setPlayers(snapshot.players);
+      setPlayerStates(snapshot.playerStates);
+      setCookie(
+        gameCookieName,
+        snapshot.players.map((x) => x.Name).join("|")
+      );
+      setPointsToFinish(snapshot.pointsToFinish);
+      setLowScoreWins(snapshot.lowScoreWins);
+    }
+
+    settingsSnapshot.current = undefined;
+    setPlayerToRemove(undefined);
+    setShowGameSettings(false);
+  }
+
+  function openGameSettings() {
+    settingsSnapshot.current = {
+      players,
+      playerStates,
+      pointsToFinish,
+      lowScoreWins,
+    };
+    setShowGameSettings(true);
   }
 
   /**
@@ -334,9 +384,9 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
             ? "Start Game"
             : "Save Settings"
         }
-        alternateButtonContent="Close"
+        alternateButtonContent="Cancel"
         onAccept={saveGameSettings}
-        onCancel={() => setShowGameSettings(false)}
+        onCancel={cancelGameSettings}
         show={showGameSettings}
       />
       <SimpleModal
@@ -373,7 +423,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
             <Button
               variant="link"
               aria-label="Game settings"
-              onClick={() => setShowGameSettings(true)}
+              onClick={openGameSettings}
             >
               <Gear />
             </Button>
