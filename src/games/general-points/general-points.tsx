@@ -99,6 +99,23 @@ export function getRankings(
 }
 
 /**
+ * The position shown beside a player's name: "1st", "2nd", "11th", ...
+ * Players who share their rank with someone else get a "T-" prefix.
+ */
+export function formatRank(rank: number, isTied: boolean): string {
+  const lastTwoDigits = rank % 100;
+  const lastDigit = rank % 10;
+  let suffix = "th";
+  if (lastTwoDigits < 11 || lastTwoDigits > 13) {
+    if (lastDigit === 1) suffix = "st";
+    else if (lastDigit === 2) suffix = "nd";
+    else if (lastDigit === 3) suffix = "rd";
+  }
+
+  return `${isTied ? "T-" : ""}${rank}${suffix}`;
+}
+
+/**
  * The player who starts a round. The first player chosen during setup starts
  * round 1, and the start passes to the next player on each following round.
  */
@@ -587,6 +604,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
 
             <GeneralPointsScoreTable
               playerStates={playerStates}
+              rankings={rankings}
               onEditRound={(index) => setEntryRoundIndex(index)}
             />
           </Stack>

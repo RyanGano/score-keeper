@@ -117,10 +117,10 @@ describe("general-points customization", () => {
     expect(screen.getByText("Round: 2")).toBeInTheDocument();
     const scoreTable = screen.getByRole("table");
     expect(
-      within(scoreTable).getByRole("columnheader", { name: "Alice" })
+      within(scoreTable).getByRole("columnheader", { name: "Alice 1st" })
     ).toBeInTheDocument();
     expect(
-      within(scoreTable).getByRole("columnheader", { name: "Player 3" })
+      within(scoreTable).getByRole("columnheader", { name: "Player 3 2nd" })
     ).toBeInTheDocument();
     expect(within(scoreTable).queryByText("Player 1")).toBeNull();
     expect(within(scoreTable).queryByText("Player 2")).toBeNull();
@@ -163,10 +163,10 @@ describe("general-points customization", () => {
 
     const scoreTable = screen.getByRole("table");
     expect(
-      within(scoreTable).getByRole("columnheader", { name: "Player 1" })
+      within(scoreTable).getByRole("columnheader", { name: "Player 1 1st" })
     ).toBeInTheDocument();
     expect(
-      within(scoreTable).getByRole("columnheader", { name: "Player 2" })
+      within(scoreTable).getByRole("columnheader", { name: "Player 2 2nd" })
     ).toBeInTheDocument();
     expect(within(scoreTable).getByText("15 (15)")).toBeInTheDocument();
     expect(within(scoreTable).getByText("8 (8)")).toBeInTheDocument();

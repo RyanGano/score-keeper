@@ -2,20 +2,25 @@ import Button from "react-bootstrap/esm/Button";
 import Table from "react-bootstrap/esm/Table";
 import { Pencil } from "react-bootstrap-icons";
 import {
+  defaultGoldColor,
+  defaultGreenColor,
+  formatRank,
   getTotalScore,
   mutedColor,
   type GeneralPointsPlayerState,
+  type GeneralPointsRanking,
 } from "../general-points";
 
 export interface GeneralPointsScoreTableProps {
   playerStates: GeneralPointsPlayerState[];
+  rankings: GeneralPointsRanking[];
   onEditRound: (roundIndex: number) => void;
 }
 
 export const GeneralPointsScoreTable = (
   props: GeneralPointsScoreTableProps
 ) => {
-  const { playerStates, onEditRound } = props;
+  const { playerStates, rankings, onEditRound } = props;
   const roundCount = playerStates[0]?.roundScores.length ?? 0;
 
   if (roundCount === 0) return null;
@@ -28,9 +33,40 @@ export const GeneralPointsScoreTable = (
         <thead>
           <tr>
             <th>Round</th>
-            {playerStates.map((x) => (
-              <th key={x.playerInfo.Name}>{x.playerInfo.Name}</th>
-            ))}
+            {playerStates.map((x) => {
+              const ranking = rankings.find(
+                (r) => r.playerInfo.Name === x.playerInfo.Name
+              );
+              const isTied = rankings.some(
+                (r) => r !== ranking && r.rank === ranking?.rank
+              );
+
+              return (
+                <th key={x.playerInfo.Name}>
+                  {x.playerInfo.Name}
+                  {ranking && (
+                    // On its own line so a badge never widens the column.
+                    <div>
+                      <span
+                        style={{
+                          padding: "0 6px",
+                          borderRadius: 8,
+                          backgroundColor:
+                            ranking.rank === 1
+                              ? defaultGoldColor
+                              : defaultGreenColor,
+                          fontSize: "8pt",
+                          fontWeight: 600,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatRank(ranking.rank, isTied)}
+                      </span>
+                    </div>
+                  )}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
