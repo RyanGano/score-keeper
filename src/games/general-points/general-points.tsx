@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Stack from "react-bootstrap/esm/Stack";
 import Form from "react-bootstrap/esm/Form";
@@ -25,6 +25,7 @@ const defaultPointsToFinish = 100;
 export const defaultBlueColor = "#DDDDFF";
 export const defaultGreenColor = "#DDFFDD";
 export const defaultGoldColor = "#FFF2CC";
+export const mutedColor = "#4D4D4D";
 
 export interface GeneralPointsPlayerState {
   playerInfo: PlayerGeneralProps;
@@ -35,6 +36,14 @@ export interface GeneralPointsRanking {
   rank: number;
   playerInfo: PlayerGeneralProps;
   total: number;
+}
+
+interface GeneralPointsSettingsSnapshot {
+  players: PlayerGeneralProps[];
+  playerStates: GeneralPointsPlayerState[];
+  pointsToFinish: number;
+  lowScoreWins: boolean;
+  firstPlayerIndex: number;
 }
 
 export const GeneralPointsGameStatus = {
@@ -100,7 +109,8 @@ export function getStartingPlayer(
 ): PlayerGeneralProps | undefined {
   if (playerStates.length === 0) return undefined;
 
-  const index = (firstPlayerIndex + round - 1) % playerStates.length;
+  const first = firstPlayerIndex < playerStates.length ? firstPlayerIndex : 0;
+  const index = (first + round - 1) % playerStates.length;
   return playerStates[index]?.playerInfo;
 }
 
@@ -121,12 +131,24 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     useState<number>(defaultPointsToFinish);
   const [lowScoreWins, setLowScoreWins] = useState<boolean>(false);
   const [firstPlayerIndex, setFirstPlayerIndex] = useState<number>(0);
-  const [gameFirstPlayerIndex, setGameFirstPlayerIndex] = useState<number>(0);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
   );
-  const [showRoundEntry, setShowRoundEntry] = useState<boolean>(false);
+  const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
+  const settingsSnapshot = useRef<GeneralPointsSettingsSnapshot | undefined>(
+    undefined
+  );
+  /** The round the entry popup is on, whether new or being corrected. */
+  const [entryRoundIndex, setEntryRoundIndex] = useState<number | undefined>();
   const [cookies, setCookie] = useCookies([gameCookieName]);
+  const roundCount = playerStates[0]?.roundScores.length ?? 0;
+  const round = roundCount + 1;
+  const rankings = getRankings(playerStates, lowScoreWins);
+  const startingPlayer = getStartingPlayer(
+    playerStates,
+    firstPlayerIndex,
+    round
+  );
 
   useEffect(() => {
     let newStatus: GameStatus = GameStatus.NotStarted;
@@ -146,6 +168,25 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     onGameStatusChanged(newStatus);
   }, [gameStatus, onGameStatusChanged]);
 
+  useEffect(() => {
+    if (showGameSettings && settingsSnapshot.current === undefined) {
+      settingsSnapshot.current = {
+        players,
+        playerStates,
+        pointsToFinish,
+        lowScoreWins,
+        firstPlayerIndex,
+      };
+    }
+  }, [
+    showGameSettings,
+    players,
+    playerStates,
+    pointsToFinish,
+    lowScoreWins,
+    firstPlayerIndex,
+  ]);
+
   if (!cookies.players_gp && players.length === 0) {
     setPlayers([{ Name: "Player 1" }, { Name: "Player 2" }]);
   }
@@ -158,59 +199,176 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   }
 
   function addPlayerLocal(newName: string) {
-    return addPlayer(
+    const error = addPlayer(
       players,
       setPlayers,
       (value: string) => setCookie(gameCookieName, value),
       maxPlayers,
       newName
     );
+
+    if (
+      !error &&
+      players.length < maxPlayers &&
+      !players.some((x) => x.Name === newName)
+    ) {
+      setPlayerStates((current) =>
+        current.length === 0
+          ? current
+          : [
+              ...current,
+              {
+                playerInfo: { Name: newName },
+                roundScores: current[0]?.roundScores.map(() => 0) ?? [],
+              },
+            ]
+      );
+    }
+
+    return error;
   }
 
   function editPlayerLocal(originalName: string, newName: string) {
-    return editPlayer(
+    const error = editPlayer(
       players,
       setPlayers,
       (value: string) => setCookie(gameCookieName, value),
       originalName,
       newName
     );
+
+    if (!error) {
+      setPlayerStates((current) =>
+        current.map((x) =>
+          x.playerInfo.Name === originalName
+            ? { ...x, playerInfo: { ...x.playerInfo, Name: newName } }
+            : x
+        )
+      );
+    }
+
+    return error;
   }
 
-  function removePlayer(name: string) {
+  function removePlayerNow(name: string) {
+    // Keep the same player as first when someone ahead of them is removed.
+    const removedIndex = players.findIndex((x) => x.Name === name);
+    if (removedIndex >= 0 && removedIndex < firstPlayerIndex) {
+      setFirstPlayerIndex(firstPlayerIndex - 1);
+    }
     const newPlayers = [...players].filter((x) => x.Name !== name);
     setPlayers(newPlayers);
     setCookie(gameCookieName, newPlayers.map((x) => x.Name).join("|"));
+    setPlayerStates((current) =>
+      current.filter((x) => x.playerInfo.Name !== name)
+    );
+  }
+
+  function removePlayer(name: string) {
+    if (roundCount > 0) {
+      setPlayerToRemove(name);
+      return;
+    }
+
+    removePlayerNow(name);
+  }
+
+  function confirmRemovePlayer() {
+    if (playerToRemove === undefined) return;
+
+    removePlayerNow(playerToRemove);
+    setPlayerToRemove(undefined);
+  }
+
+  /** Puts every player back on an empty round one. */
+  function beginFirstRound() {
+    setPlayerStates(players.map((x) => ({ playerInfo: x, roundScores: [] })));
+    setGameStatus(GeneralPointsGameStatus.GameActive);
   }
 
   function startGame() {
     setShowGameSettings(false);
     if (players.length === 0) return;
 
-    setPlayerStates(players.map((x) => ({ playerInfo: x, roundScores: [] })));
-    setGameFirstPlayerIndex(
-      firstPlayerIndex < players.length ? firstPlayerIndex : 0
-    );
-    setGameStatus(GeneralPointsGameStatus.GameActive);
+    beginFirstRound();
   }
 
+  function saveGameSettings() {
+    settingsSnapshot.current = undefined;
+    if (gameStatus === GeneralPointsGameStatus.GameNotStarted) {
+      startGame();
+      return;
+    }
+
+    setShowGameSettings(false);
+  }
+
+  function cancelGameSettings() {
+    const snapshot = settingsSnapshot.current;
+    if (snapshot) {
+      setPlayers(snapshot.players);
+      setPlayerStates(snapshot.playerStates);
+      setCookie(
+        gameCookieName,
+        snapshot.players.map((x) => x.Name).join("|")
+      );
+      setPointsToFinish(snapshot.pointsToFinish);
+      setLowScoreWins(snapshot.lowScoreWins);
+      setFirstPlayerIndex(snapshot.firstPlayerIndex);
+    }
+
+    settingsSnapshot.current = undefined;
+    setPlayerToRemove(undefined);
+    setShowGameSettings(false);
+  }
+
+  function openGameSettings() {
+    settingsSnapshot.current = {
+      players,
+      playerStates,
+      pointsToFinish,
+      lowScoreWins,
+      firstPlayerIndex,
+    };
+    setShowGameSettings(true);
+  }
+
+  /**
+   * Clears the scores and starts over with the same players and options,
+   * exactly as if the game had just been started.
+   */
   function resetGame() {
-    setPlayerStates([]);
-    setShowRoundEntry(false);
-    setGameStatus(GeneralPointsGameStatus.GameNotStarted);
+    setEntryRoundIndex(undefined);
+    if (players.length === 0) {
+      setPlayerStates([]);
+      setGameStatus(GeneralPointsGameStatus.GameNotStarted);
+      return;
+    }
+
+    beginFirstRound();
   }
 
-  function addRound(roundScores: number[]) {
-    const newPlayerStates = playerStates.map((x, index) => ({
-      ...x,
-      roundScores: [...x.roundScores, roundScores[index] ?? 0],
-    }));
+  /** Stores a round, whether it is a new one or a correction to an old one. */
+  function saveRound(index: number, roundScores: number[]) {
+    const newPlayerStates = playerStates.map((x, playerIndex) => {
+      const newScore = roundScores[playerIndex] ?? 0;
+
+      return {
+        ...x,
+        roundScores:
+          index < x.roundScores.length
+            ? x.roundScores.map((old, i) => (i === index ? newScore : old))
+            : [...x.roundScores, newScore],
+      };
+    });
 
     setPlayerStates(newPlayerStates);
-    setShowRoundEntry(false);
-    if (isGameFinished(newPlayerStates, pointsToFinish)) {
-      setGameStatus(GeneralPointsGameStatus.GameOver);
-    }
+    setEntryRoundIndex(undefined);
+    setGameStatus(
+      isGameFinished(newPlayerStates, pointsToFinish)
+        ? GeneralPointsGameStatus.GameOver
+        : GeneralPointsGameStatus.GameActive
+    );
   }
 
   function undoLastRound() {
@@ -222,14 +380,6 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
     );
     setGameStatus(GeneralPointsGameStatus.GameActive);
   }
-
-  const round = (playerStates[0]?.roundScores.length ?? 0) + 1;
-  const rankings = getRankings(playerStates, lowScoreWins);
-  const startingPlayer = getStartingPlayer(
-    playerStates,
-    gameFirstPlayerIndex,
-    round
-  );
 
   const settingsContent = (
     <Stack gap={4}>
@@ -283,20 +433,44 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
       <SimpleModal
         title={`${gameName} Settings`}
         content={settingsContent}
-        defaultButtonContent="Start Game"
-        alternateButtonContent="Close"
-        onAccept={startGame}
-        onCancel={() => setShowGameSettings(false)}
+        defaultButtonContent={
+          gameStatus === GeneralPointsGameStatus.GameNotStarted
+            ? "Start Game"
+            : "Save Settings"
+        }
+        alternateButtonContent="Cancel"
+        onAccept={saveGameSettings}
+        onCancel={cancelGameSettings}
         show={showGameSettings}
       />
-      <GeneralPointsRoundEntry
-        show={showRoundEntry}
-        round={round}
-        playerStates={playerStates}
-        startingPlayerName={startingPlayer?.Name}
-        onAccept={addRound}
-        onCancel={() => setShowRoundEntry(false)}
+      <SimpleModal
+        title="Remove Player"
+        content={
+          <>
+            Removing {playerToRemove} will delete their score history from this
+            game. Continue?
+          </>
+        }
+        defaultButtonContent="Remove Player"
+        alternateButtonContent="Cancel"
+        onAccept={confirmRemovePlayer}
+        onCancel={() => setPlayerToRemove(undefined)}
+        show={playerToRemove !== undefined}
       />
+      {entryRoundIndex !== undefined && (
+        <GeneralPointsRoundEntry
+          show
+          round={entryRoundIndex + 1}
+          isNewRound={entryRoundIndex === roundCount}
+          playerStates={playerStates}
+          startingPlayerName={
+            getStartingPlayer(playerStates, firstPlayerIndex, entryRoundIndex + 1)
+              ?.Name
+          }
+          onAccept={(roundScores) => saveRound(entryRoundIndex, roundScores)}
+          onCancel={() => setEntryRoundIndex(undefined)}
+        />
+      )}
       <GameHeader>
         <h2>
           <Stack direction="horizontal" gap={1}>
@@ -304,16 +478,13 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
             {gameStatus !== GeneralPointsGameStatus.GameNotStarted && (
               <ResetGame onAccept={resetGame} />
             )}
-            {gameStatus === GeneralPointsGameStatus.GameNotStarted ||
-            gameStatus === GeneralPointsGameStatus.GameOver ? (
-              <Button variant="link" onClick={() => setShowGameSettings(true)}>
-                <Gear />
-              </Button>
-            ) : (
-              <Button variant="link" disabled>
-                <Gear />
-              </Button>
-            )}
+            <Button
+              variant="link"
+              aria-label="Game settings"
+              onClick={openGameSettings}
+            >
+              <Gear />
+            </Button>
           </Stack>
         </h2>
       </GameHeader>
@@ -341,7 +512,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
                   fontWeight: 600,
                   cursor: "pointer",
                 }}
-                onClick={() => setShowRoundEntry(true)}
+                onClick={() => setEntryRoundIndex(roundCount)}
               >
                 {`Enter Round ${round} Scores`}
               </div>
@@ -414,7 +585,10 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
               </Stack>
             )}
 
-            <GeneralPointsScoreTable playerStates={playerStates} />
+            <GeneralPointsScoreTable
+              playerStates={playerStates}
+              onEditRound={(index) => setEntryRoundIndex(index)}
+            />
           </Stack>
         )}
       </div>

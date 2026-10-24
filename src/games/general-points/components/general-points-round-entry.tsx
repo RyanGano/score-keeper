@@ -4,6 +4,7 @@ import Form from "react-bootstrap/esm/Form";
 import Stack from "react-bootstrap/esm/Stack";
 import { CheckboxButton } from "../../../common/checkbox-buttons";
 import { SimpleModal } from "../../../common/simple-modal";
+import { getSignedNumberInputMode } from "../../../common/signed-number-input-mode";
 import {
   defaultBlueColor,
   getTotalScore,
@@ -21,6 +22,7 @@ export function parseRoundScore(value: string): number {
 export interface GeneralPointsRoundEntryProps {
   show: boolean;
   round: number;
+  isNewRound: boolean;
   playerStates: GeneralPointsPlayerState[];
   startingPlayerName?: string | undefined;
   onAccept: (roundScores: number[]) => void;
@@ -30,19 +32,25 @@ export interface GeneralPointsRoundEntryProps {
 export const GeneralPointsRoundEntry = (
   props: GeneralPointsRoundEntryProps
 ) => {
-  const { show, round, playerStates, startingPlayerName, onAccept, onCancel } =
-    props;
-  const [values, setValues] = useState<string[]>([]);
+  const {
+    show,
+    round,
+    isNewRound,
+    playerStates,
+    startingPlayerName,
+    onAccept,
+    onCancel,
+  } = props;
+  // Mounted fresh each time a round is opened, on the round being entered or
+  // corrected.
+  const [values, setValues] = useState<string[]>(() =>
+    playerStates.map((x) =>
+      isNewRound ? "" : `${x.roundScores[round - 1] ?? 0}`
+    )
+  );
   const [fastEnter, setFastEnter] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    if (!show) return;
-
-    setValues(playerStates.map(() => ""));
-    setActiveIndex(0);
-  }, [show, playerStates]);
 
   useEffect(() => {
     if (!show) return;
@@ -85,6 +93,14 @@ export const GeneralPointsRoundEntry = (
     }
   }
 
+  /** The player's total from every round but this one, new or corrected. */
+  function totalBeforeRound(playerState: GeneralPointsPlayerState): number {
+    return (
+      getTotalScore(playerState) -
+      (isNewRound ? 0 : playerState.roundScores[round - 1] ?? 0)
+    );
+  }
+
   const content = (
     <Stack gap={3}>
       <CheckboxButton
@@ -111,8 +127,8 @@ export const GeneralPointsRoundEntry = (
               <span style={{ fontWeight: 600 }}>{x.playerInfo.Name}</span>
               <span style={{ fontSize: "8pt" }}>
                 {x.playerInfo.Name === startingPlayerName
-                  ? `Total: ${getTotalScore(x)} • starts this round`
-                  : `Total: ${getTotalScore(x)}`}
+                  ? `Total: ${totalBeforeRound(x)} • starts this round`
+                  : `Total: ${totalBeforeRound(x)}`}
               </span>
             </Stack>
             <Form.Control
@@ -120,7 +136,7 @@ export const GeneralPointsRoundEntry = (
                 inputs.current[index] = input;
               }}
               type="text"
-              inputMode="numeric"
+              inputMode={getSignedNumberInputMode(navigator)}
               style={{ width: "100px" }}
               placeholder="score"
               value={values[index] ?? ""}
@@ -141,7 +157,7 @@ export const GeneralPointsRoundEntry = (
     <SimpleModal
       title={`Round ${round} Scores`}
       content={content}
-      defaultButtonContent="Add Scores"
+      defaultButtonContent={isNewRound ? "Add Scores" : "Save Scores"}
       alternateButtonContent="Cancel"
       onAccept={acceptRound}
       onCancel={onCancel}

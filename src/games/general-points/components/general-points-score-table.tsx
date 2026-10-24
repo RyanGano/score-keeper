@@ -1,14 +1,21 @@
+import Button from "react-bootstrap/esm/Button";
 import Table from "react-bootstrap/esm/Table";
-import { getTotalScore, type GeneralPointsPlayerState } from "../general-points";
+import { Pencil } from "react-bootstrap-icons";
+import {
+  getTotalScore,
+  mutedColor,
+  type GeneralPointsPlayerState,
+} from "../general-points";
 
 export interface GeneralPointsScoreTableProps {
   playerStates: GeneralPointsPlayerState[];
+  onEditRound: (roundIndex: number) => void;
 }
 
 export const GeneralPointsScoreTable = (
   props: GeneralPointsScoreTableProps
 ) => {
-  const { playerStates } = props;
+  const { playerStates, onEditRound } = props;
   const roundCount = playerStates[0]?.roundScores.length ?? 0;
 
   if (roundCount === 0) return null;
@@ -29,7 +36,25 @@ export const GeneralPointsScoreTable = (
         <tbody>
           {Array.from({ length: roundCount }, (_, round) => (
             <tr key={round}>
-              <td>{round + 1}</td>
+              <td>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  {round + 1}
+                  <Button
+                    variant="link"
+                    title={`Edit round ${round + 1}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                      border: "none",
+                      color: mutedColor,
+                    }}
+                    onClick={() => onEditRound(round)}
+                  >
+                    <Pencil />
+                  </Button>
+                </div>
+              </td>
               {playerStates.map((x, index) => {
                 const roundScore = x.roundScores[round];
                 runningTotals[index] += roundScore;

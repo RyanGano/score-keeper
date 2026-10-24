@@ -76,6 +76,7 @@ export const PlayerList = (props: PlayerListProps) => {
           {playerType === "teams" ? "Team Info" : "Player Info"}
           <Button
             variant="link"
+            aria-label={`Add ${playerType === "teams" ? "team" : "player"}`}
             disabled={!canAddPlayer}
             onClick={() => {
               setAddPlayerVisible(true);
@@ -95,6 +96,7 @@ export const PlayerList = (props: PlayerListProps) => {
             <Button
               size="sm"
               variant="outline"
+              aria-label={`Edit ${x.Name}`}
               onClick={() => setEditPlayerVisible(x)}
             >
               <Pencil />
@@ -103,6 +105,7 @@ export const PlayerList = (props: PlayerListProps) => {
               <Button
                 size="sm"
                 variant="link"
+                aria-label={`Remove ${x.Name}`}
                 onClick={() => removePlayerLocal(x.Name)}
               >
                 <XCircle color="red" />

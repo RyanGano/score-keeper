@@ -105,18 +105,32 @@ export const FirstHandLastHand = (props: FirstHandLastHandProps) => {
     setCookie(gameCookieName, newTeams.map((x) => x.Name).join("|"));
   }
 
-  function startGame() {
-    setShowGameSettings(false);
-    if (teams.length === 0) return;
-
+  /** Puts every team back on an empty round one. */
+  function beginFirstRound() {
     setTeamStates(teams.map((x) => ({ teamInfo: x, rounds: [] })));
     setGameStatus(FirstHandLastHandGameStatus.GameActive);
   }
 
+  function startGame() {
+    setShowGameSettings(false);
+    if (teams.length === 0) return;
+
+    beginFirstRound();
+  }
+
+  /**
+   * Clears the scores and starts over with the same teams, exactly as if the
+   * game had just been started.
+   */
   function resetGame() {
-    setTeamStates([]);
     setEntryRoundIndex(undefined);
-    setGameStatus(FirstHandLastHandGameStatus.GameNotStarted);
+    if (teams.length === 0) {
+      setTeamStates([]);
+      setGameStatus(FirstHandLastHandGameStatus.GameNotStarted);
+      return;
+    }
+
+    beginFirstRound();
   }
 
   /** Stores a round, whether it is a new one or a correction to an old one. */

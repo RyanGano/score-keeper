@@ -150,25 +150,31 @@ export const SkullKing = (props: SkullKingProps) => {
     );
   }
 
+  /** Puts every player back on an empty first round, ready to bid. */
+  function beginFirstRound() {
+    setPlayerStates(
+      players.map((x) => {
+        return {
+          playerInfo: x,
+          roundScores: [],
+          currentRound: {
+            ...defaultSkullKingRoundInfo,
+            id: `${x.Name}_1`,
+            possibleTricks: 1,
+          },
+          editRound: null,
+        };
+      })
+    );
+    setCurrentAutoFill(undefined);
+    setRound(1);
+    setGameStatus(SkullKingGameStatus.BiddingOpen);
+  }
+
   function startGame() {
     setShowGameSettings(false);
     if (players?.length !== 0) {
-      setPlayerStates(
-        players.map((x) => {
-          return {
-            playerInfo: x,
-            roundScores: [],
-            currentRound: {
-              ...defaultSkullKingRoundInfo,
-              id: `${x.Name}_1`,
-              possibleTricks: 1,
-            },
-            editRound: null,
-          };
-        })
-      );
-      setRound(1);
-      setGameStatus(SkullKingGameStatus.BiddingOpen);
+      beginFirstRound();
     }
   }
 
@@ -434,10 +440,19 @@ export const SkullKing = (props: SkullKingProps) => {
     }
   }
 
+  /**
+   * Clears the scores and starts over with the same players and card
+   * inclusions, exactly as if the game had just been started.
+   */
   function resetGame(): void {
-    setGameStatus(SkullKingGameStatus.GameNotStarted);
-    setPlayerStates([]);
-    setRound(0);
+    if (players.length === 0) {
+      setGameStatus(SkullKingGameStatus.GameNotStarted);
+      setPlayerStates([]);
+      setRound(0);
+      return;
+    }
+
+    beginFirstRound();
   }
 
   function lockInBids(): void {
