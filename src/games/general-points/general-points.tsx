@@ -43,6 +43,7 @@ interface GeneralPointsSettingsSnapshot {
   playerStates: GeneralPointsPlayerState[];
   pointsToFinish: number;
   lowScoreWins: boolean;
+  firstPlayerIndex: number;
 }
 
 export const GeneralPointsGameStatus = {
@@ -97,6 +98,22 @@ export function getRankings(
   return rankings;
 }
 
+/**
+ * The player who starts a round. The first player chosen during setup starts
+ * round 1, and the start passes to the next player on each following round.
+ */
+export function getStartingPlayer(
+  playerStates: GeneralPointsPlayerState[],
+  firstPlayerIndex: number,
+  round: number
+): PlayerGeneralProps | undefined {
+  if (playerStates.length === 0) return undefined;
+
+  const first = firstPlayerIndex < playerStates.length ? firstPlayerIndex : 0;
+  const index = (first + round - 1) % playerStates.length;
+  return playerStates[index]?.playerInfo;
+}
+
 export interface GeneralPointsProps {
   onGameStatusChanged: (status: GameStatus) => void;
 }
@@ -113,6 +130,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   const [pointsToFinish, setPointsToFinish] =
     useState<number>(defaultPointsToFinish);
   const [lowScoreWins, setLowScoreWins] = useState<boolean>(false);
+  const [firstPlayerIndex, setFirstPlayerIndex] = useState<number>(0);
   const [showGameSettings, setShowGameSettings] = useState<boolean>(
     players.length === 0
   );
@@ -126,6 +144,11 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   const roundCount = playerStates[0]?.roundScores.length ?? 0;
   const round = roundCount + 1;
   const rankings = getRankings(playerStates, lowScoreWins);
+  const startingPlayer = getStartingPlayer(
+    playerStates,
+    firstPlayerIndex,
+    round
+  );
 
   useEffect(() => {
     let newStatus: GameStatus = GameStatus.NotStarted;
@@ -152,9 +175,17 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
         playerStates,
         pointsToFinish,
         lowScoreWins,
+        firstPlayerIndex,
       };
     }
-  }, [showGameSettings, players, playerStates, pointsToFinish, lowScoreWins]);
+  }, [
+    showGameSettings,
+    players,
+    playerStates,
+    pointsToFinish,
+    lowScoreWins,
+    firstPlayerIndex,
+  ]);
 
   if (!cookies.players_gp && players.length === 0) {
     setPlayers([{ Name: "Player 1" }, { Name: "Player 2" }]);
@@ -220,6 +251,11 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
   }
 
   function removePlayerNow(name: string) {
+    // Keep the same player as first when someone ahead of them is removed.
+    const removedIndex = players.findIndex((x) => x.Name === name);
+    if (removedIndex >= 0 && removedIndex < firstPlayerIndex) {
+      setFirstPlayerIndex(firstPlayerIndex - 1);
+    }
     const newPlayers = [...players].filter((x) => x.Name !== name);
     setPlayers(newPlayers);
     setCookie(gameCookieName, newPlayers.map((x) => x.Name).join("|"));
@@ -278,6 +314,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
       );
       setPointsToFinish(snapshot.pointsToFinish);
       setLowScoreWins(snapshot.lowScoreWins);
+      setFirstPlayerIndex(snapshot.firstPlayerIndex);
     }
 
     settingsSnapshot.current = undefined;
@@ -291,6 +328,7 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
       playerStates,
       pointsToFinish,
       lowScoreWins,
+      firstPlayerIndex,
     };
     setShowGameSettings(true);
   }
@@ -370,6 +408,22 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
           text="Low score wins"
           onChange={setLowScoreWins}
         />
+        <Form.Label style={{ marginBottom: 0 }}>First player:</Form.Label>
+        <Form.Select
+          style={{ maxWidth: 220 }}
+          value={firstPlayerIndex < players.length ? firstPlayerIndex : 0}
+          onChange={(e) => setFirstPlayerIndex(parseInt(e.target.value, 10))}
+        >
+          {players.map((x, index) => (
+            <option key={x.Name} value={index}>
+              {x.Name}
+            </option>
+          ))}
+        </Form.Select>
+        <div style={{ fontSize: "8pt" }}>
+          This player starts round 1, then the start passes to the next player
+          each round.
+        </div>
       </Stack>
     </Stack>
   );
@@ -409,6 +463,10 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
           round={entryRoundIndex + 1}
           isNewRound={entryRoundIndex === roundCount}
           playerStates={playerStates}
+          startingPlayerName={
+            getStartingPlayer(playerStates, firstPlayerIndex, entryRoundIndex + 1)
+              ?.Name
+          }
           onAccept={(roundScores) => saveRound(entryRoundIndex, roundScores)}
           onCancel={() => setEntryRoundIndex(undefined)}
         />
@@ -466,6 +524,20 @@ export const GeneralPoints = (props: GeneralPointsProps) => {
                   ? "Game Over"
                   : `Round: ${round}`}
               </span>
+              {gameStatus === GeneralPointsGameStatus.GameActive &&
+                startingPlayer && (
+                  <span
+                    style={{
+                      padding: "2px 10px",
+                      borderRadius: 12,
+                      backgroundColor: defaultGreenColor,
+                      fontSize: "10pt",
+                    }}
+                    title="Whose turn it is to start this round"
+                  >
+                    {`${startingPlayer.Name} starts`}
+                  </span>
+                )}
               <Button
                 variant="link"
                 disabled={round === 1}
