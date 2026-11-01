@@ -20,7 +20,9 @@ concurrency:
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    # Dependabot-triggered runs get no repository secrets, so they cannot deploy a preview.
+    # ci.yml still builds and tests their PRs.
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')) && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
@@ -50,7 +52,9 @@ jobs:
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    # Dependabot PRs never create a preview environment, so there is nothing to close. Keyed on
+    # the PR author, since whoever merges or closes it is the actor here.
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
     steps:
